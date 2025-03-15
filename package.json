@@ -1,19 +1,31 @@
 {
   "name": "pfe_2025_swiftsage",
   "version": "1.0.0",
-  "description": "A Platform or a Website that implements this concept :  Crowdsourcing based decision making for crisis management",
-  "main": "index.js",
-  "type":"module",
+  "description": "A platform for crowdsourcing-based decision-making in crisis management.",
+  "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "dev": "node --watch --env-file=.env --experimental-strip-types --experimental-sqlite ./src/server.js",
+    "dev": "nodemon --require dotenv/config src/server.js",
+    "start": "node src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Nadour Moustafa and  Hasbellaoui Mehdi",
+  "keywords": ["crisis management", "crowdsourcing", "react", "express", "vite"],
+  "author": "Nadour Moustafa and Hasbellaoui Mehdi",
   "license": "ISC",
   "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
     "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.3.0",
+    "tailwindcss": "^4.0.14",
+    "vite": "^6.2.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
