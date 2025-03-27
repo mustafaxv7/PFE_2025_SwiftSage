@@ -27,7 +27,7 @@ const SignupForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch("http://localhost:5000/api/auth/signup", {
+            const response = await fetch("http://localhost:5030/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

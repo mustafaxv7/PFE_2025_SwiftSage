@@ -1,0 +1,12 @@
+
+
+
+POST http://localhost/5030/auth/register
+Content-Type: application/json
+
+{
+  "username":"mustafaxv7",
+  "email":"mustafanadour@gmail.com",
+  "phone_number":"0655555550",
+  "password":"123456"
+  }
