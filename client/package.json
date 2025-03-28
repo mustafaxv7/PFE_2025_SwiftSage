@@ -15,6 +15,7 @@
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.485.0",
     "pfe_2025_swiftsage": "file:..",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
