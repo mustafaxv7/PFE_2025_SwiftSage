@@ -50,7 +50,7 @@ const SignupForm = () => {
 
 
     return (
-        <div className="max-w-sm mx-auto p-5 bg-white rounded-lg shadow-md">
+        <div className="max-w-sm mx-auto p-5 bg-white rounded-lg shadow-md mt-10 mb-10">
             <h2 className="text-2xl font-bold text-center mb-4">Create an Account</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
                 {!isOrganization ? (
