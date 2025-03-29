@@ -46,54 +46,81 @@ const LoginForm = () => {
         }
     };
 
-
     return (
-        <div className="max-w-sm mx-auto p-5 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold text-center mb-4">Log In</h2>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-                <AuthInput
-                    label="Email Address"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                />
-
-                <AuthInput
-                    label="Password"
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                />
-
-                <div className="flex items-center justify-between">
-                    <span className="text-sm text-red-600 cursor-pointer hover:underline">
-                        Forgot password?
-                    </span>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
+                <div className="text-center">
+                    <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+                        Log in to your account
+                    </h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                        Or{" "}
+                        <button
+                            onClick={() => navigate("/signup")}
+                            className="font-medium text-red-600 hover:text-red-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+                        >
+                            create a new account
+                        </button>
+                    </p>
                 </div>
+                
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="rounded-md shadow-sm space-y-4">
+                        <AuthInput
+                            label="Email Address"
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            placeholder="you@example.com"
+                        />
 
-                <button
-                    type="submit"
-                    className="w-full py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
-                >
-                    Log In
-                </button>
-            </form>
+                        <AuthInput
+                            label="Password"
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            placeholder="••••••••"
+                        />
+                    </div>
 
-            <div className="text-center mt-4">
-                <p className="text-sm text-gray-600">
-                    Don't have an account?{" "}
-                    <button
-                        onClick={() => navigate("/signup")}
-                        className="text-red-600 hover:underline"
-                    >
-                        Sign up
-                    </button>
-                </p>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <input
+                                id="remember-me"
+                                name="rememberMe"
+                                type="checkbox"
+                                checked={formData.rememberMe}
+                                onChange={handleChange}
+                                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                            />
+                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div className="text-sm">
+                            <button
+                                type="button"
+                                className="font-medium text-red-600 hover:text-red-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+                            >
+                                Forgot password?
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out"
+                        >
+                            Log In
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
