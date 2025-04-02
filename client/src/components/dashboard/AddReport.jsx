@@ -79,10 +79,10 @@ const AddReport = () => {
                     className="w-full p-2 border mt-1"
                 >
                     <option value="">Select Crisis Type</option>
-                    <option value="seisme">Séisme</option>
-                    <option value="inondation">Inondation</option>
-                    <option value="feu_industriel">Feu Industriel</option>
-                    <option value="feu_de_foret ">Feu de foret</option>
+                    <option value="earthquake">Earthquake</option>
+                    <option value="flood">Flood</option>
+                    <option value="industrial_fire">Industrial fire</option>
+                    <option value="forest_fire ">Forest fire</option>
                 </select>
             </div>
             <div className="mt-4 p-4 border border-dashed text-gray-500">
