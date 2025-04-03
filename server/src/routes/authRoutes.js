@@ -40,44 +40,77 @@ router.post('/register', async (req, res) => {
 
 
 router.post('/login', async (req, res) => {
-     try {
-         const { email, password } = req.body;
- 
-         if (!email || !password) {
-             return res.status(400).json({ message: "Please fill all fields" });
-         }
- 
-         const query = `SELECT * FROM users WHERE email = $1;`;
-         const values = [email];
- 
-         const { rows } = await con.query(query, values);
- 
-         if (rows.length === 0) {
-             return res.status(400).json({ message: "Invalid credentials" });
-         }
- 
-         const user = rows[0];
- 
-         const validPassword = await bcrypt.compare(password, user.password);
-         if (!validPassword) {
-             return res.status(400).json({ message: "Invalid credentials" });
-         }
- 
-         const token = jwt.sign(
-             { id: user.id },
-             process.env.JWT_SECRET,
-             { expiresIn: '24h' }
-         );
- 
-         return res.status(200).json({
-               message: 'Login Successful',
-               token 
-          });
- 
-     } catch (err) {
-         console.error(err);
-         return res.status(500).json({ message: "Server error" });
-     }
- });
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ message: "Please fill all fields" });
+        }
+
+        let userRole = "user"; // default role
+
+        // check if the user is an admin 
+        const adminQuery = `SELECT * FROM admins WHERE email = $1;`;
+        const adminValues = [email];
+        const adminResult = await con.query(adminQuery, adminValues);
+
+        if (adminResult.rows.length > 0) {
+            const admin = adminResult.rows[0];
+
+            // verify password for admin
+            const validPassword = await bcrypt.compare(password, admin.password);
+            if (!validPassword) {
+                return res.status(400).json({ message: "Invalid credentials" });
+            }
+
+            userRole = "admin";
+            const token = jwt.sign(
+                { id: admin.admin_id, role: userRole },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+
+            return res.status(200).json({
+                message: 'Admin Login Successful',
+                token,
+                userRole
+            });
+        }
+
+        // if not an admin check inside users table
+        const userQuery = `SELECT * FROM users WHERE email = $1;`;
+        const userValues = [email];
+        const userResult = await con.query(userQuery, userValues);
+
+        if (userResult.rows.length === 0) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const user = userResult.rows[0];
+
+        // verify password for normal user
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(400).json({ message: "Invalid credentials" });
+        }
+
+        const token = jwt.sign(
+            { id: user.user_id, role: userRole },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        return res.status(200).json({
+            message: 'User Login Successful',
+            token,
+            userRole
+        });
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Server error" });
+    }
+});
+
  
 export default router;
