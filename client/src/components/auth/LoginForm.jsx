@@ -32,7 +32,7 @@ const LoginForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus({ loading: true, success: false, error: null });
-
+    
         try {
             const response = await fetch("http://localhost:5030/auth/login", {
                 method: "POST",
@@ -41,17 +41,22 @@ const LoginForm = () => {
                 },
                 body: JSON.stringify(formData),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
                 setStatus({ loading: false, success: true, error: null });
                 localStorage.setItem("token", data.token);
-                
-                // Show success message before redirect
+                localStorage.setItem("userRole", data.userRole); // store the role in localStorage
+    
+                // Redirect user based on role
                 setTimeout(() => {
-                    navigate("/dashboard");
-                }, 1500);
+                    if (data.userRole === "admin") {
+                        navigate("/admin/dashboard");
+                    } else {
+                        navigate("/dashboard/my-reports");
+                    }
+                }, 1500);  // Delay to ensure localStorage is updated
             } else {
                 setStatus({ 
                     loading: false, 
