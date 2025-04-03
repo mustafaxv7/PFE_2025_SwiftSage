@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState, useEffect, useRef } from "react";
 
 const AddReport = () => {
     const [formData, setFormData] = useState({
@@ -12,6 +12,53 @@ const AddReport = () => {
         image: null
     });
 
+    // Reference to the map container
+    const mapRef = useRef(null);
+    // Reference to the map instance
+    const mapInstance = useRef(null);
+    // Reference to the marker
+    const markerRef = useRef(null);
+
+    useEffect(() => {
+        // Initialize the map only once when the component mounts
+        if (mapRef.current && !mapInstance.current) {
+            // Create map instance
+            mapInstance.current = L.map(mapRef.current).setView([51.505, -0.09], 13);
+            
+            // Add tile layer (OpenStreetMap)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(mapInstance.current);
+
+            // Add click event to the map
+            mapInstance.current.on('click', (e) => {
+                const { lat, lng } = e.latlng;
+                setFormData(prev => ({
+                    ...prev,
+                    lat: lat.toString(),
+                    lng: lng.toString()
+                }));
+
+                // Remove existing marker if any
+                if (markerRef.current) {
+                    mapInstance.current.removeLayer(markerRef.current);
+                }
+
+                // Add new marker
+                markerRef.current = L.marker([lat, lng]).addTo(mapInstance.current)
+                    .bindPopup(`Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`).openPopup();
+            });
+        }
+
+        // Cleanup function to remove the map when component unmounts
+        return () => {
+            if (mapInstance.current) {
+                mapInstance.current.remove();
+                mapInstance.current = null;
+            }
+        };
+    }, []);
+
     const handleChange = (e) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
@@ -24,8 +71,13 @@ const AddReport = () => {
     return (
         <div className="p-5 bg-white rounded-lg shadow-md">
             <h2 className="text-xl font-bold mb-4">Add a New Report</h2>
-            <div className="w-full h-64 bg-gray-300 flex items-center justify-center">
-                [Map Goes Here]
+            <div className="w-full h-100 bg-gray-300 flex items-center justify-center">
+                {/* Map container - must have a defined height */}
+                <div 
+                    id="map"
+                    ref={mapRef}
+                    style={{ height: "400px", width: "100%" }}
+                ></div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 mt-3">
@@ -34,7 +86,7 @@ const AddReport = () => {
                     name="altitude"
                     placeholder="Altitude"
                     className="w-full p-2 border"
-                    value={formData.altitude}
+                    value={formData.lat}
                     onChange={handleChange}
                 />
                 <input
@@ -42,7 +94,7 @@ const AddReport = () => {
                     name="amplitude"
                     placeholder="Amplitude"
                     className="w-full p-2 border"
-                    value={formData.amplitude}
+                    value={formData.lng}
                     onChange={handleChange}
                 />
             </div>
@@ -82,7 +134,7 @@ const AddReport = () => {
                     <option value="seisme">Séisme</option>
                     <option value="inondation">Inondation</option>
                     <option value="feu_industriel">Feu Industriel</option>
-                    <option value="feu_de_foret ">Feu de foret</option>
+                    <option value="feu_de_foret">Feu de foret</option>
                 </select>
             </div>
             <div className="mt-4 p-4 border border-dashed text-gray-500">
