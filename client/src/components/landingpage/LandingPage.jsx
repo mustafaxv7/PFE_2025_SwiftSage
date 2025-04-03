@@ -5,7 +5,6 @@ const LandingPage = () => {
     return (
         <div className="bg-gray-900 text-white min-h-screen flex flex-col overflow-hidden">
             <Navbar />
-
             {/* Hero Section */}
             <header className="relative h-screen flex flex-col justify-center items-center text-center px-6 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
                 {/* Animated background elements */}
@@ -13,7 +12,6 @@ const LandingPage = () => {
                     <div className="absolute top-20 left-10 w-40 h-40 bg-red-500 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
                     <div className="absolute bottom-10 right-10 w-60 h-60 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
                 </div>
-                
                 <div className="max-w-4xl w-full relative z-10">
                     <h1 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight animate-fadeIn">
                         Transforming Crisis Management with <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Swift Sage</span>
@@ -30,7 +28,6 @@ const LandingPage = () => {
                         </a>
                     </div>
                 </div>
-                
                 {/* Scrolling indicator */}
                 <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
                     <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
@@ -38,7 +35,6 @@ const LandingPage = () => {
                     </div>
                 </div>
             </header>
-
             {/* About Section */}
             <section id="about" className="py-24 px-6 bg-gray-900 relative">
                 <div className="max-w-6xl mx-auto">
@@ -119,36 +115,36 @@ const LandingPage = () => {
                             Designed for efficiency, accuracy, and rapid response in critical situations
                         </p>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {[
-                            { 
-                                title: "Real-Time Crisis Tracking", 
+                            {
+                                title: "Real-Time Crisis Tracking",
                                 desc: "Monitor and report crises as they happen with our live alert system.",
                                 icon: <FiAlertTriangle className="text-3xl text-red-500" />,
                                 color: "red"
                             },
-                            { 
-                                title: "Crowdsourced Intelligence", 
+                            {
+                                title: "Crowdsourced Intelligence",
                                 desc: "Leverage community reports to build comprehensive situational awareness.",
                                 icon: <FiUsers className="text-3xl text-blue-500" />,
                                 color: "blue"
                             },
-                            { 
-                                title: "Interactive Mapping", 
+                            {
+                                title: "Interactive Mapping",
                                 desc: "Visualize crisis data geographically for better strategic planning.",
                                 icon: <FiMap className="text-3xl text-green-500" />,
                                 color: "green"
                             },
-                            { 
-                                title: "AI-Powered Analytics", 
+                            {
+                                title: "AI-Powered Analytics",
                                 desc: "Our algorithms process data to predict trends and recommend actions.",
                                 icon: <FiBarChart2 className="text-3xl text-purple-500" />,
                                 color: "purple"
                             }
                         ].map((feature, index) => (
-                            <div 
-                                key={index} 
+                            <div
+                                key={index}
                                 className={`group relative p-8 bg-gray-700/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-${feature.color}-500 overflow-hidden`}
                             >
                                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-${feature.color}-500 to-${feature.color}-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -171,14 +167,14 @@ const LandingPage = () => {
                         Join organizations worldwide who trust Swift Sage for their critical decision-making needs.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <a 
-                            href="#contact" 
+                        <a
+                            href="#contact"
                             className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-lg font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center"
                         >
                             Get Started Today
                         </a>
-                        <a 
-                            href="#features" 
+                        <a
+                            href="#features"
                             className="px-8 py-4 border-2 border-gray-600 text-white text-lg font-semibold rounded-lg transition-all duration-300 hover:bg-gray-700/30 hover:shadow-lg flex items-center justify-center"
                         >
                             Learn More
@@ -241,33 +237,33 @@ const LandingPage = () => {
                                 <div className="space-y-5">
                                     <div>
                                         <label htmlFor="name" className="block text-gray-300 mb-2">Your Name</label>
-                                        <input 
-                                            type="text" 
-                                            id="name" 
+                                        <input
+                                            type="text"
+                                            id="name"
                                             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                                             placeholder="John Doe"
                                         />
                                     </div>
                                     <div>
                                         <label htmlFor="email" className="block text-gray-300 mb-2">Email Address</label>
-                                        <input 
-                                            type="email" 
-                                            id="email" 
+                                        <input
+                                            type="email"
+                                            id="email"
                                             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                                             placeholder="you@example.com"
                                         />
                                     </div>
                                     <div>
                                         <label htmlFor="message" className="block text-gray-300 mb-2">Your Message</label>
-                                        <textarea 
-                                            id="message" 
+                                        <textarea
+                                            id="message"
                                             rows="4"
                                             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
                                             placeholder="Tell us about your needs..."
                                         ></textarea>
                                     </div>
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         className="w-full px-6 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl"
                                     >
                                         Send Message
