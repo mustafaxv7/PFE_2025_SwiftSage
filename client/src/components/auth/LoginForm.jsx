@@ -14,9 +14,8 @@ const LoginForm = () => {
     const [status, setStatus] = useState({
         loading: false,
         success: false,
-        error: null
+        error: null,
     });
-
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
