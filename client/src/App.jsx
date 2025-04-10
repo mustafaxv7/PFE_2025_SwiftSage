@@ -8,7 +8,6 @@ import MyReports from "./components/dashboard/MyReports.jsx";
 import AddReport from "./components/dashboard/AddReport.jsx";
 import Sidebar from "./components/dashboard/Sidebar.jsx";
 import Alerts from "./components/dashboard/Alerts.jsx";
-import AdminDashboard from "./components/dashboard/admin/AdminDashboard.jsx";
 import AdminReports from "./components/dashboard/admin/ReportsOverview.jsx";
 import AdminMap from "./components/dashboard/admin/MapView.jsx";
 import AdminAlerts from "./components/dashboard/admin/AdminAlerts.jsx";
@@ -38,48 +37,44 @@ const App = () => {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/signup" element={<SignupForm />} />
-                
-                {/* Protected User Routes */}
-                <Route 
-                    path="/dashboard/*" 
+                <Route
+                    path="/dashboard/*"
                     element={
-                        userRole === "user" ? (
+                       (
+                           <div className="flex h-screen w-full">
+                               <Sidebar/>
+                               <div className="flex-1 p-6 bg-gray-100 ml-64">
+                                   <Routes>
+                                       <Route index element={<Dashboard/>}/>
+                                       <Route path="my-reports" element={<MyReports/>}/>
+                                       <Route path="add-report" element={<AddReport/>}/>
+                                       <Route path="alerts" element={<Alerts/>}/>
+                                   </Routes>
+                               </div>
+                           </div>
+                       )
+                    }
+                />
+
+                <Route
+                    path="/admin/*"
+                    element={
+                        ( // TEMPORARY ACCESS
                             <div className="flex h-screen w-full">
-                                <Sidebar />
+                                <AdminSidebar/>
                                 <div className="flex-1 p-6 bg-gray-100 ml-64">
                                     <Routes>
-                                        <Route index element={<Dashboard />} />
-                                        <Route path="my-reports" element={<MyReports />} />
-                                        <Route path="add-report" element={<AddReport />} />
-                                        <Route path="alerts" element={<Alerts />} />
+
+                                        <Route path="reports" element={<AdminReports/>}/>
+                                        <Route path="map" element={<AdminMap/>}/>
+                                        <Route path="alerts" element={<AdminAlerts/>}/>
                                     </Routes>
                                 </div>
                             </div>
-                        ) : <Navigate to="/login" replace />
+                        )
                     }
                 />
-                
-                {/* Protected Admin Routes */}
-                <Route 
-                    path="/admin/*" 
-                    element={
-                        userRole === "admin" ? (
-                            <div className="flex h-screen w-full">
-                                <AdminSidebar />
-                                <div className="flex-1 p-6 bg-gray-100 ml-64">
-                                    <Routes>
-                                        <Route index element={<AdminDashboard />} />
-                                        <Route path="dashboard" element={<AdminDashboard />} />
-                                        <Route path="reports" element={<AdminReports />} />
-                                        <Route path="map" element={<AdminMap />} />
-                                        <Route path="alerts" element={<AdminAlerts />} />
-                                    </Routes>
-                                </div>
-                            </div>
-                        ) : <Navigate to="/login" replace />
-                    }
-                />
-                
+
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </Router>
