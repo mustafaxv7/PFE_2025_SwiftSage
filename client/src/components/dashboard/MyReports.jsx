@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown} from "lucide-react";
 
 const MyReports = () => {
     const reports = [
@@ -63,6 +64,11 @@ const MyReports = () => {
 
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [filter, setFilter] = useState({
+        type: "all",
+        status: "all"
+    });
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleReportClick = (report) => {
         setSelectedReport(report);
@@ -76,35 +82,72 @@ const MyReports = () => {
     const getStatusBadge = (status) => {
         switch (status) {
             case "active":
-                return <span
-                    className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Active</span>;
+                return (
+                    <span
+                        className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+            <span className="w-2 h-2 bg-red-500 rounded-full mr-1.5"></span>
+            Active
+          </span>
+                );
             case "resolved":
-                return <span
-                    className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Resolved</span>;
+                return (
+                    <span
+                        className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+            <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
+            Resolved
+          </span>
+                );
             case "in_progress":
-                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">In Progress</span>;
+                return (
+                    <span
+                        className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1.5"></span>
+            In Progress
+          </span>
+                );
             default:
-                return <span
-                    className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Unknown</span>;
+                return (
+                    <span
+                        className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
+            <span className="w-2 h-2 bg-gray-500 rounded-full mr-1.5"></span>
+            Unknown
+          </span>
+                );
         }
     };
 
     const getImportanceBadge = (importance) => {
         switch (importance) {
             case "critical":
-                return <span
-                    className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Critical</span>;
+                return (
+                    <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Critical
+          </span>
+                );
             case "high":
-                return <span
-                    className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">High</span>;
+                return (
+                    <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            High
+          </span>
+                );
             case "medium":
-                return <span
-                    className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Medium</span>;
+                return (
+                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Medium
+          </span>
+                );
             case "low":
-                return <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Low</span>;
+                return (
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Low
+          </span>
+                );
             default:
-                return <span
-                    className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Unknown</span>;
+                return (
+                    <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+            Unknown
+          </span>
+                );
         }
     };
 
@@ -123,122 +166,61 @@ const MyReports = () => {
         }
     };
 
+    const getCrisisTypeName = (type) => {
+        return type?.replace(/_/g, ' ').split(' ').map(word =>
+            word.charAt(0).toUpperCase() + word.slice(1)
+        ).join(' ') || 'Unknown';
+    };
+
     const renderCrisisDetails = (report) => {
         switch (report.crisisType) {
             case "earthquake":
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Injured</h4>
-                            <p>{report.injuredNumber || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Bleeding</h4>
-                            <p>{report.bleedingNumber || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Throttled</h4>
-                            <p>{report.throttled || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Burnt</h4>
-                            <p>{report.burnt || '0'} structures</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Fractions</h4>
-                            <p>{report.fractions || '0'} incidents</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <DetailItem label="Road Status" value={report.roadStatus?.replace(/_/g, ' ') || 'N/A'}/>
+                        <DetailItem label="Injured" value={`${report.injuredNumber || '0'} people`}/>
+                        <DetailItem label="Bleeding" value={`${report.bleedingNumber || '0'} people`}/>
+                        <DetailItem label="Throttled" value={`${report.throttled || '0'} people`}/>
+                        <DetailItem label="Burnt" value={`${report.burnt || '0'} structures`}/>
+                        <DetailItem label="Fractures" value={`${report.fractions || '0'} incidents`}/>
+                        <DetailItem label="Electrification"
+                                    value={report.electrification?.replace(/_/g, ' ') || 'Unknown'}/>
                     </div>
                 );
             case "flood":
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Missing</h4>
-                            <p>{report.missing || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Trapped</h4>
-                            <p>{report.trapped || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Submerged Dwellings</h4>
-                            <p>{report.submergedDwelling || '0'} buildings</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <DetailItem label="Road Status" value={report.roadStatus?.replace(/_/g, ' ') || 'N/A'}/>
+                        <DetailItem label="Missing" value={`${report.missing || '0'} people`}/>
+                        <DetailItem label="Trapped" value={`${report.trapped || '0'} people`}/>
+                        <DetailItem label="Submerged Dwellings" value={`${report.submergedDwelling || '0'} buildings`}/>
+                        <DetailItem label="Electrification"
+                                    value={report.electrification?.replace(/_/g, ' ') || 'Unknown'}/>
                     </div>
                 );
             case "industrial_fire":
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <h4 className="font-medium text-gray-700">Burnt Area</h4>
-                            <p>{report.burnt || '0'} sq m</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Explosion</h4>
-                            <p className="capitalize">{report.explosion || 'No'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Type of Institution</h4>
-                            <p className="capitalize">{report.institutionType?.replace(/_/g, ' ') || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Trapped</h4>
-                            <p>{report.trapped || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <DetailItem label="Burnt Area" value={`${report.burnt || '0'} sq m`}/>
+                        <DetailItem label="Road Status" value={report.roadStatus?.replace(/_/g, ' ') || 'N/A'}/>
+                        <DetailItem label="Explosion Risk" value={report.explosion || 'No'}/>
+                        <DetailItem label="Type of Institution"
+                                    value={report.institutionType?.replace(/_/g, ' ') || 'N/A'}/>
+                        <DetailItem label="Trapped" value={`${report.trapped || '0'} people`}/>
+                        <DetailItem label="Electrification"
+                                    value={report.electrification?.replace(/_/g, ' ') || 'Unknown'}/>
                     </div>
                 );
             case "forest_fire":
                 return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Burnt Area</h4>
-                            <p>{report.burntArea || '0'} hectares</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Fire Spread Rate</h4>
-                            <p className="capitalize">{report.spreadRate || 'Unknown'}</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Evacuated</h4>
-                            <p>{report.evacuated || '0'} people</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Threatened Structures</h4>
-                            <p>{report.threatenedStructures || '0'} buildings</p>
-                        </div>
-                        <div>
-                            <h4 className="font-medium text-gray-700">Containment</h4>
-                            <p>{report.containmentPercent || '0'}%</p>
-                        </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <DetailItem label="Road Status" value={report.roadStatus?.replace(/_/g, ' ') || 'N/A'}/>
+                        <DetailItem label="Burnt Area" value={`${report.burntArea || '0'} hectares`}/>
+                        <DetailItem label="Fire Spread Rate" value={report.spreadRate || 'Unknown'}/>
+                        <DetailItem label="Evacuated" value={`${report.evacuated || '0'} people`}/>
+                        <DetailItem label="Threatened Structures"
+                                    value={`${report.threatenedStructures || '0'} buildings`}/>
+                        <DetailItem label="Containment" value={`${report.containmentPercent || '0'}%`}/>
                     </div>
                 );
             default:
@@ -246,122 +228,258 @@ const MyReports = () => {
         }
     };
 
+    const filteredReports = reports.filter(report => {
+        const searchMatch = searchQuery === "" ||
+            report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            report.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            report.location.toLowerCase().includes(searchQuery.toLowerCase());
+        const typeMatch = filter.type === "all" || report.crisisType === filter.type;
+        const statusMatch = filter.status === "all" || report.status === filter.status;
+
+        return searchMatch && typeMatch && statusMatch;
+    });
+
+    const DetailItem = ({label, value}) => (
+        <div className="bg-gray-50 p-3 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-500">{label}</h4>
+            <p className="text-gray-800 capitalize font-medium mt-1">{value}</p>
+        </div>
+    );
+
     return (
-        <div className="p-6 bg-white rounded-lg shadow-md">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">My Reports</h2>
-                <div className="flex space-x-2">
-                    <select className="bg-white border border-gray-300 rounded-md text-sm p-2">
-                        <option>All Types</option>
-                        <option>Earthquake</option>
-                        <option>Flood</option>
-                        <option>Industrial Fire</option>
-                        <option>Forest Fire</option>
-                    </select>
-                    <select className="bg-white border border-gray-300 rounded-md text-sm p-2">
-                        <option>All Status</option>
-                        <option>Active</option>
-                        <option>Resolved</option>
-                        <option>In Progress</option>
-                    </select>
+        <>
+            <div className="bg-white rounded-lg shadow-lg border border-gray-200">
+                <div className="p-6 border-b border-gray-200">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                            <FileText className="mr-2 text-red-500" size={24}/>
+                            My Reports
+                        </h2>
+                        <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+                            <div className="relative flex-grow">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Search className="h-4 w-4 text-gray-400"/>
+                                </div>
+                                <input
+                                    type="text"
+                                    className="focus:ring-2 focus:ring-red-500 focus:border-red-500 block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md"
+                                    placeholder="Search reports..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                            <div className="flex space-x-3">
+                                <div className="relative">
+                                    <select
+                                        className="appearance-none focus:ring-2 focus:ring-red-500 focus:border-red-500 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-gray-700"
+                                        value={filter.type}
+                                        onChange={(e) => setFilter({...filter, type: e.target.value})}
+                                    >
+                                        <option value="all">All Types</option>
+                                        <option value="earthquake">Earthquake</option>
+                                        <option value="flood">Flood</option>
+                                        <option value="industrial_fire">Industrial Fire</option>
+                                        <option value="forest_fire">Forest Fire</option>
+                                    </select>
+                                    <div
+                                        className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <ChevronDown className="h-4 w-4"/>
+                                    </div>
+                                </div>
+
+                                <div className="relative">
+                                    <select
+                                        className="appearance-none focus:ring-2 focus:ring-red-500 focus:border-red-500 block w-full pl-3 pr-10 py-2 border border-gray-300 rounded-md text-gray-700"
+                                        value={filter.status}
+                                        onChange={(e) => setFilter({...filter, status: e.target.value})}
+                                    >
+                                        <option value="all">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="resolved">Resolved</option>
+                                        <option value="in_progress">In Progress</option>
+                                    </select>
+                                    <div
+                                        className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                        <ChevronDown className="h-4 w-4"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p className="text-gray-600 mt-1">View and manage your submitted crisis reports</p>
+                </div>
+
+                <div className="p-6">
+                    {filteredReports.length === 0 ? (
+                        <div className="text-center py-16 bg-gray-50 rounded-lg">
+                            <FileText size={48} className="mx-auto text-gray-300 mb-4"/>
+                            <h3 className="text-lg font-medium text-gray-700">No reports found</h3>
+                            <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                <tr className="bg-gray-50">
+                                    <th scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type
+                                    </th>
+                                    <th scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title
+                                    </th>
+                                    <th scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date
+                                    </th>
+                                    <th scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status
+                                    </th>
+                                    <th scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                {filteredReports.map(report => (
+                                    <tr
+                                        key={report.id}
+                                        onClick={() => handleReportClick(report)}
+                                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                    >
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div
+                                                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xl"
+                                                title={getCrisisTypeName(report.crisisType)}>
+                                                {getCrisisTypeIcon(report.crisisType)}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm font-medium text-gray-900">{report.title}</div>
+                                            <div className="text-sm text-gray-500 flex items-center mt-1">
+                                                <MapPin size={12} className="mr-1 text-gray-400"/> {report.location}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="text-sm text-gray-500 flex items-center">
+                                                <Calendar size={14} className="mr-2 text-gray-400"/>
+                                                {report.date}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {getStatusBadge(report.status)}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {getImportanceBadge(report.importance)}
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             </div>
-
-            <div className="overflow-x-auto">
-                <table className="min-w-full bg-white rounded-lg overflow-hidden">
-                    <thead className="bg-gray-100">
-                    <tr>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
-                    </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200">
-                    {reports.map(report => (
-                        <tr
-                            key={report.id}
-                            onClick={() => handleReportClick(report)}
-                            className="hover:bg-gray-50 cursor-pointer transition-colors"
-                        >
-                            <td className="py-4 px-4">
-                                    <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
-                                        {getCrisisTypeIcon(report.crisisType)}
-                                    </span>
-                            </td>
-                            <td className="py-4 px-4 font-medium text-gray-900">{report.title}</td>
-                            <td className="py-4 px-4 text-gray-500">{report.date}</td>
-                            <td className="py-4 px-4">{getStatusBadge(report.status)}</td>
-                            <td className="py-4 px-4">{getImportanceBadge(report.importance)}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-
             {isModalOpen && selectedReport && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
-                        <div className="p-6">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-2xl">{getCrisisTypeIcon(selectedReport.crisisType)}</span>
-                                        <h3 className="text-xl font-bold text-gray-900">{selectedReport.title}</h3>
-                                    </div>
-                                    <p className="text-sm text-gray-500 mt-1">{selectedReport.date}</p>
-                                </div>
-                                <div className="flex space-x-2">
-                                    {getStatusBadge(selectedReport.status)}
-                                    {getImportanceBadge(selectedReport.importance)}
-                                </div>
-                            </div>
-
-                            <div className="mt-6">
-                                <h4 className="font-medium text-gray-700">Description</h4>
-                                <p className="mt-1 text-gray-600">{selectedReport.description}</p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                <div>
-                                    <h4 className="font-medium text-gray-700">Location</h4>
-                                    <p>{selectedReport.location}</p>
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-700">Coordinates</h4>
-                                    <p>Lat: {selectedReport.lat}, Lng: {selectedReport.lng}</p>
-                                </div>
-                            </div>
-
-                            <div className="mt-6">
-                                <h4 className="font-semibold text-gray-800">Crisis Details</h4>
-                                {renderCrisisDetails(selectedReport)}
-                            </div>
-
-                            <div className="h-48 bg-gray-200 mt-6 rounded flex items-center justify-center">
-                                <p className="text-gray-500">Map View</p>
-                            </div>
-
-                            <div className="flex justify-end mt-6 space-x-3">
+                <div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="relative">
+                            <div className="p-6 border-b border-gray-200">
                                 <button
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                    onClick={() => alert("Edit functionality would go here")}
-                                >
-                                    Edit Report
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
                                     onClick={closeModal}
+                                    className="absolute top-6 right-6 p-1 rounded-full hover:bg-gray-100 transition-colors"
                                 >
-                                    Close
+                                    <X size={20} className="text-gray-500"/>
                                 </button>
+
+                                <div className="flex items-start">
+                                    <div
+                                        className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-2xl mr-4">
+                                        {getCrisisTypeIcon(selectedReport.crisisType)}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold text-gray-900">{selectedReport.title}</h3>
+                                        <div className="flex flex-wrap items-center gap-3 mt-2">
+                      <span className="text-sm text-gray-500 flex items-center">
+                        <Calendar size={14} className="mr-1.5 text-gray-400"/> {selectedReport.date}
+                      </span>
+                                            <span className="text-sm text-gray-500 flex items-center">
+                        <MapPin size={14} className="mr-1.5 text-gray-400"/> {selectedReport.location}
+                      </span>
+                                            <span className="text-sm text-gray-500">
+                        {getCrisisTypeName(selectedReport.crisisType)}
+                      </span>
+                                        </div>
+                                        <div className="flex flex-wrap mt-3 gap-2">
+                                            {getStatusBadge(selectedReport.status)}
+                                            {getImportanceBadge(selectedReport.importance)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-6">
+                                <div className="mb-6">
+                                    <h4 className="text-sm uppercase tracking-wider text-gray-500 font-medium mb-2 flex items-center">
+                                        <AlertCircle size={14} className="mr-2"/> Description
+                                    </h4>
+                                    <p className="text-gray-700 bg-gray-50 p-4 rounded-lg border border-gray-100">
+                                        {selectedReport.description}
+                                    </p>
+                                </div>
+
+                                <div className="mb-6">
+                                    <h4 className="text-sm uppercase tracking-wider text-gray-500 font-medium mb-2 flex items-center">
+                                        <MapPin size={14} className="mr-2"/> Location Details
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <DetailItem label="Location" value={selectedReport.location}/>
+                                        <DetailItem label="Coordinates"
+                                                    value={`Lat: ${selectedReport.lat}, Lng: ${selectedReport.lng}`}/>
+                                    </div>
+                                </div>
+
+                                <div className="mb-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <h4 className="text-sm uppercase tracking-wider text-gray-500 font-medium flex items-center">
+                                            <Flag size={14}
+                                                  className="mr-2"/> {getCrisisTypeName(selectedReport.crisisType)} Details
+                                        </h4>
+                                    </div>
+                                    {renderCrisisDetails(selectedReport)}
+                                </div>
+
+                                <div
+                                    className="h-64 bg-gray-100 rounded-lg mb-6 flex items-center justify-center overflow-hidden">
+                                    <div className="text-center">
+                                        <MapPin size={32} className="mx-auto text-gray-400 mb-2"/>
+                                        <p className="text-gray-500">Crisis Location Map</p>
+                                        <p className="text-xs text-gray-400 mt-1">Interactive map would be displayed
+                                            here</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-6 border-t border-gray-200 bg-gray-50 flex justify-between items-center">
+                                <span
+                                    className="text-sm text-gray-500">Submitted by: {selectedReport.submittedBy}</span>
+                                <div className="flex gap-3">
+                                    <button
+                                        className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors flex items-center gap-2"
+                                        onClick={closeModal}
+                                    >
+                                        Close
+                                    </button>
+                                    <button
+                                        className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors flex items-center gap-2"
+                                        onClick={() => alert("Edit functionality would go here")}
+                                    >
+                                        <Edit size={16}/> Edit Report
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

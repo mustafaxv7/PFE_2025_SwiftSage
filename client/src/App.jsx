@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
+import {useState, useEffect} from "react";
 import LandingPage from "./components/landingpage/LandingPage.jsx";
 import LoginForm from "./components/auth/LoginForm.jsx";
 import SignupForm from "./components/auth/SignupForm.jsx";
@@ -12,6 +12,7 @@ import AdminReports from "./components/dashboard/admin/ReportsOverview.jsx";
 import AdminMap from "./components/dashboard/admin/MapView.jsx";
 import AdminAlerts from "./components/dashboard/admin/AdminAlerts.jsx";
 import AdminSidebar from "./components/dashboard/admin/AdminSidebar.jsx";
+import AdminStatics from "./components/dashboard/admin/AdminStatics.jsx";
 
 const App = () => {
     const [authChecked, setAuthChecked] = useState(false);  // State to track if auth has been checked
@@ -34,25 +35,25 @@ const App = () => {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/signup" element={<SignupForm />} />
+                <Route path="/" element={<LandingPage/>}/>
+                <Route path="/login" element={<LoginForm/>}/>
+                <Route path="/signup" element={<SignupForm/>}/>
                 <Route
                     path="/dashboard/*"
                     element={
-                       (
-                           <div className="flex h-screen w-full">
-                               <Sidebar/>
-                               <div className="flex-1 p-6 bg-gray-100 ml-64">
-                                   <Routes>
-                                       <Route index element={<Dashboard/>}/>
-                                       <Route path="my-reports" element={<MyReports/>}/>
-                                       <Route path="add-report" element={<AddReport/>}/>
-                                       <Route path="alerts" element={<Alerts/>}/>
-                                   </Routes>
-                               </div>
-                           </div>
-                       )
+                        (
+                            <div className="flex h-screen w-full">
+                                <Sidebar/>
+                                <div className="flex-1 p-6 bg-gray-100 ml-64">
+                                    <Routes>
+                                        <Route index element={<Dashboard/>}/>
+                                        <Route path="my-reports" element={<MyReports/>}/>
+                                        <Route path="add-report" element={<AddReport/>}/>
+                                        <Route path="alerts" element={<Alerts/>}/>
+                                    </Routes>
+                                </div>
+                            </div>
+                        )
                     }
                 />
 
@@ -64,10 +65,10 @@ const App = () => {
                                 <AdminSidebar/>
                                 <div className="flex-1 p-6 bg-gray-100 ml-64">
                                     <Routes>
-
                                         <Route path="reports" element={<AdminReports/>}/>
                                         <Route path="map" element={<AdminMap/>}/>
                                         <Route path="alerts" element={<AdminAlerts/>}/>
+                                        <Route path="statistics" element={<AdminStatics/>}/>
                                     </Routes>
                                 </div>
                             </div>
@@ -75,7 +76,7 @@ const App = () => {
                     }
                 />
 
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/" replace/>}/>
             </Routes>
         </Router>
     );
