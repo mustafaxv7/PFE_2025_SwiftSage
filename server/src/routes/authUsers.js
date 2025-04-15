@@ -6,7 +6,7 @@ import { deleteAuthUser } from '../controllers/deleteAuthUser.js';
 
 
 const router = express.Router();
-
+//Get all users
 router.get('/', getAuthUsers);
 
 router.post('/', createAuthUser);

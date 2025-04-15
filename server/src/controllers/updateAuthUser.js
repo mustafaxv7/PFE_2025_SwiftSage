@@ -25,4 +25,4 @@ export const updateAuthUser = async (req, res) => {
         console.error(err.message);
         return res.status(500).json({ message: "Server error" });
     }
-}
+};

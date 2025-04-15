@@ -10,4 +10,4 @@ export const getAuthUsers = async (req, res) => {
         console.error('Error fetching users:', err.message);
         return res.status(500).json({ message: "Server error" });
     }
-};
+};// getAuthUsers

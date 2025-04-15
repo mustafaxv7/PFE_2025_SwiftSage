@@ -1,4 +1,5 @@
 import con from "../config/db.js";
+
 export const deleteAuthUser = async (req, res) => {
     try {
         const { id } = req.params;

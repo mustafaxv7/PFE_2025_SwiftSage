@@ -1,4 +1,5 @@
 import con from "../config/db.js";
+
 export const createAuthUser = async (req, res) => {
       try {
             const { name, email, phone, password, isOrganisationMember } = req.body;
