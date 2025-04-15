@@ -6,7 +6,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import con from './config/db.js';
 import authRoutes from './routes/authRoutes.js';  
-import reportRoutes from './routes/reportRoutes.js';     
+import reportRoutes from './routes/reportRoutes.js'; 
+import authMiddleware from './middleware/authMiddleware.js';    
+import authUsers from './routes/authUsers.js';
+
 
 dotenv.config();
 
@@ -23,7 +26,8 @@ app.use(helmet({contentSecurityPolicy: false})); // helps secure the app by sett
 app.use(morgan("dev")); // log the requests
 app.use(cors()); // allows requests from diffrent domains
 app.use('/auth',authRoutes);
-app.use('/api',reportRoutes); // protected routes
+app.use('/api',authMiddleware,reportRoutes); // protected routes
+app.get('/api/users',authMiddleware,authUsers); 
 app.get('/', (req,res)=>{
     res.sendFile(path.join(__dirname, 'client','dist','index.html'));
 });
