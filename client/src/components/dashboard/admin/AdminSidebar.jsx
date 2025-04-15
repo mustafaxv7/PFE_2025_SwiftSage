@@ -6,6 +6,7 @@ import {
     Map,
     LineChart,
     LogOut,
+    Users,
 } from "lucide-react";
 
 const AdminSidebar = () => {
@@ -25,7 +26,14 @@ const AdminSidebar = () => {
         { path: "/admin/reports", icon: <BarChart2 size={18} />, text: "Reports Overview", bgColor: "bg-red-600", hoverColor: "hover:bg-red-700" },
         { path: "/admin/alerts", icon: <AlertTriangle size={18} />, text: "Manage Alerts", bgColor: "bg-yellow-600", hoverColor: "hover:bg-yellow-700" },
         { path: "/admin/map", icon: <Map size={18} />, text: "Crisis Map", bgColor: "bg-blue-600", hoverColor: "hover:bg-blue-700" },
-        { path: "/admin/statistics", icon: <LineChart size={18} />, text: "Statistics", bgColor: "bg-green-600", hoverColor: "hover:bg-green-700" }
+        { path: "/admin/statistics", icon: <LineChart size={18} />, text: "Statistics", bgColor: "bg-green-600", hoverColor: "hover:bg-green-700" },
+        {
+            path: "/admin/users",
+            icon: <Users size={18} />,
+            text: "Manage Users",
+            bgColor: "bg-purple-600",
+            hoverColor: "hover:bg-purple-700"
+        }
     ];
 
     return (

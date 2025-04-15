@@ -13,6 +13,7 @@ import AdminMap from "./components/dashboard/admin/MapView.jsx";
 import AdminAlerts from "./components/dashboard/admin/AdminAlerts.jsx";
 import AdminSidebar from "./components/dashboard/admin/AdminSidebar.jsx";
 import AdminStatics from "./components/dashboard/admin/AdminStatics.jsx";
+import AdminUsers from "./components/dashboard/admin/AdminUsers.jsx";
 
 const App = () => {
     const [authChecked, setAuthChecked] = useState(false);  // State to track if auth has been checked
@@ -69,6 +70,7 @@ const App = () => {
                                         <Route path="map" element={<AdminMap/>}/>
                                         <Route path="alerts" element={<AdminAlerts/>}/>
                                         <Route path="statistics" element={<AdminStatics/>}/>
+                                        <Route path="users" element={<AdminUsers/>}/>
                                     </Routes>
                                 </div>
                             </div>
