@@ -1,8 +1,8 @@
-import {useState} from "react";
+import { useState } from "react";
 import AuthInput from "./AuthInput";
-import {useNavigate, Link} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
-import {FiCheckCircle, FiAlertCircle, FiLoader} from "react-icons/fi";
+import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
 
 const SignupForm = () => {
     const navigate = useNavigate();
@@ -21,20 +21,20 @@ const SignupForm = () => {
     });
 
     const handleChange = (e) => {
-        const {name, value, type, checked} = e.target;
+        const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
         // Clear errors when user starts typing
         if (status.error) {
-            setStatus(prev => ({...prev, error: null}));
+            setStatus(prev => ({ ...prev, error: null }));
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setStatus({loading: true, success: false, error: null});
+        setStatus({ loading: true, success: false, error: null });
 
         try {
             const response = await fetch("http://localhost:5030/auth/register", {
@@ -48,8 +48,7 @@ const SignupForm = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setStatus({loading: false, success: true, error: null});
-
+                setStatus({ loading: false, success: true, error: null });
                 // Show success message before redirect
                 setTimeout(() => {
                     navigate("/login");
@@ -71,11 +70,36 @@ const SignupForm = () => {
         }
     };
 
+    // Placeholder text based on account type
+    const getPlaceholder = (field) => {
+        const placeholders = {
+            name: isOrganization ? "Acme Inc." : "John Doe",
+            email: isOrganization ? "contact@organization.com" : "you@example.com",
+            phone: "+1 (555) 123-4567",
+            password: "••••••••"
+        };
+        return placeholders[field];
+    };
+    const getLabel = (field) => {
+        const labels = {
+            name: isOrganization ? "Organization Name" : "Full Name",
+            email: isOrganization ? "Organization Email" : "Email Address",
+            phone: "Phone Number",
+            password: "Password"
+        };
+        return labels[field];
+    };
+
+    const inputFields = [
+        { name: "name", type: "text" },
+        { name: "email", type: "email" },
+        { name: "phone", type: "tel" },
+        { name: "password", type: "password" }
+    ];
+
     return (
-        <div
-            className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-                {/* Centered Logo linking to homepage */}
                 <Link to="/" className="flex justify-center">
                     <div className="flex items-center space-x-3">
                         <img
@@ -83,14 +107,11 @@ const SignupForm = () => {
                             alt="Swift Sage Logo"
                             className="w-12 h-12 object-contain"
                         />
-                        <span
-                            className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">
-                            Swift Sage
-                        </span>
+                        <span className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">
+              Swift Sage
+            </span>
                     </div>
                 </Link>
-
-                {/* Centered Title and subtitle */}
                 <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
                     Create your account
                 </h2>
@@ -101,11 +122,9 @@ const SignupForm = () => {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-6 shadow-lg rounded-xl sm:px-10 relative">
-                    {/* Success Message */}
                     {status.success && (
-                        <div
-                            className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center rounded-xl z-10 p-6">
-                            <FiCheckCircle className="h-16 w-16 text-green-500 mb-4"/>
+                        <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center rounded-xl z-10 p-6">
+                            <FiCheckCircle className="h-16 w-16 text-green-500 mb-4" />
                             <h3 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h3>
                             <p className="text-gray-600 mb-6">You're being redirected to login page</p>
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
@@ -113,13 +132,11 @@ const SignupForm = () => {
                             </div>
                         </div>
                     )}
-
-                    {/* Error Message */}
                     {status.error && (
                         <div className="rounded-md bg-red-50 p-4 mb-6">
                             <div className="flex">
                                 <div className="flex-shrink-0">
-                                    <FiAlertCircle className="h-5 w-5 text-red-400"/>
+                                    <FiAlertCircle className="h-5 w-5 text-red-400" />
                                 </div>
                                 <div className="ml-3">
                                     <h3 className="text-sm font-medium text-red-800">
@@ -131,95 +148,55 @@ const SignupForm = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <AuthInput
-                            label={isOrganization ? "Organization Name" : "Full Name"}
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            placeholder={isOrganization ? "Acme Inc." : "John Doe"}
-                            disabled={status.loading}
-                        />
-                        <AuthInput
-                            label={isOrganization ? "Organization Email" : "Email Address"}
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            placeholder={isOrganization ? "contact@organization.com" : "you@example.com"}
-                            disabled={status.loading}
-                        />
-                        <AuthInput
-                            label="Phone Number"
-                            type="tel"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={handleChange}
-                            required
-                            placeholder="+1 (555) 123-4567"
-                            disabled={status.loading}
-                        />
-
+                        {inputFields.map((field) => (
+                            <AuthInput
+                                key={field.name}
+                                label={getLabel(field.name)}
+                                type={field.type}
+                                name={field.name}
+                                value={formData[field.name]}
+                                onChange={handleChange}
+                                required
+                                placeholder={getPlaceholder(field.name)}
+                                disabled={status.loading}
+                            />
+                        ))}
                         {isOrganization && (
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
                                     Organization Type
                                 </label>
                                 <div className="flex space-x-6">
-                                    <label className="inline-flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="type"
-                                            value="public"
-                                            checked={formData.type === "public"}
-                                            onChange={handleChange}
-                                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                                            disabled={status.loading}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-700">Public</span>
-                                    </label>
-                                    <label className="inline-flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="type"
-                                            value="private"
-                                            checked={formData.type === "private"}
-                                            onChange={handleChange}
-                                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
-                                            disabled={status.loading}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-700">Private</span>
-                                    </label>
+                                    {["public", "private"].map((type) => (
+                                        <label key={type} className="inline-flex items-center">
+                                            <input
+                                                type="radio"
+                                                name="type"
+                                                value={type}
+                                                checked={formData.type === type}
+                                                onChange={handleChange}
+                                                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
+                                                disabled={status.loading}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-700 capitalize">{type}</span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
                         )}
-
-                        <AuthInput
-                            label="Password"
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            placeholder="••••••••"
-                            disabled={status.loading}
-                        />
-
                         <div className="flex items-center">
                             <input
                                 type="checkbox"
+                                id="isOrganization"
                                 checked={isOrganization}
                                 onChange={() => setIsOrganization(!isOrganization)}
                                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                 disabled={status.loading}
                             />
-                            <label className="ml-2 block text-sm text-gray-700">
+                            <label htmlFor="isOrganization" className="ml-2 block text-sm text-gray-700">
                                 Are you registering as an organization?
                             </label>
                         </div>
-
                         <div className="flex items-center">
                             <input
                                 id="terms"
@@ -234,7 +211,6 @@ const SignupForm = () => {
                                 href="#" className="text-red-600 hover:underline">Privacy Policy</a>
                             </label>
                         </div>
-
                         <div>
                             <button
                                 type="submit"
@@ -247,7 +223,7 @@ const SignupForm = () => {
                             >
                                 {status.loading ? (
                                     <>
-                                        <FiLoader className="animate-spin h-5 w-5 mr-2"/>
+                                        <FiLoader className="animate-spin h-5 w-5 mr-2" />
                                         Creating Account...
                                     </>
                                 ) : (
@@ -257,6 +233,7 @@ const SignupForm = () => {
                         </div>
                     </form>
 
+                    {/* Login Link */}
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
                             Already have an account?{" "}
