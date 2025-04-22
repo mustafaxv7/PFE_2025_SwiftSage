@@ -1,6 +1,7 @@
-import {useState} from "react";
-import {MapPin, Upload, AlertTriangle} from "lucide-react";
 
+import { useState, useCallback, useRef } from "react";
+import { MapPin, Upload, AlertTriangle, Search } from "lucide-react";
+import { GoogleMap, Marker, LoadScript, Autocomplete } from '@react-google-maps/api';
 const AddReport = () => {
     const [formData, setFormData] = useState({
         lat: "",
@@ -39,6 +40,22 @@ const AddReport = () => {
         setFormData({...formData, image: file});
     };
 
+    // Use environment variable for API key
+    // const [mapApiKey] = useState(import.meta.env.VITE_MAP_API_KEY);
+
+// Function to initialize map with API key
+    //const initializeMap = () => {
+    // Map initialization code using the API key
+    //  console.log("Map initialization started");
+    // Example: load Google Maps or another mapping service
+    //};
+
+// Call this function in useEffect to load the map when component mounts
+    //useEffect(() => {
+    //  initializeMap();
+    // Empty dependency array if you only want to run once when mounted
+    //}, []);
+
     const getCrisisTypeIcon = (type) => {
         switch (type) {
             case "earthquake":
@@ -53,6 +70,41 @@ const AddReport = () => {
                 return <AlertTriangle className="text-yellow-500"/>;
         }
     };
+    const [autocomplete, setAutocomplete] = useState(null);
+    const searchInputRef = useRef(null);
+
+
+
+    const [map, setMap] = useState(null);
+    const containerStyle = {
+        width: '100%',
+        height: '400px'  // Changed to fixed height for better layout
+    };
+
+    const center = {
+        lat: formData.lat ? parseFloat(formData.lat) : 53.54,
+        lng: formData.lng ? parseFloat(formData.lng) : 10
+    };
+
+    const onLoad = useCallback((map) => {
+        setMap(map);
+    }, []);
+
+    const onUnmount = useCallback(() => {
+        setMap(null);
+    }, []);
+
+    const handleMapClick = (event) => {
+        const lat = event.latLng.lat();
+        const lng = event.latLng.lng();
+
+        setFormData(prev => ({
+            ...prev,
+            lat: lat.toFixed(6),
+            lng: lng.toFixed(6)
+        }));
+    };
+
 
     return (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200">
@@ -64,13 +116,45 @@ const AddReport = () => {
                 <p className="text-gray-600 mt-1">Provide detailed information about the crisis situation</p>
             </div>
             <div className="p-6">
-                <div
-                    className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center mb-6 border border-dashed border-gray-300">
-                    <div className="text-center">
-                        <MapPin size={32} className="mx-auto text-gray-400 mb-2"/>
-                        <p className="text-gray-500">Interactive Map</p>
-                        <p className="text-sm text-gray-400">Click to select location</p>
-                    </div>
+                <div className="w-full h-64 bg-gray-100 rounded-lg mb-6 overflow-hidden">
+                    <LoadScript
+                        googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+                        loadingElement={<div className="flex items-center justify-center h-full">
+                            <MapPin size={32} className="mx-auto text-gray-400 mb-2"/>
+                            <p className="text-gray-500">Loading Map...</p>
+                        </div>}
+                    >
+                        <GoogleMap
+                            mapContainerStyle={containerStyle}
+                            center={center}
+                            zoom={9}
+                            onClick={handleMapClick}
+                            onLoad={onLoad}
+                            onUnmount={onUnmount}
+                            options={{
+                                streetViewControl: false,
+                                mapTypeControl: true,
+                                fullscreenControl: true
+                            }}
+                        >
+                            {(formData.lat && formData.lng) && (
+                                <Marker
+                                    position={{
+                                        lat: parseFloat(formData.lat),
+                                        lng: parseFloat(formData.lng)
+                                    }}
+                                    icon={{
+                                        path: window.google.maps.SymbolPath.CIRCLE,
+                                        fillColor: 'grey',
+                                        fillOpacity: 1,
+                                        strokeColor: 'green',
+                                        strokeWeight: 2,
+                                        scale: 8
+                                    }}
+                                />
+                            )}
+                        </GoogleMap>
+                    </LoadScript>
                 </div>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -79,7 +163,7 @@ const AddReport = () => {
                             type="text"
                             name="lat"
                             placeholder="Latitude"
-                            className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            className="w-full p-2 rounded-md border border-gray-300 "
                             value={formData.lat}
                             onChange={handleChange}
                         />
@@ -90,44 +174,19 @@ const AddReport = () => {
                             type="text"
                             name="lng"
                             placeholder="Longitude"
-                            className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                            className="w-full p-2 rounded-md border border-gray-300  "
                             value={formData.lng}
                             onChange={handleChange}
                         />
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Altitude</label>
-                        <input
-                            type="text"
-                            name="altitude"
-                            placeholder="Altitude"
-                            className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                            value={formData.altitude}
-                            onChange={handleChange}
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Amplitude</label>
-                        <input
-                            type="text"
-                            name="amplitude"
-                            placeholder="Amplitude"
-                            className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                            value={formData.amplitude}
-                            onChange={handleChange}
-                        />
-                    </div>
-                </div>
-
                 <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Report Title</label>
                     <input
                         type="text"
                         name="title"
                         placeholder="Brief title describing the crisis"
-                        className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full p-2 rounded-md border border-gray-300 "
                         value={formData.title}
                         onChange={handleChange}
                     />
@@ -137,7 +196,7 @@ const AddReport = () => {
                     <textarea
                         name="description"
                         placeholder="Provide a detailed description of the situation..."
-                        className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500 h-32"
+                        className="w-full p-2 rounded-md border border-gray-300  h-32"
                         value={formData.description}
                         onChange={handleChange}
                     ></textarea>
@@ -148,7 +207,7 @@ const AddReport = () => {
                         name="crisisType"
                         value={formData.crisisType}
                         onChange={handleChange}
-                        className="w-full p-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                        className="w-full p-2 rounded-md border border-gray-300 "
                     >
                         <option value="">Select Crisis Type</option>
                         <option value="earthquake">Earthquake</option>

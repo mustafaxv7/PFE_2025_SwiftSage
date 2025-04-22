@@ -13,6 +13,7 @@
   "author": "Nadour Moustafa and  Hasbellaoui Mehdi",
   "license": "ISC",
   "dependencies": {
+    "@react-google-maps/api": "^2.20.6",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
