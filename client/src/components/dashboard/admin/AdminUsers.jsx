@@ -21,50 +21,55 @@ const AdminUsers = () => {
                 const mockUsers = [
                     {
                         id: 1,
-                        name: "John Doe",
-                        email: "john@example.com",
-                        phone: "+1 555-123-4567",
+                        name: "محمد بن علي",
+                        email: "mohammed@example.com",
+                        phone: "+213 555-123-456",
                         type: "individual",
                         status: "active",
-                        createdAt: "2024-04-01"
+                        createdAt: "2025-03-10",
+                        reportTime: "08:30"
                     },
                     {
                         id: 2,
-                        name: "Jane Smith",
-                        email: "jane@example.com",
-                        phone: "+1 555-987-6543",
+                        name: "فاطمة الزهراء",
+                        email: "fatima@example.com",
+                        phone: "+213 555-987-654",
                         type: "individual",
                         status: "active",
-                        createdAt: "2024-04-02"
+                        createdAt: "2025-03-15",
+                        reportTime: "14:22"
                     },
                     {
                         id: 3,
-                        name: "Acme Corporation",
-                        email: "contact@acme.com",
-                        phone: "+1 555-111-2222",
+                        name: "شركة سونلغاز",
+                        email: "contact@sonelgaz.dz",
+                        phone: "+213 555-111-222",
                         type: "organization",
                         orgType: "public",
                         status: "active",
-                        createdAt: "2024-04-03"
+                        createdAt: "2025-04-02",
+                        reportTime: "11:15"
                     },
                     {
                         id: 4,
-                        name: "Tech Solutions Inc",
-                        email: "info@techsolutions.com",
-                        phone: "+1 555-333-4444",
+                        name: "شركة حلول التكنولوجيا",
+                        email: "info@techsolutions.dz",
+                        phone: "+213 555-333-444",
                         type: "organization",
                         orgType: "private",
                         status: "suspended",
-                        createdAt: "2024-04-04"
+                        createdAt: "2025-03-28",
+                        reportTime: "16:45"
                     },
                     {
                         id: 5,
-                        name: "Robert Johnson",
-                        email: "robert@example.com",
-                        phone: "+1 555-555-5555",
+                        name: "كريم حمدي",
+                        email: "karim@example.com",
+                        phone: "+213 555-555-555",
                         type: "individual",
                         status: "inactive",
-                        createdAt: "2024-04-05"
+                        createdAt: "2025-04-01",
+                        reportTime: "09:00"
                     },
                 ];
 
@@ -179,9 +184,8 @@ const AdminUsers = () => {
             const newUser = {
                 ...userData,
                 id: users.length + 1,
-                createdAt: new Date().toISOString().split("T")[0],
-                status: "active",
-                type: userData.isOrganization ? "organization" : "individual"
+                createdAt: new Date().toISOString().split('T')[0],
+                reportTime: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false})
             };
 
             delete newUser.isOrganization;
@@ -252,12 +256,11 @@ const AdminUsers = () => {
                         </h3>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-500"
                         >
                             <X size={20}/>
                         </button>
                     </div>
-
                     <form onSubmit={handleSubmit}>
                         <div className="space-y-4">
                             <div className="flex items-center">
@@ -288,9 +291,8 @@ const AdminUsers = () => {
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
-
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Email Address</label>
+                                <label className="block text-sm font-medium text-gray-700">Email</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -301,9 +303,8 @@ const AdminUsers = () => {
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                                 />
                             </div>
-
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                                <label className="block text-sm font-medium text-gray-700">Phone</label>
                                 <input
                                     type="tel"
                                     name="phone"
@@ -361,7 +362,6 @@ const AdminUsers = () => {
                                     </div>
                                 </div>
                             )}
-
                             {!isCreate && (
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Status</label>
@@ -478,14 +478,14 @@ const AdminUsers = () => {
                                     : "bg-gray-100 text-gray-800 hover:bg-gray-200"
                             }`}
                         >
-                            All Users
+                            All
                         </button>
                         <button
                             onClick={() => handleFilterChange("active")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
                                 currentFilter === "active"
-                                    ? "bg-green-600 text-white"
-                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
                             Active
@@ -494,8 +494,8 @@ const AdminUsers = () => {
                             onClick={() => handleFilterChange("inactive")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
                                 currentFilter === "inactive"
-                                    ? "bg-gray-600 text-white"
-                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
                             Inactive
@@ -504,8 +504,8 @@ const AdminUsers = () => {
                             onClick={() => handleFilterChange("suspended")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
                                 currentFilter === "suspended"
-                                    ? "bg-red-600 text-white"
-                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
                             Suspended
@@ -515,8 +515,8 @@ const AdminUsers = () => {
                         onClick={handleAddNewUser}
                         className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center w-full sm:w-auto justify-center"
                     >
-                        <UserPlus size={16} className="mr-2"/>
-                        Add New User
+                        <UserPlus size={18} className="mr-1"/>
+                        Add User
                     </button>
                 </div>
             </div>
@@ -645,6 +645,7 @@ const AdminUsers = () => {
                     onSave={handleSaveUser}
                 />
             )}
+
             {showDeleteModal && (
                 <DeleteModal
                     user={userToDelete}
