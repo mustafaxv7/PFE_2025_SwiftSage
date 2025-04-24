@@ -16,6 +16,7 @@
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "i18next": "^24.2.3",
+    "i18next-browser-languagedetector": "^8.0.5",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.485.0",
     "pfe_2025_swiftsage": "file:..",

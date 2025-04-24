@@ -1,7 +1,11 @@
 import Navbar from "../layout/Navbar.jsx";
 import {FiArrowRight, FiMap, FiAlertTriangle, FiUsers, FiBarChart2} from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 
 const LandingPage = () => {
+
+    const { t } = useTranslation();
+
     return (
         <div className="bg-gray-900 text-white min-h-screen flex flex-col overflow-hidden">
             <Navbar/>
@@ -15,12 +19,10 @@ const LandingPage = () => {
                 </div>
                 <div className="max-w-4xl w-full relative z-10">
                     <h1 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight animate-fadeIn">
-                        Transforming Crisis Management with <span
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Swift Sage</span>
+                        {t('hero.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Swift Sage</span>
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-10">
-                        Harnessing collective intelligence and AI-driven insights for real-time crisis response and
-                        decision-making.
+                        {t('hero.subtitle')}
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
                         <a href="#features"

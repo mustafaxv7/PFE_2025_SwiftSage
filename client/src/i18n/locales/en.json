@@ -1,0 +1,190 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "features": "Features",
+    "contact": "Contact",
+    "login": "Login",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Transforming Crisis Management with",
+    "subtitle": "Harnessing collective intelligence and AI-driven insights for real-time crisis response and decision-making.",
+    "exploreFeatures": "Explore Features",
+    "contactUs": "Contact Us"
+  },
+  "auth": {
+    "login": {
+      "title": "Log in to your account",
+      "createAccount": "create a new account",
+      "emailLabel": "Email Address",
+      "passwordLabel": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "loginButton": "Sign in",
+      "success": "Login Successful!",
+      "redirecting": "You're being redirected to your dashboard"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Join our platform to manage crises effectively",
+      "fullName": "Full Name",
+      "orgName": "Organization Name",
+      "email": "Email Address",
+      "orgEmail": "Organization Email",
+      "phone": "Phone Number",
+      "password": "Password",
+      "orgType": "Organization Type",
+      "public": "Public",
+      "private": "Private",
+      "isOrg": "Are you registering as an organization?",
+      "termsAgree": "I agree to the Terms of Service and Privacy Policy",
+      "registerButton": "Create Account",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Log in",
+      "success": "Registration Successful!",
+      "redirecting": "You're being redirected to login page"
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "addReport": "Add New Report",
+      "alerts": "Alerts",
+      "myReports": "My Reports",
+      "logout": "Log Out"
+    },
+    "reports": {
+      "title": "My Reports",
+      "active": "Active",
+      "resolved": "Resolved",
+      "inProgress": "In Progress",
+      "unknown": "Unknown",
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low",
+      "details": "Report Details",
+      "location": "Location",
+      "date": "Date",
+      "status": "Status",
+      "importance": "Importance",
+      "description": "Description",
+      "submittedBy": "Submitted By",
+      "close": "Close"
+    },
+    "addReport": {
+      "title": "Add New Crisis Report",
+      "subtitle": "Provide detailed information about the crisis situation",
+      "loadingMap": "Loading Map...",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "reportTitle": "Report Title",
+      "titlePlaceholder": "Brief title describing the crisis",
+      "description": "Detailed Description",
+      "descriptionPlaceholder": "Provide a detailed description of the situation...",
+      "crisisType": "Crisis Type",
+      "selectType": "Select crisis type",
+      "earthquake": "Earthquake",
+      "flood": "Flood",
+      "forestFire": "Forest Fire",
+      "industrialFire": "Industrial Fire",
+      "roadStatus": "Road Status",
+      "selectStatus": "Select road status",
+      "open": "Open",
+      "closed": "Closed",
+      "partiallyBlocked": "Partially Blocked",
+      "flooded": "Flooded",
+      "smokeCovered": "Smoke Covered",
+      "uploadImage": "Upload Image",
+      "uploadPlaceholder": "Drag and drop or click to upload",
+      "maxSize": "Max size: 5MB",
+      "submit": "Submit Report",
+      "cancel": "Cancel"
+    },
+    "alerts": {
+      "title": "Alert Center",
+      "subtitle": "Stay informed about ongoing Crisis situations",
+      "filter": "Filter:",
+      "all": "All",
+      "information": "Information",
+      "warning": "Warning",
+      "critical": "Critical",
+      "noAlerts": "No active alerts at the moment",
+      "allClear": "All clear for now. Check again later.",
+      "priority": "Priority",
+      "viewDetails": "View details",
+      "dismiss": "Dismiss alert",
+      "affectedArea": "Affected Area",
+      "viewReport": "View full report",
+      "recentHistory": "Recent History"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "reports": "Reports Overview",
+      "alerts": "Manage Alerts",
+      "map": "Crisis Map",
+      "statistics": "Statistics",
+      "users": "Manage Users",
+      "logout": "Log Out"
+    },
+    "reports": {
+      "title": "Reports Overview",
+      "subtitle": "Manage and review all submitted crisis reports",
+      "filter": "Filter",
+      "search": "Search reports...",
+      "allTypes": "All Types",
+      "allStatus": "All Status",
+      "allSeverity": "All Severity",
+      "details": "View Details",
+      "edit": "Edit Report",
+      "delete": "Delete Report",
+      "noReports": "No reports found matching your criteria"
+    },
+    "alerts": {
+      "title": "Emergency Alerts Management",
+      "activeAlerts": "Active Alerts",
+      "createTitle": "Create New Alert",
+      "message": "Alert Message",
+      "messagePlaceholder": "Write an alert message...",
+      "alertType": "Alert Type",
+      "information": "Information",
+      "warning": "Warning",
+      "critical": "Critical",
+      "send": "Send Alert",
+      "allTypes": "All Types",
+      "allStatus": "All Status"
+    },
+    "map": {
+      "title": "Crisis Map Overview",
+      "subtitle": "Visualizing active crisis reports",
+      "search": "Search reports...",
+      "allTypes": "All Types",
+      "allSeverity": "All Severity"
+    },
+    "statistics": {
+      "title": "Analytics Dashboard",
+      "timeRange": {
+        "week": "Last 7 days",
+        "month": "Last 30 days",
+        "quarter": "Last 90 days",
+        "custom": "Custom range"
+      },
+      "export": "Export Report",
+      "cards": {
+        "totalReports": "Total Reports",
+        "activeReports": "Active Crises",
+        "responseTime": "Avg Response Time",
+        "criticalEvents": "Critical Events"
+      },
+      "timeline": "Reports Timeline",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "bar": "Bar",
+      "line": "Line",
+      "distribution": "Distribution by Region",
+      "crisisTypes": "Crisis Types Distribution"
+    }
+  }
+}

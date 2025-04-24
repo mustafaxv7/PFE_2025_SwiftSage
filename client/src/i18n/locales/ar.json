@@ -1,0 +1,300 @@
+{
+  "navbar": {
+    "home": "الرئيسية",
+    "about": "من نحن",
+    "features": "المميزات",
+    "contact": "اتصل بنا",
+    "login": "تسجيل الدخول",
+    "language": "اللغة"
+  },
+  "hero": {
+    "title": "تحويل إدارة الأزمات مع",
+    "subtitle": "تسخير الذكاء الجماعي والرؤى المدعومة بالذكاء الاصطناعي للاستجابة للأزمات في الوقت الفعلي.",
+    "exploreFeatures": "استكشف المميزات",
+    "contactUs": "اتصل بنا"
+  },
+  "about": {
+    "mission": {
+      "title": "مهمتنا",
+      "description": "في Swift Sage، نحن نعمل على ثورة في إدارة الأزمات من خلال التكنولوجيا المبتكرة والتعاون المجتمعي.",
+      "subDescription": "تدمج منصتنا جمع البيانات في الوقت الفعلي، والتحليلات المدعومة بالذكاء الاصطناعي، والذكاء الجماعي لتوفير رؤى قابلة للتنفيذ أثناء المواقف الحرجة."
+    },
+    "stats": {
+      "reports": "+100K",
+      "reportsLabel": "تقارير تمت معالجتها",
+      "monitoring": "24/7",
+      "monitoringLabel": "مراقبة في الوقت الفعلي"
+    },
+    "features": {
+      "alertSystem": {
+        "title": "نظام تنبيه الأزمات",
+        "description": "لوحة مراقبة نشطة"
+      },
+      "crowdsourcing": {
+        "title": "التعهيد الجماعي",
+        "description": "بيانات مدعومة من المجتمع"
+      },
+      "analytics": {
+        "title": "التحليلات",
+        "description": "رؤى في الوقت الفعلي"
+      }
+    }
+  },
+  "features": {
+    "title": "ميزات قوية",
+    "subtitle": "مصممة للكفاءة والدقة والاستجابة السريعة في المواقف الحرجة",
+    "items": {
+      "crisisTracking": {
+        "title": "تتبع الأزمات في الوقت الفعلي",
+        "description": "مراقبة وإبلاغ عن الأزمات أثناء حدوثها مع نظام التنبيه المباشر لدينا."
+      },
+      "crowdsourced": {
+        "title": "ذكاء جماعي",
+        "description": "الاستفادة من تقارير المجتمع لبناء وعي شامل بالوضع."
+      },
+      "mapping": {
+        "title": "خرائط تفاعلية",
+        "description": "تصور بيانات الأزمة جغرافيًا لتخطيط استراتيجي أفضل."
+      },
+      "analytics": {
+        "title": "تحليلات مدعومة بالذكاء الاصطناعي",
+        "description": "تعالج خوارزمياتنا البيانات للتنبؤ بالاتجاهات والتوصية بالإجراءات."
+      }
+    }
+  },
+  "cta": {
+    "subtitle": "كن جزءًا من الحل",
+    "primaryButton": "ابدأ الآن",
+    "secondaryButton": "تعرف على المزيد"
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "subtitle": "نحن هنا للمساعدة",
+    "form": {
+      "title": "أرسل لنا رسالة",
+      "name": "الاسم",
+      "namePlaceholder": "أدخل اسمك الكامل",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل بريدك الإلكتروني",
+      "message": "الرسالة",
+      "messagePlaceholder": "اكتب رسالتك هنا..."
+    },
+    "email": {
+      "title": "البريد الإلكتروني",
+      "value": "info@swiftsage.com"
+    },
+    "phone": {
+      "title": "الهاتف",
+      "value": "+212 123 456 789"
+    },
+    "location": {
+      "title": "الموقع",
+      "value": "الدار البيضاء، المغرب"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول إلى حسابك",
+      "createAccount": "إنشاء حساب جديد",
+      "emailLabel": "البريد الإلكتروني",
+      "passwordLabel": "كلمة المرور",
+      "rememberMe": "تذكرني",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "loginButton": "تسجيل الدخول",
+      "success": "تم تسجيل الدخول بنجاح!",
+      "redirecting": "يتم توجيهك إلى لوحة التحكم الخاصة بك"
+    },
+    "signup": {
+      "title": "إنشاء حسابك",
+      "subtitle": "انضم إلى منصتنا لإدارة الأزمات بفعالية",
+      "fullName": "الاسم الكامل",
+      "orgName": "اسم المنظمة",
+      "email": "البريد الإلكتروني",
+      "orgEmail": "البريد الإلكتروني للمنظمة",
+      "phone": "رقم الهاتف",
+      "password": "كلمة المرور",
+      "orgType": "نوع المنظمة",
+      "public": "عامة",
+      "private": "خاصة",
+      "isOrg": "هل تقوم بالتسجيل كمنظمة؟",
+      "termsAgree": "أوافق على شروط الخدمة وسياسة الخصوصية",
+      "registerButton": "إنشاء حساب",
+      "haveAccount": "هل لديك حساب بالفعل؟",
+      "loginLink": "تسجيل الدخول",
+      "success": "تم التسجيل بنجاح!",
+      "redirecting": "يتم توجيهك إلى صفحة تسجيل الدخول"
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "addReport": "إضافة تقرير جديد",
+      "alerts": "التنبيهات",
+      "myReports": "تقاريري",
+      "logout": "تسجيل الخروج"
+    },
+    "reports": {
+      "title": "تقاريري",
+      "active": "نشط",
+      "resolved": "تم الحل",
+      "inProgress": "قيد التنفيذ",
+      "unknown": "غير معروف",
+      "critical": "حرج",
+      "high": "مرتفع",
+      "medium": "متوسط",
+      "low": "منخفض",
+      "details": "تفاصيل التقرير",
+      "location": "الموقع",
+      "date": "التاريخ",
+      "status": "الحالة",
+      "importance": "الأهمية",
+      "description": "الوصف",
+      "submittedBy": "تم التقديم بواسطة",
+      "close": "إغلاق"
+    },
+    "addReport": {
+      "title": "إضافة تقرير أزمة جديد",
+      "subtitle": "تقديم معلومات مفصلة عن حالة الأزمة",
+      "loadingMap": "جاري تحميل الخريطة...",
+      "latitude": "خط العرض",
+      "longitude": "خط الطول",
+      "reportTitle": "عنوان التقرير",
+      "titlePlaceholder": "عنوان موجز يصف الأزمة",
+      "description": "وصف مفصل",
+      "descriptionPlaceholder": "تقديم وصف مفصل للوضع...",
+      "crisisType": "نوع الأزمة",
+      "selectType": "اختر نوع الأزمة",
+      "earthquake": "زلزال",
+      "flood": "فيضان",
+      "forestFire": "حريق غابات",
+      "industrialFire": "حريق صناعي",
+      "uploadImages": "تحميل الصور",
+      "dragDrop": "اسحب وأفلت الملفات هنا، أو انقر لتحديد الملفات",
+      "maxSize": "الحد الأقصى لحجم الملف: 10 ميجابايت",
+      "submit": "تقديم التقرير",
+      "cancel": "إلغاء"
+    },
+    "alerts": {
+      "title": "مركز التنبيهات",
+      "subtitle": "ابق على اطلاع بحالات الأزمات الجارية",
+      "filter": "تصفية:",
+      "all": "الكل",
+      "information": "معلومات",
+      "warning": "تحذير",
+      "critical": "حرج",
+      "noAlerts": "لا توجد تنبيهات نشطة في الوقت الحالي",
+      "allClear": "كل شيء واضح الآن. تحقق مرة أخرى لاحقًا.",
+      "recentHistory": "التاريخ الحديث",
+      "viewDetails": "عرض التفاصيل",
+      "dismiss": "تجاهل التنبيه",
+      "viewReport": "عرض التقرير الكامل",
+      "affectedArea": "المنطقة المتأثرة"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "reportsOverview": "نظرة عامة على التقارير",
+      "manageAlerts": "إدارة التنبيهات",
+      "crisisMap": "خريطة الأزمات",
+      "statistics": "الإحصائيات",
+      "manageUsers": "إدارة المستخدمين",
+      "logout": "تسجيل الخروج",
+      "controlPanel": "لوحة تحكم المسؤول"
+    },
+    "reports": {
+      "title": "نظرة عامة على التقارير",
+      "filter": "تصفية",
+      "search": "البحث عن تقارير...",
+      "allTypes": "جميع الأنواع",
+      "allStatus": "جميع الحالات",
+      "allSeverity": "جميع مستويات الخطورة",
+      "details": "عرض التفاصيل",
+      "edit": "تعديل التقرير",
+      "delete": "حذف التقرير",
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا التقرير؟",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد"
+    },
+    "alerts": {
+      "title": "إدارة تنبيهات الطوارئ",
+      "activeAlerts": "التنبيهات النشطة",
+      "createAlert": "إنشاء تنبيه جديد",
+      "alertMessage": "رسالة التنبيه",
+      "messagePlaceholder": "اكتب رسالة تنبيه...",
+      "alertType": "نوع التنبيه",
+      "information": "معلومات",
+      "warning": "تحذير",
+      "critical": "حرج",
+      "sendAlert": "إرسال التنبيه",
+      "allTypes": "جميع الأنواع",
+      "allStatus": "جميع الحالات",
+      "actions": "الإجراءات",
+      "noAlerts": "لم يتم العثور على تنبيهات"
+    },
+    "map": {
+      "title": "نظرة عامة على خريطة الأزمات",
+      "visualizing": "تصور",
+      "activeReports": "تقارير الأزمات النشطة",
+      "search": "البحث عن تقارير...",
+      "allTypes": "جميع الأنواع",
+      "allSeverity": "جميع مستويات الخطورة"
+    },
+    "statistics": {
+      "title": "لوحة التحليلات",
+      "totalReports": "إجمالي التقارير",
+      "activeCrises": "الأزمات النشطة",
+      "avgResponseTime": "متوسط وقت الاستجابة",
+      "criticalEvents": "الأحداث الحرجة",
+      "reportsTimeline": "الجدول الزمني للتقارير",
+      "daily": "يومي",
+      "weekly": "أسبوعي",
+      "monthly": "شهري",
+      "bar": "شريط",
+      "line": "خط",
+      "distributionByRegion": "التوزيع حسب المنطقة",
+      "crisisTypes": "أنواع الأزمات",
+      "exportReport": "تصدير التقرير"
+    },
+    "users": {
+      "title": "إدارة المستخدمين",
+      "search": "البحث عن مستخدمين...",
+      "all": "الكل",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "suspended": "معلق",
+      "addUser": "إضافة مستخدم",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "type": "النوع",
+      "status": "الحالة",
+      "actions": "الإجراءات",
+      "view": "عرض",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "individual": "فرد",
+      "organization": "منظمة",
+      "confirmDelete": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد"
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجاح",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "submit": "تقديم",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "search": "بحث",
+    "filter": "تصفية",
+    "noResults": "لم يتم العثور على نتائج",
+    "yes": "نعم",
+    "no": "لا"
+  }
+}

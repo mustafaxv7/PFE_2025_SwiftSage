@@ -1,0 +1,284 @@
+{
+  "navbar": {
+    "home": "Accueil",
+    "about": "À propos",
+    "features": "Fonctionnalités",
+    "contact": "Contact",
+    "login": "Connexion",
+    "language": "Langue"
+  },
+  "hero": {
+    "title": "Transformer la Gestion de Crise avec",
+    "subtitle": "Exploiter l'intelligence collective et les insights basés sur l'IA pour la réponse aux crises en temps réel.",
+    "exploreFeatures": "Explorer les Fonctionnalités",
+    "contactUs": "Contactez-nous"
+  },
+  "about": {
+    "mission": {
+      "title": "Notre Mission",
+      "description": "Chez Swift Sage, nous révolutionnons la gestion de crise grâce à une technologie innovante et à la collaboration communautaire.",
+      "subDescription": "Notre plateforme intègre la collecte de données en temps réel, l'analyse basée sur l'IA et l'intelligence collective pour fournir des informations exploitables lors de situations critiques."
+    },
+    "stats": {
+      "reports": "100K+",
+      "reportsLabel": "Rapports Traités",
+      "monitoring": "24/7",
+      "monitoringLabel": "Surveillance en Temps Réel"
+    },
+    "features": {
+      "alertSystem": {
+        "title": "Système d'Alerte de Crise",
+        "description": "Tableau de bord de surveillance active"
+      },
+      "crowdsourcing": {
+        "title": "Crowdsourcing",
+        "description": "Données alimentées par la communauté"
+      },
+      "analytics": {
+        "title": "Analytique",
+        "description": "Insights en temps réel"
+      }
+    }
+  },
+  "features": {
+    "title": "Fonctionnalités Puissantes",
+    "subtitle": "Conçues pour l'efficacité, la précision et une réponse rapide dans les situations critiques",
+    "items": {
+      "crisisTracking": {
+        "title": "Suivi de Crise en Temps Réel",
+        "description": "Surveillez et signalez les crises au moment où elles se produisent grâce à notre système d'alerte en direct."
+      },
+      "crowdsourced": {
+        "title": "Intelligence Collective",
+        "description": "Exploitez les rapports communautaires pour construire une connaissance situationnelle complète."
+      },
+      "mapping": {
+        "title": "Cartographie Interactive",
+        "description": "Visualisez les données de crise géographiquement pour une meilleure planification stratégique."
+      },
+      "analytics": {
+        "title": "Analytique Alimentée par l'IA",
+        "description": "Nos algorithmes traitent les données pour prédire les tendances et recommander des actions."
+      }
+    }
+  },
+  "cta": {
+    "subtitle": "Prêt à transformer votre approche de gestion de crise?",
+    "primaryButton": "Commencer",
+    "secondaryButton": "En Savoir Plus"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Vous avez des questions ou besoin d'assistance? Contactez notre équipe.",
+    "form": {
+      "title": "Envoyez-nous un message",
+      "name": "Votre Nom",
+      "namePlaceholder": "Entrez votre nom complet",
+      "email": "Adresse Email",
+      "emailPlaceholder": "Entrez votre adresse email",
+      "message": "Votre Message",
+      "messagePlaceholder": "Comment pouvons-nous vous aider?"
+    },
+    "email": {
+      "title": "Envoyez-nous un Email",
+      "value": "contact@swiftsage.com"
+    },
+    "phone": {
+      "title": "Appelez-nous",
+      "value": "+1 (555) 123-4567"
+    },
+    "location": {
+      "title": "Visitez-nous",
+      "value": "123 Tech Plaza, Quartier de l'Innovation"
+    }
+  },
+  "footer": {
+    "description": "Swift Sage - Autonomiser les communautés avec des solutions intelligentes de gestion de crise",
+    "copyright": "© 2023 Swift Sage. Tous droits réservés.",
+    "legal": {
+      "title": "Mentions Légales",
+      "privacy": "Politique de Confidentialité",
+      "terms": "Conditions d'Utilisation"
+    },
+    "links": {
+      "title": "Liens Rapides",
+      "about": "À Propos",
+      "features": "Fonctionnalités",
+      "contact": "Contact"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Connectez-vous à votre compte",
+      "createAccount": "créer un nouveau compte",
+      "emailLabel": "Adresse e-mail",
+      "passwordLabel": "Mot de passe",
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié?",
+      "loginButton": "Se connecter",
+      "success": "Connexion réussie!",
+      "redirecting": "Vous êtes redirigé vers votre tableau de bord"
+    },
+    "signup": {
+      "title": "Créez votre compte",
+      "subtitle": "Rejoignez notre plateforme pour gérer efficacement les crises",
+      "fullName": "Nom complet",
+      "orgName": "Nom de l'organisation",
+      "email": "Adresse e-mail",
+      "orgEmail": "E-mail de l'organisation",
+      "phone": "Numéro de téléphone",
+      "password": "Mot de passe",
+      "orgType": "Type d'organisation",
+      "public": "Publique",
+      "private": "Privée",
+      "isOrg": "Vous inscrivez-vous en tant qu'organisation?",
+      "termsAgree": "J'accepte les conditions d'utilisation et la politique de confidentialité",
+      "registerButton": "Créer un compte",
+      "haveAccount": "Vous avez déjà un compte?",
+      "loginLink": "Se connecter",
+      "success": "Inscription réussie!",
+      "redirecting": "Vous êtes redirigé vers la page de connexion"
+    }
+  },
+  "dashboard": {
+    "sidebar": {
+      "addReport": "Ajouter un rapport",
+      "alerts": "Alertes",
+      "myReports": "Mes rapports",
+      "logout": "Déconnexion"
+    },
+    "reports": {
+      "title": "Mes rapports",
+      "active": "Actif",
+      "resolved": "Résolu",
+      "inProgress": "En cours",
+      "unknown": "Inconnu",
+      "critical": "Critique",
+      "high": "Élevé",
+      "medium": "Moyen",
+      "low": "Faible",
+      "details": "Détails du rapport",
+      "location": "Emplacement",
+      "date": "Date",
+      "status": "Statut",
+      "importance": "Importance",
+      "description": "Description",
+      "submittedBy": "Soumis par",
+      "close": "Fermer"
+    },
+    "addReport": {
+      "title": "Ajouter un nouveau rapport de crise",
+      "subtitle": "Fournir des informations détaillées sur la situation de crise",
+      "loadingMap": "Chargement de la carte...",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "reportTitle": "Titre du rapport",
+      "titlePlaceholder": "Titre bref décrivant la crise",
+      "description": "Description détaillée",
+      "descriptionPlaceholder": "Fournir une description détaillée de la situation...",
+      "crisisType": "Type de crise",
+      "selectType": "Sélectionner le type de crise",
+      "earthquake": "Tremblement de terre",
+      "flood": "Inondation",
+      "forestFire": "Feu de forêt",
+      "industrialFire": "Incendie industriel",
+      "roadStatus": "État de la route",
+      "selectStatus": "Sélectionner l'état de la route",
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "partiallyBlocked": "Partiellement bloqué",
+      "flooded": "Inondé",
+      "smokeCovered": "Couvert de fumée",
+      "uploadImage": "Télécharger une image",
+      "uploadPlaceholder": "Glisser-déposer ou cliquer pour télécharger",
+      "maxSize": "Taille max: 5MB",
+      "submit": "Soumettre le rapport",
+      "cancel": "Annuler"
+    },
+    "alerts": {
+      "title": "Centre d'alertes",
+      "subtitle": "Restez informé des situations de crise en cours",
+      "filter": "Filtre:",
+      "all": "Tous",
+      "information": "Information",
+      "warning": "Avertissement",
+      "critical": "Critique",
+      "noAlerts": "Aucune alerte active pour le moment",
+      "allClear": "Tout est clair pour l'instant. Vérifiez à nouveau plus tard.",
+      "priority": "Priorité",
+      "viewDetails": "Voir les détails",
+      "dismiss": "Ignorer l'alerte",
+      "affectedArea": "Zone affectée",
+      "viewReport": "Voir le rapport complet",
+      "recentHistory": "Historique récent"
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "reports": "Aperçu des rapports",
+      "alerts": "Gérer les alertes",
+      "map": "Carte des crises",
+      "statistics": "Statistiques",
+      "users": "Gérer les utilisateurs",
+      "logout": "Déconnexion"
+    },
+    "reports": {
+      "title": "Aperçu des rapports",
+      "subtitle": "Gérer et examiner tous les rapports de crise soumis",
+      "filter": "Filtre",
+      "search": "Rechercher des rapports...",
+      "allTypes": "Tous les types",
+      "allStatus": "Tous les statuts",
+      "allSeverity": "Toutes les sévérités",
+      "details": "Voir les détails",
+      "edit": "Modifier le rapport",
+      "delete": "Supprimer le rapport",
+      "noReports": "Aucun rapport trouvé correspondant à vos critères"
+    },
+    "alerts": {
+      "title": "Gestion des alertes d'urgence",
+      "activeAlerts": "Alertes actives",
+      "createTitle": "Créer une nouvelle alerte",
+      "message": "Message d'alerte",
+      "messagePlaceholder": "Écrire un message d'alerte...",
+      "alertType": "Type d'alerte",
+      "information": "Information",
+      "warning": "Avertissement",
+      "critical": "Critique",
+      "send": "Envoyer l'alerte",
+      "allTypes": "Tous les types",
+      "allStatus": "Tous les statuts"
+    },
+    "map": {
+      "title": "Aperçu de la carte des crises",
+      "subtitle": "Visualisation des rapports de crise actifs",
+      "search": "Rechercher des rapports...",
+      "allTypes": "Tous les types",
+      "allSeverity": "Toutes les sévérités"
+    },
+    "statistics": {
+      "title": "Tableau de bord analytique",
+      "timeRange": {
+        "week": "7 derniers jours",
+        "month": "30 derniers jours",
+        "quarter": "90 derniers jours",
+        "custom": "Plage personnalisée"
+      },
+      "export": "Exporter le rapport",
+      "cards": {
+        "totalReports": "Total des rapports",
+        "activeReports": "Crises actives",
+        "responseTime": "Temps de réponse moyen",
+        "criticalEvents": "Événements critiques"
+      },
+      "timeline": "Chronologie des rapports",
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "bar": "Barre",
+      "line": "Ligne",
+      "distribution": "Distribution par région",
+      "crisisTypes": "Distribution des types de crise"
+    }
+  }
+}
