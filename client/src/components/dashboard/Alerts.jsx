@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from "react";
-import {Bell, AlertTriangle, X, Filter, History, ExternalLink, Eye} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Bell, AlertTriangle, X, Filter, History, ExternalLink, Eye } from "lucide-react";
 
 const Alerts = () => {
     const [alerts, setAlerts] = useState([]);
@@ -10,35 +10,35 @@ const Alerts = () => {
         const receivedAlerts = [
             {
                 id: 1,
-                message: "Flood in Nairobi",
-                description: "Rising water levels reported in residential areas. Multiple streets are inaccessible.",
-                date: "March 10, 2025",
+                message: "Inondation à Alger",
+                description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Bab El Oued.",
+                date: "10 Mars, 2025",
                 status: "Active",
                 importance: "High",
                 type: "info",
-                location: "Nairobi, Kenya",
-                affectedArea: "12 sq km"
+                location: "Alger, Algérie",
+                affectedArea: "12 km²"
             },
             {
                 id: 2,
-                message: "Earthquake in Mexico",
-                description: "6.4 magnitude earthquake with significant structural damage and potential aftershocks expected.",
-                date: "March 15, 2025",
+                message: "Séisme à Béjaïa",
+                description: "Séisme de magnitude 5.8 avec des dommages structurels importants et des répliques potentielles attendues.",
+                date: "15 Mars, 2025",
                 status: "Resolved",
                 importance: "Critical",
                 type: "danger",
-                location: "Mexico City, Mexico",
-                affectedArea: "35 sq km"
+                location: "Béjaïa, Algérie",
+                affectedArea: "35 km²"
             },
             {
                 id: 3,
-                message: "Forest Fire in California",
-                description: "Rapidly spreading wildfire threatening residential areas. Evacuation orders in place.",
-                date: "April 2, 2025",
+                message: "Incendie de forêt à Tizi Ouzou",
+                description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles. Ordres d'évacuation en place.",
+                date: "2 Avril, 2025",
                 status: "Active",
                 importance: "High",
                 type: "warning",
-                location: "Mendocino County, CA",
+                location: "Tizi Ouzou, Algérie",
                 affectedArea: "1240 hectares"
             }
         ];
@@ -53,13 +53,13 @@ const Alerts = () => {
     const getAlertIcon = (type) => {
         switch (type) {
             case "info":
-                return <span className="text-blue-500"><Bell size={20}/></span>;
+                return <span className="text-blue-500"><Bell size={20} /></span>;
             case "danger":
-                return <span className="text-red-500"><AlertTriangle size={20}/></span>;
+                return <span className="text-red-500"><AlertTriangle size={20} /></span>;
             case "warning":
-                return <span className="text-orange-500"><AlertTriangle size={20}/></span>;
+                return <span className="text-orange-500"><AlertTriangle size={20} /></span>;
             default:
-                return <span className="text-gray-500"><Bell size={20}/></span>;
+                return <span className="text-gray-500"><Bell size={20} /></span>;
         }
     };
 
@@ -85,12 +85,12 @@ const Alerts = () => {
             <div className="p-6 border-b border-gray-200">
                 <div className="flex justify-between items-center">
                     <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-                        <Bell className="mr-2 text-red-500" size={24}/>
+                        <Bell className="mr-2 text-red-500" size={24} />
                         Alert Center
                     </h2>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-500">Filter:</span>
-                        <Filter size={16} className="text-gray-400"/>
+                        <Filter size={16} className="text-gray-400" />
                         <div className="flex space-x-1">
                             <button
                                 onClick={() => setFilter("all")}
@@ -119,13 +119,13 @@ const Alerts = () => {
                         </div>
                     </div>
                 </div>
-                <p className="text-gray-600 mt-1">Stay informed about ongoing crisis situations</p>
+                <p className="text-gray-600 mt-1">Stay informed about ongoing Crisis situations</p>
             </div>
 
             <div className="p-6">
                 {filteredAlerts.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
-                        <Bell size={40} className="mx-auto text-gray-300 mb-4"/>
+                        <Bell size={40} className="mx-auto text-gray-300 mb-4" />
                         <p className="text-gray-500 font-medium">No active alerts at the moment</p>
                         <p className="text-sm text-gray-400 mt-1">All clear for now. Check again later.</p>
                     </div>
@@ -156,21 +156,22 @@ const Alerts = () => {
                                             className="p-1 rounded-full hover:bg-white/30 transition"
                                             aria-label="View details"
                                         >
-                                            <Eye size={18}/>
+                                            <Eye size={18} />
                                         </button>
                                         <button
                                             onClick={() => dismissAlert(alert.id)}
                                             className="p-1 rounded-full hover:bg-white/30 transition"
                                             aria-label="Dismiss alert"
                                         >
-                                            <X size={18}/>
+                                            <X size={18} />
                                         </button>
                                     </div>
                                 </div>
+
                                 {showDetails === alert.id && (
-                                    <div className="px-4 pb-4 pt-0 border-t border-gray-100">
-                                        <div className="mb-2 mt-2 text-sm">{alert.description}</div>
-                                        <div className="grid grid-cols-2 gap-2 text-sm">
+                                    <div className="p-4 border-t border-gray-200 bg-white/50">
+                                        <p className="text-sm mb-3">{alert.description}</p>
+                                        <div className="flex flex-wrap gap-4 text-xs text-gray-600">
                                             <div>
                                                 <span className="font-medium">Location:</span> {alert.location}
                                             </div>
@@ -178,42 +179,25 @@ const Alerts = () => {
                                                 <span className="font-medium">Affected Area:</span> {alert.affectedArea}
                                             </div>
                                         </div>
-                                        <div className="mt-3 text-right">
+                                        <div className="mt-3 flex justify-between items-center">
                                             <button
-                                                className="text-xs inline-flex items-center gap-1 text-blue-600 hover:text-blue-800">
-                                                View full report <ExternalLink size={12}/>
+                                                className="flex items-center text-xs text-gray-600 hover:text-gray-800"
+                                            >
+                                                <History size={14} className="mr-1" />
+                                                Recent History
+                                            </button>
+                                            <button
+                                                className="flex items-center text-xs text-blue-600 hover:text-blue-800"
+                                            >
+                                                <ExternalLink size={14} className="mr-1" />
+                                                View full report
                                             </button>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        ))}
-                    </div>
-                )}
-                {alerts.some(alert => alert.status === "Resolved") && (
-                    <div className="mt-8">
-                        <h3 className="text-lg font-medium text-gray-700 mb-3 flex items-center">
-                            <History size={18} className="mr-2 text-gray-500"/>
-                            Recent History
-                        </h3>
-                        <div className="space-y-2">
-                            {alerts
-                                .filter(alert => alert.status === "Resolved")
-                                .map((alert) => (
-                                    <div
-                                        key={alert.id}
-                                        className="border border-gray-200 rounded-md p-3 bg-gray-50 text-gray-600 flex items-center"
-                                    >
-                                        <div className="mr-3 opacity-70">{getAlertIcon(alert.type)}</div>
-                                        <div className="flex-1">
-                                            <div className="text-sm font-medium">{alert.message}</div>
-                                            <div className="text-xs text-gray-500 mt-1">{alert.date}</div>
-                                        </div>
-                                        <span
-                                            className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">Resolved</span>
-                                    </div>
-                                ))}
-                        </div>
+                        )
+                        )}
                     </div>
                 )}
             </div>

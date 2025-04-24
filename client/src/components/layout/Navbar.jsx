@@ -2,10 +2,13 @@ import {Link} from "react-router-dom";
 import Logo from "../../assets/Logo.png";
 import {useState, useEffect} from "react";
 import {FiMenu, FiX} from "react-icons/fi";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -15,7 +18,6 @@ const Navbar = () => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // this is a function to  handle smooth scrolling
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
         if (element) {
@@ -23,7 +25,7 @@ const Navbar = () => {
                 behavior: 'smooth'
             });
         }
-        setIsOpen(false); // Close mobile menu after clicking
+        setIsOpen(false);
     };
 
     return (
@@ -36,8 +38,8 @@ const Navbar = () => {
                             <img src={Logo} alt="Logo" className="w-12 h-12 object-contain"/>
                             <span
                                 className="text-2xl font-bold bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent">
-                Swift Sage
-              </span>
+                                Swift Sage
+                            </span>
                         </Link>
                     </div>
                     <div className="hidden md:flex items-center space-x-8">
@@ -46,7 +48,7 @@ const Navbar = () => {
                                 onClick={() => scrollToSection('about')}
                                 className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 relative group"
                             >
-                                About
+                                {t('navbar.about')}
                                 <span
                                     className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
                             </button>
@@ -54,7 +56,7 @@ const Navbar = () => {
                                 onClick={() => scrollToSection('features')}
                                 className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 relative group"
                             >
-                                Features
+                                {t('navbar.features')}
                                 <span
                                     className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
                             </button>
@@ -62,16 +64,17 @@ const Navbar = () => {
                                 onClick={() => scrollToSection('contact')}
                                 className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 relative group"
                             >
-                                Contact
+                                {t('navbar.contact')}
                                 <span
                                     className="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all duration-300 group-hover:w-full"></span>
                             </button>
+                            <LanguageSwitcher />
                         </div>
                         <Link
                             to="/login"
                             className="ml-8 px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold text-sm transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-lg transform hover:-translate-y-0.5"
                         >
-                            login
+                            {t('navbar.login')}
                         </Link>
                     </div>
 
@@ -98,26 +101,29 @@ const Navbar = () => {
                         onClick={() => scrollToSection('about')}
                         className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-100 transition-colors duration-300"
                     >
-                        About
+                        {t('navbar.about')}
                     </button>
                     <button
                         onClick={() => scrollToSection('features')}
                         className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-100 transition-colors duration-300"
                     >
-                        Features
+                        {t('navbar.features')}
                     </button>
                     <button
                         onClick={() => scrollToSection('contact')}
                         className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-600 hover:bg-gray-100 transition-colors duration-300"
                     >
-                        Contact
+                        {t('navbar.contact')}
                     </button>
+                    <div className="px-3 py-2">
+                        <LanguageSwitcher mobile />
+                    </div>
                     <Link
                         to="/login"
                         onClick={() => setIsOpen(false)}
                         className="block w-full text-center mt-4 px-6 py-2 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold text-sm transition-colors duration-300 hover:from-red-500 hover:to-red-400"
                     >
-                        Log in
+                        {t('navbar.login')}
                     </Link>
                 </div>
             </div>

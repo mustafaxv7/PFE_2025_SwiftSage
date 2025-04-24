@@ -14,31 +14,33 @@ const ReportsOverview = () => {
             const data = [
                 {
                     id: 1,
-                    title: "Flood in Nairobi",
-                    date: "March 10, 2025",
+                    title: "Inondation à Alger",
+                    date: "10 Mars, 2025",
+                    time: "08:30",
                     crisisType: "flood",
-                    description: "Major flooding in downtown Nairobi affecting residential areas.",
-                    location: "Nairobi, Kenya",
-                    lat: "-1.286389",
-                    lng: "36.817223",
+                    description: "Inondation majeure dans le centre-ville d'Alger affectant les zones résidentielles de Bab El Oued.",
+                    location: "Alger, Algérie",
+                    lat: "36.7538",
+                    lng: "3.0588",
                     roadStatus: "flooded",
                     missing: 3,
                     trapped: 12,
                     submergedDwelling: 48,
                     electrification: "dangerous",
                     status: "active",
-                    submittedBy: "John Doe",
+                    submittedBy: "Ahmed Benali",
                     importance: "high"
                 },
                 {
                     id: 2,
-                    title: "Earthquake in Mexico",
-                    date: "March 15, 2025",
+                    title: "Séisme à Béjaïa",
+                    date: "15 Mars, 2025",
+                    time: "14:22",
                     crisisType: "earthquake",
-                    description: "6.4 magnitude earthquake that caused significant structural damage.",
-                    location: "Mexico City, Mexico",
-                    lat: "19.4326",
-                    lng: "-99.1332",
+                    description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
+                    location: "Béjaïa, Algérie",
+                    lat: "36.7509",
+                    lng: "5.0567",
                     roadStatus: "partially_blocked",
                     injuredNumber: 24,
                     bleedingNumber: 8,
@@ -47,18 +49,19 @@ const ReportsOverview = () => {
                     fractions: 14,
                     electrification: "partial",
                     status: "resolved",
-                    submittedBy: "Jane Smith",
+                    submittedBy: "Karima Hadj",
                     importance: "critical"
                 },
                 {
                     id: 3,
-                    title: "Forest Fire in California",
-                    date: "April 2, 2025",
+                    title: "Incendie de forêt à Tizi Ouzou",
+                    date: "2 Avril, 2025",
+                    time: "11:15",
                     crisisType: "forest_fire",
-                    description: "Wildfire spreading across northern California forests.",
-                    location: "Mendocino County, CA",
-                    lat: "39.3076",
-                    lng: "-123.7994",
+                    description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
+                    location: "Tizi Ouzou, Algérie",
+                    lat: "36.7169",
+                    lng: "4.0476",
                     roadStatus: "smoke_covered",
                     burntArea: 1240,
                     spreadRate: "rapid",
@@ -66,18 +69,19 @@ const ReportsOverview = () => {
                     threatenedStructures: 126,
                     containmentPercent: 35,
                     status: "active",
-                    submittedBy: "Alex Johnson",
+                    submittedBy: "Sofiane Amrouche",
                     importance: "high"
                 },
                 {
                     id: 4,
-                    title: "Industrial Fire in Detroit",
-                    date: "March 28, 2025",
+                    title: "Incendie industriel à Oran",
+                    date: "28 Mars, 2025",
+                    time: "16:45",
                     crisisType: "industrial_fire",
-                    description: "Chemical plant fire with potential hazardous materials release.",
-                    location: "Detroit, MI",
-                    lat: "42.3314",
-                    lng: "-83.0458",
+                    description: "Incendie dans une usine chimique avec risque potentiel de libération de matières dangereuses.",
+                    location: "Oran, Algérie",
+                    lat: "35.6969",
+                    lng: "-0.6331",
                     roadStatus: "closed",
                     burnt: 3500,
                     explosion: "Yes",
@@ -85,25 +89,26 @@ const ReportsOverview = () => {
                     trapped: 5,
                     electrification: "offline",
                     status: "in_progress",
-                    submittedBy: "Robert Chen",
+                    submittedBy: "Karim Boudiaf",
                     importance: "critical"
                 },
                 {
                     id: 5,
-                    title: "Coastal Flooding in Miami",
-                    date: "April 5, 2025",
+                    title: "Inondation côtière à Annaba",
+                    date: "5 Avril, 2025",
+                    time: "09:00",
                     crisisType: "flood",
-                    description: "Coastal flooding affecting south beach and downtown areas.",
-                    location: "Miami, FL",
-                    lat: "25.7617",
-                    lng: "-80.1918",
+                    description: "Inondation côtière affectant les plages et le centre-ville.",
+                    location: "Annaba, Algérie",
+                    lat: "36.9142",
+                    lng: "7.7427",
                     roadStatus: "flooded",
                     missing: 0,
                     trapped: 8,
                     submergedDwelling: 23,
                     electrification: "partial",
                     status: "active",
-                    submittedBy: "Maria Rodriguez",
+                    submittedBy: "Amina Khelifi",
                     importance: "medium"
                 }
             ];
@@ -314,7 +319,7 @@ const ReportsOverview = () => {
         <div className="p-6 bg-white rounded-lg shadow-md">
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Reports Overview</h2>
-                <p className="text-gray-600 mt-1">Monitoring {reportStats.total} crisis reports across regions</p>
+                <p className="text-gray-600 mt-1">Monitoring {reportStats.total} Crisis reports across regions</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
@@ -447,9 +452,9 @@ const ReportsOverview = () => {
                                 className="hover:bg-gray-50 cursor-pointer transition-colors"
                             >
                                 <td className="py-4 px-4">
-                    <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
-                      {getCrisisTypeIcon(report.crisisType)}
-                    </span>
+                                    <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
+                                        {getCrisisTypeIcon(report.crisisType)}
+                                    </span>
                                 </td>
                                 <td className="py-4 px-4 font-medium text-gray-900">{report.title}</td>
                                 <td className="py-4 px-4 text-gray-600">
@@ -493,15 +498,21 @@ const ReportsOverview = () => {
             </div>
             {isModalOpen && selectedReport && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <div className="flex items-center space-x-2">
-                                        <span className="text-2xl">{getCrisisTypeIcon(selectedReport.crisisType)}</span>
+                                    <div className="flex items-center">
+                                        <span className="text-3xl mr-3">{getCrisisTypeIcon(selectedReport.crisisType)}</span>
                                         <h3 className="text-xl font-bold text-gray-900">{selectedReport.title}</h3>
                                     </div>
-                                    <p className="text-sm text-gray-500 mt-1">{selectedReport.date}</p>
+                                    <p className="text-gray-500 mt-1">
+                                        <span className="font-medium">Reported on:</span> {selectedReport.date} at {selectedReport.time}
+                                    </p>
+                                    <div className="flex items-center mt-2">
+                                        <MapPin size={16} className="mr-1 text-gray-500" />
+                                        <span className="text-gray-600">{selectedReport.location}</span>
+                                    </div>
                                 </div>
                                 <div className="flex space-x-2">
                                     {getStatusBadge(selectedReport.status)}
@@ -511,7 +522,7 @@ const ReportsOverview = () => {
 
                             <div className="mt-6">
                                 <h4 className="font-medium text-gray-700">Description</h4>
-                                <p className="mt-1 text-gray-600">{selectedReport.description}</p>
+                                <p className="text-gray-600 mt-1">{selectedReport.description}</p>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -534,34 +545,10 @@ const ReportsOverview = () => {
                                 {renderCrisisDetails(selectedReport)}
                             </div>
 
-                            <div className="h-48 bg-gray-200 mt-6 rounded flex items-center justify-center">
-                                <p className="text-gray-500">Map View</p>
-                            </div>
-
-                            <div className="flex justify-end mt-6 space-x-3">
+                            <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end">
                                 <button
-                                    className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                                    onClick={() => {
-                                        const updatedStatus = selectedReport.status === "active" ? "resolved" : "active";
-                                        setReports(
-                                            reports.map(r =>
-                                                r.id === selectedReport.id ? {...r, status: updatedStatus} : r
-                                            )
-                                        );
-                                        setSelectedReport({...selectedReport, status: updatedStatus});
-                                    }}
-                                >
-                                    {selectedReport.status === "active" ? "Mark as Resolved" : "Reactivate Alert"}
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                    onClick={() => alert("Edit functionality would go here")}
-                                >
-                                    Edit Report
-                                </button>
-                                <button
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
                                     onClick={closeModal}
+                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
                                 >
                                     Close
                                 </button>

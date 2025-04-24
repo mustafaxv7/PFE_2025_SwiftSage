@@ -9,44 +9,44 @@ const MapView = () => {
 
     useEffect(() => {
         const fetchReports = async () => {
-            // Simulated data - in a real app, this would be an API call
+            
             const data = [
                 {
                     id: 1,
-                    title: "Flood in Nairobi",
-                    location: "Nairobi, Kenya",
-                    coordinates: { lat: -1.286389, lng: 36.817223 },
+                    title: "Inondation à Alger",
+                    location: "Alger, Algérie",
+                    coordinates: { lat: 36.7538, lng: 3.0588 },
                     severity: "high",
                     type: "flood",
-                    date: "April 2, 2025",
-                    description: "Major flooding affecting downtown area with road closures and property damage.",
-                    affectedArea: "12 km²",
-                    evacuees: 230,
+                    date: "10 Mars, 2025",
+                    description: "Inondation majeure affectant le centre-ville avec fermetures de routes et dommages matériels.",
+                    affectedArea: "8 km²",
+                    evacuees: 180,
                     status: "active"
                 },
                 {
                     id: 2,
-                    title: "Earthquake in Mexico",
-                    location: "Mexico City, Mexico",
-                    coordinates: { lat: 19.4326, lng: -99.1332 },
+                    title: "Séisme à Béjaïa",
+                    location: "Béjaïa, Algérie",
+                    coordinates: { lat: 36.7509, lng: 5.0567 },
                     severity: "critical",
                     type: "earthquake",
-                    date: "March 15, 2025",
-                    description: "6.4 magnitude earthquake causing structural damage.",
-                    affectedArea: "50 km radius",
-                    injured: 42,
+                    date: "15 Mars, 2025",
+                    description: "Séisme de magnitude 5.8 causant des dommages structurels importants.",
+                    affectedArea: "40 km de rayon",
+                    injured: 35,
                     status: "active"
                 },
                 {
                     id: 3,
-                    title: "Forest Fire in California",
-                    location: "Mendocino County, CA",
-                    coordinates: { lat: 39.3076, lng: -123.7994 },
+                    title: "Incendie de forêt à Tizi Ouzou",
+                    location: "Tizi Ouzou, Algérie",
+                    coordinates: { lat: 36.7169, lng: 4.0476 },
                     severity: "high",
                     type: "forest_fire",
-                    date: "April 2, 2025",
-                    description: "Wildfire spreading across northern California forests.",
-                    burntArea: "1240 hectares",
+                    date: "2 Avril, 2025",
+                    description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
+                    burntArea: "950 hectares",
                     contained: "35%",
                     status: "active"
                 }
@@ -61,7 +61,7 @@ const MapView = () => {
     }, []);
 
     const filteredReports = reports.filter(report => {
-        if (crisisType !== "all" && report.type !== crisisType) return false;
+        if (crisisType !== "all" && report.type !== CrisisType) return false;
         if (severity !== "all" && report.severity !== severity) return false;
         if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
@@ -72,7 +72,7 @@ const MapView = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-800">Crisis Map Overview</h2>
-                    <p className="text-gray-600">Visualizing {filteredReports.length} active crisis reports</p>
+                    <p className="text-gray-600">Visualizing {filteredReports.length} active Crisis reports</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0 w-full md:w-auto">

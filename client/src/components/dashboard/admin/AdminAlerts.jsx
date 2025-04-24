@@ -7,24 +7,27 @@ const AdminAlerts = () => {
     const [alerts, setAlerts] = useState([
         {
             id: 1,
-            message: "Flood in Nairobi",
-            date: "March 10, 2025",
+            message: "Inondation à Alger",
+            date: "10 Mars, 2025",
+            time: "08:30",
             status: "Active",
             importance: "High",
             type: "info"
         },
         {
             id: 2,
-            message: "Earthquake in Mexico",
-            date: "March 15, 2025",
+            message: "Séisme à Béjaïa",
+            date: "15 Mars, 2025",
+            time: "14:22",
             status: "Resolved",
             importance: "Critical",
             type: "danger"
         },
         {
             id: 3,
-            message: "Forest Fire in California",
-            date: "April 2, 2025",
+            message: "Incendie de forêt à Tizi Ouzou",
+            date: "2 Avril, 2025",
+            time: "11:15",
             status: "Active",
             importance: "High",
             type: "warning"
@@ -34,13 +37,20 @@ const AdminAlerts = () => {
     const sendAlert = () => {
         if (!message.trim()) return;
 
+        const now = new Date();
+        
         const newAlert = {
             id: Date.now(),
             message: message,
-            date: new Date().toLocaleDateString('en-US', {
+            date: now.toLocaleDateString('fr-FR', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
+            }),
+            time: now.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
             }),
             status: "Active",
             importance: alertType === "danger" ? "Critical" : "High",
@@ -173,7 +183,7 @@ const AdminAlerts = () => {
                     <tr className="bg-gray-100">
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -189,7 +199,10 @@ const AdminAlerts = () => {
                             <tr key={alert.id} className="hover:bg-gray-50 transition-colors">
                                 <td className="px-4 py-4 whitespace-nowrap">{getAlertIcon(alert.type)}</td>
                                 <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{alert.message}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{alert.date}</td>
+                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <div>{alert.date}</div>
+                                    <div className="text-xs">{alert.time}</div>
+                                </td>
                                 <td className="px-4 py-4 whitespace-nowrap">{getStatusBadge(alert.status)}</td>
                                 <td className="px-4 py-4 whitespace-nowrap">{getImportanceBadge(alert.importance)}</td>
                                 <td className="px-4 py-4 whitespace-nowrap text-sm">
