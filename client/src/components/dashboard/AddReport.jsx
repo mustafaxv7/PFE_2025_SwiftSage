@@ -1,12 +1,10 @@
-
 import { useState, useCallback, useRef } from "react";
 import { MapPin, Upload, AlertTriangle, Search } from "lucide-react";
 import { GoogleMap, Marker, LoadScript, Autocomplete } from '@react-google-maps/api';
 
-
 const AddReport = () => {
-    // Reports table data
-    const [reportData, setReportData] = useState({
+    // Initial state for resetting the form
+    const initialReportData = {
         lat: "",
         lng: "",
         altitude: "",
@@ -15,9 +13,9 @@ const AddReport = () => {
         description: "",
         crisisType: "",
         image: null,
-    });
-    // Report_details table data
-    const [reportDetailsData, setReportDetailsData] = useState({
+    };
+
+    const initialReportDetailsData = {
         spreadRate: undefined,
         roadStatus: undefined,
         injuredNumber: undefined,
@@ -27,9 +25,9 @@ const AddReport = () => {
         burntArea: undefined,
         institutionType: undefined,
         evacuated: undefined,
-    });
-    // Additional data that might need special handling
-    const [additionalData, setAdditionalData] = useState({
+    };
+
+    const initialAdditionalData = {
         throttled: undefined,
         burnt: undefined,
         fractions: undefined,
@@ -38,7 +36,15 @@ const AddReport = () => {
         submergedDwelling: undefined,
         electrification: undefined,
         explosion: undefined,
-    });
+    };
+
+    // Reports table data
+    const [reportData, setReportData] = useState(initialReportData);
+    // Report_details table data
+    const [reportDetailsData, setReportDetailsData] = useState(initialReportDetailsData);
+    // Additional data that might need special handling
+    const [additionalData, setAdditionalData] = useState(initialAdditionalData);
+    
     const formData = {
         ...reportData,
         ...reportDetailsData,
@@ -79,8 +85,6 @@ const AddReport = () => {
     const [autocomplete, setAutocomplete] = useState(null);
     const searchInputRef = useRef(null);
 
-
-
     const [map, setMap] = useState(null);
     const containerStyle = {
         width: '100%',
@@ -110,6 +114,7 @@ const AddReport = () => {
             lng: lng.toFixed(6)
         }));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -129,11 +134,16 @@ const AddReport = () => {
 
             console.log('Report submitted successfully:', response.data);
 
-
         } catch (error) {
             console.error('Error submitting report:', error);
-
         }
+    };
+
+    // Function to handle cancel action
+    const handleCancel = () => {
+        setReportData(initialReportData);
+        setReportDetailsData(initialReportDetailsData);
+        setAdditionalData(initialAdditionalData);
     };
 
     return (
@@ -520,6 +530,7 @@ const AddReport = () => {
                         <button
                             type="button"
                             className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            onClick={handleCancel}
                         >
                             Cancel
                         </button>

@@ -10,102 +10,102 @@ const LandingPage = () => {
         <div className="bg-gray-900 text-white min-h-screen flex flex-col overflow-hidden">
             <Navbar/>
             <header
-                className="relative h-screen flex flex-col justify-center items-center text-center px-6 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
+                className="relative h-screen flex flex-col justify-center items-center text-center px-4 sm:px-6 bg-gradient-to-br from-gray-900 to-gray-800 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full opacity-20">
                     <div
-                        className="absolute top-20 left-10 w-40 h-40 bg-red-500 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
+                        className="absolute top-20 left-10 w-24 sm:w-40 h-24 sm:h-40 bg-red-500 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
                     <div
-                        className="absolute bottom-10 right-10 w-60 h-60 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+                        className="absolute bottom-10 right-10 w-32 sm:w-60 h-32 sm:h-60 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
                 </div>
-                <div className="max-w-4xl w-full relative z-10">
-                    <h1 className="text-3xl md:text-5xl font-extrabold mb-6 leading-tight animate-fadeIn">
+                <div className="max-w-4xl w-full relative z-10 px-2 sm:px-0">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold mb-4 sm:mb-6 leading-tight animate-fadeIn">
                         {t('hero.title')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Swift Sage</span>
                     </h1>
-                    <p className="text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-10">
+                    <p className="text-base sm:text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto mb-6 sm:mb-10">
                         {t('hero.subtitle')}
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                    <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mt-4 sm:mt-6 px-4 sm:px-0">
                         <a href="#features"
-                           className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-lg font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center">
+                           className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-base sm:text-lg font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center">
                             Explore Features <FiArrowRight className="ml-2"/>
                         </a>
                         <a href="#contact"
-                           className="px-8 py-4 border-2 border-red-500 text-white text-lg font-semibold rounded-lg transition-all duration-300 hover:bg-red-500/10 hover:shadow-lg flex items-center justify-center">
+                           className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-red-500 text-white text-base sm:text-lg font-semibold rounded-lg transition-all duration-300 hover:bg-red-500/10 hover:shadow-lg flex items-center justify-center">
                             Contact Us
                         </a>
                     </div>
                 </div>
-                <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-                    <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
+                <div className="absolute bottom-6 sm:bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                    <div className="w-5 sm:w-6 h-8 sm:h-10 border-2 border-gray-400 rounded-full flex justify-center">
                         <div className="w-1 h-2 bg-gray-400 rounded-full mt-2"></div>
                     </div>
                 </div>
             </header>
-            <section id="about" className="py-24 px-6 bg-gray-900 relative">
+            <section id="about" className="py-16 sm:py-24 px-4 sm:px-6 bg-gray-900 relative">
                 <div className="max-w-6xl mx-auto">
-                    <div className="flex flex-col lg:flex-row items-center gap-12">
+                    <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
                         <div className="lg:w-1/2">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8">
                                 <span
                                     className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Our Mission</span>
                             </h2>
-                            <p className="text-xl text-gray-300 leading-relaxed mb-6">
+                            <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-4 sm:mb-6">
                                 At Swift Sage, we're revolutionizing crisis management through innovative technology and
                                 community collaboration.
                             </p>
-                            <p className="text-lg text-gray-400 leading-relaxed mb-8">
+                            <p className="text-base sm:text-lg text-gray-400 leading-relaxed mb-6 sm:mb-8">
                                 Our platform integrates real-time data collection, AI-powered analytics, and
                                 crowdsourced intelligence to provide actionable insights during critical situations.
                             </p>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-gray-800/50 p-4 rounded-lg border-l-4 border-red-500">
-                                    <h3 className="font-bold text-lg mb-2">100K+</h3>
-                                    <p className="text-gray-400">Reports Processed</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div className="bg-gray-800/50 p-3 sm:p-4 rounded-lg border-l-4 border-red-500">
+                                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2">100K+</h3>
+                                    <p className="text-gray-400 text-sm sm:text-base">Reports Processed</p>
                                 </div>
-                                <div className="bg-gray-800/50 p-4 rounded-lg border-l-4 border-blue-500">
-                                    <h3 className="font-bold text-lg mb-2">24/7</h3>
-                                    <p className="text-gray-400">Real-time Monitoring</p>
+                                <div className="bg-gray-800/50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-500">
+                                    <h3 className="font-bold text-base sm:text-lg mb-1 sm:mb-2">24/7</h3>
+                                    <p className="text-gray-400 text-sm sm:text-base">Real-time Monitoring</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="lg:w-1/2 relative mt-10 lg:mt-0">
+                        <div className="lg:w-1/2 relative mt-8 sm:mt-10 lg:mt-0 w-full max-w-md mx-auto lg:max-w-none">
                             <div
                                 className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-1 shadow-2xl">
                                 <div className="bg-gray-900 rounded-xl overflow-hidden">
-                                    <div className="h-8 bg-gray-800 flex items-center px-4">
-                                        <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
-                                        <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
-                                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <div className="h-6 sm:h-8 bg-gray-800 flex items-center px-3 sm:px-4">
+                                        <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-red-500 mr-2"></div>
+                                        <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-yellow-500 mr-2"></div>
+                                        <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-green-500"></div>
                                     </div>
-                                    <div className="p-6">
-                                        <div className="bg-gray-800 rounded-lg p-4 mb-4">
-                                            <div className="flex items-center mb-2">
+                                    <div className="p-4 sm:p-6">
+                                        <div className="bg-gray-800 rounded-lg p-3 sm:p-4 mb-3 sm:mb-4">
+                                            <div className="flex items-center mb-1 sm:mb-2">
                                                 <div
-                                                    className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center mr-3">
-                                                    <FiAlertTriangle className="text-red-500"/>
+                                                    className="w-6 sm:w-8 h-6 sm:h-8 bg-red-500/20 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+                                                    <FiAlertTriangle className="text-red-500" size={window.innerWidth < 640 ? 14 : 18} />
                                                 </div>
                                                 <div>
-                                                    <h4 className="font-medium">Crisis Alert System</h4>
-                                                    <p className="text-sm text-gray-400">Active monitoring dashboard</p>
+                                                    <h4 className="font-medium text-sm sm:text-base">Crisis Alert System</h4>
+                                                    <p className="text-xs sm:text-sm text-gray-400">Active monitoring dashboard</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="bg-gray-800 rounded-lg p-4">
+                                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                            <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
                                                 <div
-                                                    className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center mb-3">
-                                                    <FiUsers className="text-blue-500"/>
+                                                    className="w-8 sm:w-10 h-8 sm:h-10 bg-blue-500/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+                                                    <FiUsers className="text-blue-500" size={window.innerWidth < 640 ? 14 : 18} />
                                                 </div>
-                                                <h4 className="font-medium mb-1">Crowdsourcing</h4>
-                                                <p className="text-sm text-gray-400">Community-powered data</p>
+                                                <h4 className="font-medium mb-1 text-sm sm:text-base">Crowdsourcing</h4>
+                                                <p className="text-xs sm:text-sm text-gray-400">Community-powered data</p>
                                             </div>
-                                            <div className="bg-gray-800 rounded-lg p-4">
+                                            <div className="bg-gray-800 rounded-lg p-3 sm:p-4">
                                                 <div
-                                                    className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center mb-3">
-                                                    <FiBarChart2 className="text-purple-500"/>
+                                                    className="w-8 sm:w-10 h-8 sm:h-10 bg-purple-500/20 rounded-full flex items-center justify-center mb-2 sm:mb-3">
+                                                    <FiBarChart2 className="text-purple-500" size={window.innerWidth < 640 ? 14 : 18} />
                                                 </div>
-                                                <h4 className="font-medium mb-1">Analytics</h4>
-                                                <p className="text-sm text-gray-400">Real-time insights</p>
+                                                <h4 className="font-medium mb-1 text-sm sm:text-base">Analytics</h4>
+                                                <p className="text-xs sm:text-sm text-gray-400">Real-time insights</p>
                                             </div>
                                         </div>
                                     </div>
@@ -115,78 +115,78 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
-            <section id="features" className="py-24 px-6 bg-gray-800 relative">
+            <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-gray-800 relative">
                 <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                    <div className="text-center mb-10 sm:mb-16">
+                        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Powerful Features</span>
                         </h2>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                        <p className="text-lg sm:text-xl text-gray-300 max-w-3xl mx-auto">
                             Designed for efficiency, accuracy, and rapid response in critical situations
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
                         {[
                             {
                                 title: "Real-Time Crisis Tracking",
                                 desc: "Monitor and report crises as they happen with our live alert system.",
-                                icon: <FiAlertTriangle className="text-3xl text-red-500"/>,
+                                icon: <FiAlertTriangle className="text-2xl sm:text-3xl text-red-500"/>,
                                 color: "red"
                             },
                             {
                                 title: "Crowdsourced Intelligence",
                                 desc: "Leverage community reports to build comprehensive situational awareness.",
-                                icon: <FiUsers className="text-3xl text-blue-500"/>,
+                                icon: <FiUsers className="text-2xl sm:text-3xl text-blue-500"/>,
                                 color: "blue"
                             },
                             {
                                 title: "Interactive Mapping",
                                 desc: "Visualize crisis data geographically for better strategic planning.",
-                                icon: <FiMap className="text-3xl text-green-500"/>,
+                                icon: <FiMap className="text-2xl sm:text-3xl text-green-500"/>,
                                 color: "green"
                             },
                             {
                                 title: "AI-Powered Analytics",
                                 desc: "Our algorithms process data to predict trends and recommend actions.",
-                                icon: <FiBarChart2 className="text-3xl text-purple-500"/>,
+                                icon: <FiBarChart2 className="text-2xl sm:text-3xl text-purple-500"/>,
                                 color: "purple"
                             }
                         ].map((feature, index) => (
                             <div
                                 key={index}
-                                className={`group relative p-8 bg-gray-700/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-${feature.color}-500 overflow-hidden`}
+                                className={`group relative p-6 sm:p-8 bg-gray-700/50 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-${feature.color}-500 overflow-hidden`}
                             >
                                 <div
                                     className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-${feature.color}-500 to-${feature.color}-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <div
-                                    className="w-14 h-14 mb-6 rounded-xl bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-500/10 flex items-center justify-center">
+                                    className="w-12 h-12 sm:w-14 sm:h-14 mb-4 sm:mb-6 rounded-xl bg-gradient-to-br from-${feature.color}-500/20 to-${feature.color}-500/10 flex items-center justify-center">
                                     {feature.icon}
                                 </div>
-                                <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                                <p className="text-gray-400">{feature.desc}</p>
+                                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">{feature.title}</h3>
+                                <p className="text-sm sm:text-base text-gray-400">{feature.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            <section className="py-20 px-6 bg-gradient-to-br from-gray-900 to-gray-800">
+            <section className="py-14 sm:py-20 px-4 sm:px-6 bg-gradient-to-br from-gray-900 to-gray-800">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-2xl md:text-2xl font-bold mb-6">Ready to Transform Your Crisis Response?</h2>
-                    <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Ready to Transform Your Crisis Response?</h2>
+                    <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-10 max-w-3xl mx-auto">
                         Join organizations worldwide who trust Swift Sage for their critical decision-making needs.
                     </p>
-                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
                         <a
                             href="#contact"
-                            className="px-8 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-lg font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center"
+                            className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-red-600 to-red-500 text-white text-base sm:text-lg font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl hover:scale-[1.02] flex items-center justify-center"
                         >
                             Get Started Today
                         </a>
                         <a
                             href="#features"
-                            className="px-8 py-4 border-2 border-gray-600 text-white text-lg font-semibold rounded-lg transition-all duration-300 hover:bg-gray-700/30 hover:shadow-lg flex items-center justify-center"
+                            className="px-6 sm:px-8 py-3 sm:py-4 border-2 border-gray-600 text-white text-base sm:text-lg font-semibold rounded-lg transition-all duration-300 hover:bg-gray-700/30 hover:shadow-lg flex items-center justify-center"
                         >
                             Learn More
                         </a>
@@ -194,51 +194,51 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            <section id="contact" className="py-24 px-6 bg-gray-900">
+            <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6 bg-gray-900">
                 <div className="max-w-6xl mx-auto">
-                    <div className="flex flex-col lg:flex-row gap-16">
+                    <div className="flex flex-col lg:flex-row gap-8 sm:gap-16">
                         <div className="lg:w-1/2">
-                            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8">
                                 <span
                                     className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-300">Get In Touch</span>
                             </h2>
-                            <p className="text-xl text-gray-300 mb-8">
+                            <p className="text-lg sm:text-xl text-gray-300 mb-6 sm:mb-8">
                                 Have questions about our platform or interested in a demo? Our team is ready to assist
                                 you.
                             </p>
-                            <div className="space-y-6">
+                            <div className="space-y-4 sm:space-y-6">
                                 <div className="flex items-start">
                                     <div
-                                        className="w-12 h-12 bg-red-500/10 rounded-lg flex items-center justify-center mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 bg-red-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-red-500"
                                              fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg mb-1">Email Us</h4>
-                                        <p className="text-gray-400">contact@swiftsage.com</p>
+                                        <h4 className="font-bold text-base sm:text-lg mb-1">Email Us</h4>
+                                        <p className="text-sm sm:text-base text-gray-400">contact@swiftsage.com</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
                                     <div
-                                        className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500"
                                              fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                   d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg mb-1">Call Us</h4>
-                                        <p className="text-gray-400">(+213) 0558720000</p>
+                                        <h4 className="font-bold text-base sm:text-lg mb-1">Call Us</h4>
+                                        <p className="text-sm sm:text-base text-gray-400">(+213) 0558720000</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
                                     <div
-                                        className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mr-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-500"
+                                        className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500/10 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-green-500"
                                              fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                                                   d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
@@ -247,48 +247,48 @@ const LandingPage = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-lg mb-1">Visit Us</h4>
-                                        <p className="text-gray-400">Chlef Center</p>
+                                        <h4 className="font-bold text-base sm:text-lg mb-1">Visit Us</h4>
+                                        <p className="text-sm sm:text-base text-gray-400">Chlef Center</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="lg:w-1/2">
-                            <form className="bg-gray-800/50 rounded-xl p-8 shadow-lg border border-gray-700">
-                                <h3 className="text-2xl font-bold mb-6">Send Us a Message</h3>
-                                <div className="space-y-5">
+                        <div className="lg:w-1/2 mt-8 lg:mt-0">
+                            <form className="bg-gray-800/50 rounded-xl p-6 sm:p-8 shadow-lg border border-gray-700">
+                                <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Send Us a Message</h3>
+                                <div className="space-y-4 sm:space-y-5">
                                     <div>
-                                        <label htmlFor="name" className="block text-gray-300 mb-2">Your Name</label>
+                                        <label htmlFor="name" className="block text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">Your Name</label>
                                         <input
                                             type="text"
                                             id="name"
-                                            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-sm sm:text-base"
                                             placeholder="John Doe"
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="email" className="block text-gray-300 mb-2">Email
+                                        <label htmlFor="email" className="block text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">Email
                                             Address</label>
                                         <input
                                             type="email"
                                             id="email"
-                                            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-sm sm:text-base"
                                             placeholder="you@example.com"
                                         />
                                     </div>
                                     <div>
-                                        <label htmlFor="message" className="block text-gray-300 mb-2">Your
+                                        <label htmlFor="message" className="block text-gray-300 mb-1 sm:mb-2 text-sm sm:text-base">Your
                                             Message</label>
                                         <textarea
                                             id="message"
                                             rows="4"
-                                            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all text-sm sm:text-base"
                                             placeholder="Tell us about your needs..."
                                         ></textarea>
                                     </div>
                                     <button
                                         type="submit"
-                                        className="w-full px-6 py-4 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl"
+                                        className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 hover:from-red-500 hover:to-red-400 hover:shadow-xl text-sm sm:text-base"
                                     >
                                         Send Message
                                     </button>

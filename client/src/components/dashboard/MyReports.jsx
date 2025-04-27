@@ -1,8 +1,8 @@
-import {useState} from "react";
-import {Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown} from "lucide-react";
+import { useState } from "react";
+import { Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown, Save } from "lucide-react";
 
 const MyReports = () => {
-    const reports = [
+    const initialReports = [
         {
             id: 1,
             title: "Inondation à Alger",
@@ -62,218 +62,149 @@ const MyReports = () => {
         }
     ];
 
+    const [reports, setReports] = useState(initialReports);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [filter, setFilter] = useState({
-        type: "all",
-        status: "all"
-    });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editedReport, setEditedReport] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
 
     const handleReportClick = (report) => {
         setSelectedReport(report);
         setIsModalOpen(true);
+        setIsEditing(false);
+        setEditedReport(null);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setIsEditing(false);
+        setEditedReport(null);
+    };
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+        setEditedReport({ ...selectedReport });
+    };
+
+    const handleSaveEdit = () => {
+        const updatedReports = reports.map(report =>
+            report.id === editedReport.id ? editedReport : report
+        );
+        setReports(updatedReports);
+        setSelectedReport(editedReport);
+        setIsEditing(false);
+        alert("Report updated successfully!");
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setEditedReport(null);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditedReport(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const getStatusBadge = (status) => {
         switch (status) {
             case "active":
-                return (
-                    <span
-                        className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
-            <span className="w-2 h-2 bg-red-500 rounded-full mr-1.5"></span>
-            Active
-          </span>
-                );
+                return <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"><span className="w-2 h-2 bg-red-500 rounded-full mr-1.5"></span>Active</span>;
             case "resolved":
-                return (
-                    <span
-                        className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
-            <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
-            Resolved
-          </span>
-                );
+                return <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>Resolved</span>;
             case "in_progress":
-                return (
-                    <span
-                        className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
-            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1.5"></span>
-            In Progress
-          </span>
-                );
+                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"><span className="w-2 h-2 bg-yellow-500 rounded-full mr-1.5"></span>In Progress</span>;
             default:
-                return (
-                    <span
-                        className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center">
-            <span className="w-2 h-2 bg-gray-500 rounded-full mr-1.5"></span>
-            Unknown
-          </span>
-                );
+                return <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center"><span className="w-2 h-2 bg-gray-500 rounded-full mr-1.5"></span>Unknown</span>;
         }
     };
 
     const getImportanceBadge = (importance) => {
         switch (importance) {
             case "critical":
-                return (
-                    <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Critical
-          </span>
-                );
+                return <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Critical</span>;
             case "high":
-                return (
-                    <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            High
-          </span>
-                );
+                return <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded-full">High</span>;
             case "medium":
-                return (
-                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Medium
-          </span>
-                );
+                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Medium</span>;
             case "low":
-                return (
-                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Low
-          </span>
-                );
+                return <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Low</span>;
             default:
-                return (
-                    <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-            Unknown
-          </span>
-                );
+                return <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full">Unknown</span>;
         }
     };
 
     const getCrisisTypeIcon = (type) => {
-        switch (type) {
-            case "earthquake":
-                return <AlertCircle className="text-red-500" />;
-            case "flood":
-                return <AlertCircle className="text-blue-500" />;
-            case "forest_fire":
-                return <AlertCircle className="text-orange-500" />;
-            default:
-                return <AlertCircle className="text-gray-500" />;
-        }
+        return <AlertCircle className="text-red-500" />;
     };
 
     const filteredReports = reports.filter(report => {
-        // Filter by search query
-        if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return false;
-        }
-        
-        // Filter by crisis type
-        if (filter.type !== "all" && report.crisisType !== filter.type) {
-            return false;
-        }
-        
-        // Filter by status
-        if (filter.status !== "all" && report.status !== filter.status) {
-            return false;
-        }
-        
-        return true;
+        return searchQuery === "" || report.title.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
     return (
-        <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">My Reports</h2>
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+        <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">My Reports</h2>
+                <div className="relative w-full sm:w-auto">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input
                         type="text"
                         placeholder="Search reports..."
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
             </div>
 
-            <div className="flex gap-2 mb-6">
-                <div className="relative">
-                    <button
-                        className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 font-medium flex items-center"
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {filteredReports.map((report) => (
+                    <div
+                        key={report.id}
+                        className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+                        onClick={() => handleReportClick(report)}
                     >
-                        Crisis Type <ChevronDown size={16} className="ml-2" />
-                    </button>
-                </div>
-                <div className="relative">
-                    <button
-                        className="px-4 py-2 bg-gray-100 rounded-md text-gray-700 font-medium flex items-center"
-                    >
-                        Status <ChevronDown size={16} className="ml-2" />
-                    </button>
-                </div>
-            </div>
-
-            {filteredReports.length === 0 ? (
-                <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <FileText size={40} className="mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500 font-medium">No reports found</p>
-                    <p className="text-sm text-gray-400 mt-1">Try adjusting your filters or create a new report</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredReports.map((report) => (
-                        <div
-                            key={report.id}
-                            className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
-                            onClick={() => handleReportClick(report)}
-                        >
-                            <div className="p-4">
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center">
-                                        {getCrisisTypeIcon(report.crisisType)}
-                                        <h3 className="font-medium ml-2">{report.title}</h3>
-                                    </div>
-                                    {getStatusBadge(report.status)}
+                        <div className="p-3 sm:p-4">
+                            <div className="flex items-start justify-between">
+                                <div className="flex items-center">
+                                    {getCrisisTypeIcon(report.crisisType)}
+                                    <h3 className="font-medium text-sm sm:text-base ml-2 line-clamp-1">{report.title}</h3>
                                 </div>
-                                <div className="mt-3 text-sm text-gray-600 line-clamp-2">
-                                    {report.description}
-                                </div>
-                                <div className="mt-4 flex items-center text-xs text-gray-500">
-                                    <MapPin size={14} className="mr-1" />
-                                    {report.location}
-                                </div>
-                                <div className="mt-2 flex items-center text-xs text-gray-500">
-                                    <Calendar size={14} className="mr-1" />
-                                    {report.date}
-                                </div>
-                                <div className="mt-4 flex justify-between items-center">
-                                    {getImportanceBadge(report.importance)}
-                                    <span className="text-xs text-gray-500">
-                                        Submitted by: {report.submittedBy}
-                                    </span>
-                                </div>
+                                {getStatusBadge(report.status)}
+                            </div>
+                            <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 line-clamp-2">{report.description}</div>
+                            <div className="mt-3 sm:mt-4 flex items-center text-xs text-gray-500">
+                                <MapPin size={12} className="mr-1" />
+                                <span className="line-clamp-1">{report.location}</span>
+                            </div>
+                            <div className="mt-1 sm:mt-2 flex items-center text-xs text-gray-500">
+                                <Calendar size={12} className="mr-1" />
+                                {report.date}
+                            </div>
+                            <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                                {getImportanceBadge(report.importance)}
+                                <span className="text-xs text-gray-500 line-clamp-1">Submitted by: {report.submittedBy}</span>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
-
+                    </div>
+                ))}
+            </div>
             {isModalOpen && selectedReport && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                             <h3 className="text-xl font-bold text-gray-800">Report Details</h3>
-                            <button
-                                onClick={closeModal}
-                                className="p-1 rounded-full hover:bg-gray-100"
-                            >
-                                <X size={20} />
-                            </button>
+                            <button onClick={closeModal} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
                         </div>
+
                         <div className="p-6">
+
                             <div className="flex justify-between items-start mb-4">
                                 <div>
                                     <h2 className="text-2xl font-bold text-gray-800 flex items-center">
@@ -290,89 +221,205 @@ const MyReports = () => {
                                     {getImportanceBadge(selectedReport.importance)}
                                 </div>
                             </div>
-                            
+
+
                             <div className="mt-6">
                                 <h4 className="text-lg font-medium text-gray-800 mb-2">Description</h4>
-                                <p className="text-gray-600">{selectedReport.description}</p>
+                                {isEditing ? (
+                                    <textarea
+                                        name="description"
+                                        value={editedReport.description}
+                                        onChange={handleInputChange}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                        rows="4"
+                                    />
+                                ) : (
+                                    <p className="text-gray-600">{selectedReport.description}</p>
+                                )}
                             </div>
-                            
+
                             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <h4 className="text-lg font-medium text-gray-800 mb-2">Details</h4>
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <div className="grid grid-cols-2 gap-y-2">
-                                            <div className="text-sm text-gray-500">Date Reported:</div>
-                                            <div className="text-sm font-medium">{selectedReport.date}</div>
-                                            
-                                            <div className="text-sm text-gray-500">Crisis Type:</div>
-                                            <div className="text-sm font-medium capitalize">{selectedReport.crisisType.replace('_', ' ')}</div>
-                                            
-                                            <div className="text-sm text-gray-500">Road Status:</div>
-                                            <div className="text-sm font-medium capitalize">{selectedReport.roadStatus.replace('_', ' ')}</div>
-                                            
-                                            <div className="text-sm text-gray-500">Submitted By:</div>
-                                            <div className="text-sm font-medium">{selectedReport.submittedBy}</div>
+                                    <div className="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-2">
+                                        <div className="text-sm text-gray-500">Date Reported:</div>
+                                        <div className="text-sm font-medium">
+                                            {selectedReport.date.replace('_', ' ')}
+                                        </div>
+
+                                        <div className="text-sm text-gray-500">Crisis Type:</div>
+                                        <div className="text-sm font-medium capitalize">
+                                            {selectedReport.crisisType.replace('_', ' ')}
+                                        </div>
+
+                                        <div className="text-sm text-gray-500">Road Status:</div>
+                                        <div className="text-sm font-medium">
+                                            {isEditing ? (
+                                                <select
+                                                    name="roadStatus"
+                                                    value={editedReport.roadStatus}
+                                                    onChange={handleInputChange}
+                                                    className="w-full p-1 border border-gray-300 rounded-md"
+                                                >
+                                                    <option value="clear">Clear</option>
+                                                    <option value="blocked">Blocked</option>
+                                                    <option value="partially_blocked">Partially Blocked</option>
+                                                    <option value="flooded">Flooded</option>
+                                                    <option value="smoke_covered">Smoke Covered</option>
+                                                    <option value="inaccessible">Inaccessible</option>
+                                                    <option value="hazardous">Hazardous</option>
+                                                </select>
+                                            ) : (
+                                                selectedReport.roadStatus.replace('_', ' ')
+                                            )}
+                                        </div>
+
+                                        <div className="text-sm text-gray-500">Submitted By:</div>
+                                        <div className="text-sm font-medium">
+                                            {selectedReport.submittedBy.replace('_', ' ')}
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <h4 className="text-lg font-medium text-gray-800 mb-2">Impact</h4>
-                                    <div className="bg-gray-50 p-4 rounded-lg">
-                                        <div className="grid grid-cols-2 gap-y-2">
-                                            {selectedReport.missing && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Missing Persons:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.missing}</div>
-                                                </>
-                                            )}
-                                            
-                                            {selectedReport.trapped && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Trapped Persons:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.trapped}</div>
-                                                </>
-                                            )}
-                                            
-                                            {selectedReport.submergedDwelling && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Submerged Dwellings:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.submergedDwelling}</div>
-                                                </>
-                                            )}
-                                            
-                                            {selectedReport.injuredNumber && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Injured Persons:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.injuredNumber}</div>
-                                                </>
-                                            )}
-                                            
-                                            {selectedReport.burntArea && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Burnt Area:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.burntArea} hectares</div>
-                                                </>
-                                            )}
-                                            
-                                            {selectedReport.evacuated && (
-                                                <>
-                                                    <div className="text-sm text-gray-500">Evacuated Persons:</div>
-                                                    <div className="text-sm font-medium">{selectedReport.evacuated}</div>
-                                                </>
-                                            )}
-                                        </div>
+                                    <div className="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-2">
+                                        {selectedReport.missing !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Missing Persons:</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            name="missing"
+                                                            value={editedReport.missing}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        />
+                                                    ) : (
+                                                        selectedReport.missing
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedReport.trapped !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Trapped Persons:</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            name="trapped"
+                                                            value={editedReport.trapped}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        />
+                                                    ) : (
+                                                        selectedReport.trapped
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedReport.submergedDwelling !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Submerged Dwellings:</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            name="submergedDwelling"
+                                                            value={editedReport.submergedDwelling}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        />
+                                                    ) : (
+                                                        selectedReport.submergedDwelling
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedReport.injuredNumber !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Injured People:</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            name="injuredNumber"
+                                                            value={editedReport.injuredNumber}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        />
+                                                    ) : (
+                                                        selectedReport.injuredNumber
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedReport.burntArea !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Burnt Area (hectares):</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="number"
+                                                            name="burntArea"
+                                                            value={editedReport.burntArea}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        />
+                                                    ) : (
+                                                        selectedReport.burntArea
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                        {selectedReport.electrification !== undefined && (
+                                            <>
+                                                <div className="text-sm text-gray-500">Electrification Status:</div>
+                                                <div className="text-sm font-medium">
+                                                    {isEditing ? (
+                                                        <select
+                                                            name="electrification"
+                                                            value={editedReport.electrification}
+                                                            onChange={handleInputChange}
+                                                            className="w-full p-1 border border-gray-300 rounded-md"
+                                                        >
+                                                            <option value="active">Active</option>
+                                                            <option value="inactive">Inactive</option>
+                                                            <option value="partial">Partial</option>
+                                                            <option value="dangerous">Dangerous</option>
+                                                            <option value="unknown">Unknown</option>
+                                                        </select>
+                                                    ) : (
+                                                        selectedReport.electrification
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                            
                             <div className="mt-6 flex justify-end gap-3">
-                                <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
-                                    <Flag size={16} className="inline mr-1" /> Flag Report
-                                </button>
-                                <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                                    <Edit size={16} className="inline mr-1" /> Edit Report
-                                </button>
+                                {isEditing ? (
+                                    <>
+                                        <button onClick={handleSaveEdit} className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+                                            <Save size={16} className="inline mr-1" /> Save Changes
+                                        </button>
+                                        <button onClick={handleCancelEdit} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition">
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
+                                            <Flag size={16} className="inline mr-1" /> Flag Report
+                                        </button>
+                                        <button onClick={handleEditClick} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                            <Edit size={16} className="inline mr-1" /> Edit Report
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

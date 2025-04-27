@@ -1,11 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Search, MapPin, ChevronDown } from "lucide-react";
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
+
+const mapContainerStyle = {
+    width: '100%',
+    height: '400px'
+};
+
+const center = {
+    lat: 36.7538, // Center of Algeria
+    lng: 3.0588
+};
 
 const MapView = () => {
     const [reports, setReports] = useState([]);
     const [crisisType, setCrisisType] = useState("all");
     const [severity, setSeverity] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
+    const [mapCenter, setMapCenter] = useState(center);
+    const [mapZoom, setMapZoom] = useState(6);
+    const [selectedReport, setSelectedReport] = useState(null);
+    
+    // Load Google Maps API
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: '' // You'll need to add your API key here
+    });
+    
+    const mapRef = useRef(null);
+    
+    const onMapLoad = useCallback((map) => {
+        mapRef.current = map;
+    }, []);
 
     useEffect(() => {
         const fetchReports = async () => {
@@ -61,11 +87,26 @@ const MapView = () => {
     }, []);
 
     const filteredReports = reports.filter(report => {
-        if (crisisType !== "all" && report.type !== CrisisType) return false;
+        if (crisisType !== "all" && report.type !== crisisType) return false;
         if (severity !== "all" && report.severity !== severity) return false;
         if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
     });
+    
+    // Get marker icon based on crisis type
+    const getMarkerColor = (type) => {
+        switch(type) {
+            case "flood":
+                return "#3b82f6"; // blue
+            case "earthquake":
+                return "#f59e0b"; // orange
+            case "forest_fire":
+            case "industrial_fire":
+                return "#ef4444"; // red
+            default:
+                return "#10b981"; // green
+        }
+    };
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
@@ -128,17 +169,20 @@ const MapView = () => {
             </div>
 
 
-            {/*
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-                <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+                {isLoaded ? (
                     <GoogleMap
                         mapContainerStyle={mapContainerStyle}
                         center={mapCenter}
                         zoom={mapZoom}
+                        onLoad={onMapLoad}
                         options={{
                             streetViewControl: false,
                             mapTypeControl: false,
-                            fullscreenControl: false
+                            fullscreenControl: false,
+                            mapTypeControlOptions: {
+                                position: window.google?.maps?.ControlPosition?.TOP_RIGHT
+                            }
                         }}
                     >
                         {filteredReports.map(report => (
@@ -146,7 +190,7 @@ const MapView = () => {
                                 key={report.id}
                                 position={report.coordinates}
                                 icon={{
-                                    path: window.google.maps.SymbolPath.CIRCLE,
+                                    path: window.google?.maps?.SymbolPath?.CIRCLE,
                                     fillColor: getMarkerColor(report.type),
                                     fillOpacity: 1,
                                     strokeWeight: 0,
@@ -180,9 +224,12 @@ const MapView = () => {
                             </InfoWindow>
                         )}
                     </GoogleMap>
-                </LoadScript>
+                ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg" style={mapContainerStyle}>
+                        <p className="text-gray-500">Loading map...</p>
+                    </div>
+                )}
             </div>
-            */}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {filteredReports.slice(0, 3).map(report => (
