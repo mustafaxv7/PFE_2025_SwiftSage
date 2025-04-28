@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { MapPin, Upload, AlertTriangle, Search } from "lucide-react";
-import { GoogleMap, Marker, LoadScript, Autocomplete } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 
 const AddReport = () => {
     // Initial state for resetting the form
@@ -81,6 +81,21 @@ const AddReport = () => {
                 return <AlertTriangle className="text-yellow-500" />;
         }
     };
+    
+    // Get marker color based on crisis type (matching MapView.jsx)
+    const getMarkerColor = (type) => {
+        switch(type) {
+            case "flood":
+                return "#3b82f6"; // blue
+            case "earthquake":
+                return "#f59e0b"; // orange
+            case "forest_fire":
+            case "industrial_fire":
+                return "#ef4444"; // red
+            default:
+                return "#10b981"; // green
+        }
+    };
 
     const [autocomplete, setAutocomplete] = useState(null);
     const searchInputRef = useRef(null);
@@ -92,9 +107,15 @@ const AddReport = () => {
     };
 
     const center = {
-        lat: reportData.lat ? parseFloat(reportData.lat) : 53.54,
-        lng: reportData.lng ? parseFloat(reportData.lng) : 10
+        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538, // Center of Algeria
+        lng: reportData.lng ? parseFloat(reportData.lng) : 3.0588
     };
+    
+    // Load Google Maps API
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+    });
 
     const onLoad = useCallback((map) => {
         setMap(map);
@@ -158,44 +179,49 @@ const AddReport = () => {
             <form onSubmit={handleSubmit}>
                 <div className="p-6">
                     <div className="w-full h-64 bg-gray-100 rounded-lg mb-6 overflow-hidden">
-                        <LoadScript
-                            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
-                            loadingElement={<div className="flex items-center justify-center h-full">
-                                <MapPin size={32} className="mx-auto text-gray-400 mb-2" />
-                                <p className="text-gray-500">Loading Map...</p>
-                            </div>}
-                        >
-                            <GoogleMap
-                                mapContainerStyle={containerStyle}
-                                center={center}
-                                zoom={9}
-                                onClick={handleMapClick}
-                                onLoad={onLoad}
-                                onUnmount={onUnmount}
-                                options={{
-                                    streetViewControl: false,
-                                    mapTypeControl: true,
-                                    fullscreenControl: true
-                                }}
-                            >
-                                {(reportData.lat && reportData.lng) && (
-                                    <Marker
-                                        position={{
-                                            lat: parseFloat(reportData.lat),
-                                            lng: parseFloat(reportData.lng)
-                                        }}
-                                        icon={{
-                                            path: window.google.maps.SymbolPath.CIRCLE,
-                                            fillColor: 'grey',
-                                            fillOpacity: 1,
-                                            strokeColor: 'green',
-                                            strokeWeight: 2,
-                                            scale: 8
-                                        }}
-                                    />
-                                )}
-                            </GoogleMap>
-                        </LoadScript>
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full">
+                            {isLoaded ? (
+                                <GoogleMap
+                                    mapContainerStyle={containerStyle}
+                                    center={center}
+                                    zoom={6}
+                                    onClick={handleMapClick}
+                                    onLoad={onLoad}
+                                    onUnmount={onUnmount}
+                                    options={{
+                                        streetViewControl: false,
+                                        mapTypeControl: false,
+                                        fullscreenControl: false,
+                                        mapTypeControlOptions: {
+                                            position: window.google?.maps?.ControlPosition?.TOP_RIGHT
+                                        }
+                                    }}
+                                >
+                                    {(reportData.lat && reportData.lng) && (
+                                        <Marker
+                                            position={{
+                                                lat: parseFloat(reportData.lat),
+                                                lng: parseFloat(reportData.lng)
+                                            }}
+                                            icon={{
+                                                path: window.google?.maps?.SymbolPath?.CIRCLE,
+                                                fillColor: getMarkerColor(reportData.crisisType || 'default'),
+                                                fillOpacity: 1,
+                                                strokeWeight: 0,
+                                                scale: 8
+                                            }}
+                                        />
+                                    )}
+                                </GoogleMap>
+                            ) : (
+                                <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg" style={containerStyle}>
+                                    <div className="text-center">
+                                        <MapPin size={32} className="mx-auto text-gray-400 mb-2" />
+                                        <p className="text-gray-500">Loading map...</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
