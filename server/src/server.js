@@ -26,7 +26,7 @@ app.use(helmet({contentSecurityPolicy: false})); // helps secure the app by sett
 app.use(morgan("dev")); // log the requests
 app.use(cors()); // allows requests from diffrent domains
 app.use('/auth',authRoutes);
-app.use('/api',authMiddleware,reportRoutes); // protected routes
+app.use('/api/reports',authMiddleware,reportRoutes); // protected routes
 app.get('/api/users',authMiddleware,authUsers); 
 app.get('/', (req,res)=>{
     res.sendFile(path.join(__dirname, 'client','dist','index.html'));
