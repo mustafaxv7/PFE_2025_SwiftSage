@@ -1,13 +1,14 @@
-import AWS from 'aws-sdk';
-import dotenv from 'dotenv';
+import { S3Client } from "@aws-sdk/client-s3";
+import { fromEnv } from "@aws-sdk/credential-provider-env";
+import { config as dotenvConfig } from "dotenv";
 
+dotenvConfig();
 
-dotenv.config();
-const spacesEndpoint = new AWS.Endpoint(process.env.SPACES_ENDPOINT);
-const s3 = new AWS.S3({
-    endpoint: process.env.SPACES_ENDPOINT,
-    accessKeyId: process.env.DO_SPACES_KEY,
-    secretAccessKey: process.env.DO_SPACES_SECRET
-  });
-  
-export default s3; 
+const s3Client = new S3Client({
+  region: "nyc3", 
+  endpoint: process.env.SPACES_ENDPOINT,
+  credentials: fromEnv(),
+  forcePathStyle: false,
+});
+
+export default s3Client;
