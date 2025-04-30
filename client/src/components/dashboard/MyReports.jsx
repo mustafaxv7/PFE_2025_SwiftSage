@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown, Save } from "lucide-react";
 
 const MyReports = () => {
-    const initialReports = [
+    // Sample reports to use as fallback if no reports in localStorage
+    const sampleReports = [
         {
             id: 1,
             title: "Inondation à Alger",
@@ -62,7 +63,21 @@ const MyReports = () => {
         }
     ];
 
-    const [reports, setReports] = useState(initialReports);
+    // Load reports from localStorage or use sample reports if none exist
+    const loadReportsFromStorage = () => {
+        try {
+            const storedReports = localStorage.getItem('userReports');
+            if (storedReports) {
+                return JSON.parse(storedReports);
+            }
+            return sampleReports;
+        } catch (error) {
+            console.error('Error loading reports from localStorage:', error);
+            return sampleReports;
+        }
+    };
+
+    const [reports, setReports] = useState(loadReportsFromStorage);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -91,9 +106,26 @@ const MyReports = () => {
         const updatedReports = reports.map(report =>
             report.id === editedReport.id ? editedReport : report
         );
+        
+        // Update state
         setReports(updatedReports);
         setSelectedReport(editedReport);
         setIsEditing(false);
+        
+        // Save to localStorage
+        localStorage.setItem('userReports', JSON.stringify(updatedReports));
+        
+        // Also update in admin reports if it exists there
+        try {
+            const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+            const updatedAdminReports = adminReports.map(report => 
+                report.id === editedReport.id ? editedReport : report
+            );
+            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
+        } catch (error) {
+            console.error('Error updating admin reports:', error);
+        }
+        
         alert("Report updated successfully!");
     };
 
