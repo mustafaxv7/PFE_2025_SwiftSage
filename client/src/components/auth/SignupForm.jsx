@@ -13,6 +13,7 @@ const SignupForm = () => {
         phone: "",
         password: "",
         type: "public",
+        community: "",
     });
     const [status, setStatus] = useState({
         loading: false,
@@ -161,6 +162,32 @@ const SignupForm = () => {
                                 disabled={status.loading}
                             />
                         ))}
+                        
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Community
+                            </label>
+                            <select
+                                name="community"
+                                value={formData.community}
+                                onChange={handleChange}
+                                className="w-full p-2 rounded-md border border-gray-300"
+                                required
+                                disabled={status.loading}
+                            >
+                                <option value="">Select your community</option>
+                                <option value="Chlef Chlef">Chlef Chlef</option>
+                                <option value="Ténès">Ténès</option>
+                                <option value="Beni Haoua">Beni Haoua</option>
+                                <option value="Ouled Fares">Ouled Fares</option>
+                                <option value="Boukadir">Boukadir</option>
+                                <option value="Zeboudja">Zeboudja</option>
+                                <option value="Abou El Hassan">Abou El Hassan</option>
+                                <option value="El Karimia">El Karimia</option>
+                                <option value="Taougrite">Taougrite</option>
+                                <option value="Beni Rached">Beni Rached</option>
+                            </select>
+                        </div>
                         {isOrganization && (
                             <div className="space-y-2">
                                 <label className="block text-sm font-medium text-gray-700">
