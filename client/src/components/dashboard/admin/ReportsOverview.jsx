@@ -9,112 +9,143 @@ const ReportsOverview = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Sample data to use as fallback if no reports in localStorage
+    const sampleReports = [
+        {
+            id: 1,
+            title: "Inondation à Alger",
+            date: "10 Mars, 2025",
+            time: "08:30",
+            crisisType: "flood",
+            description: "Inondation majeure dans le centre-ville d'Alger affectant les zones résidentielles de Bab El Oued.",
+            location: "Alger, Algérie",
+            lat: "36.7538",
+            lng: "3.0588",
+            roadStatus: "flooded",
+            missing: 3,
+            trapped: 12,
+            submergedDwelling: 48,
+            electrification: "dangerous",
+            status: "active",
+            submittedBy: "Ahmed Benali",
+            importance: "high"
+        },
+        {
+            id: 2,
+            title: "Séisme à Béjaïa",
+            date: "15 Mars, 2025",
+            time: "14:22",
+            crisisType: "earthquake",
+            description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
+            location: "Béjaïa, Algérie",
+            lat: "36.7509",
+            lng: "5.0567",
+            roadStatus: "partially_blocked",
+            injuredNumber: 24,
+            bleedingNumber: 8,
+            throttled: 3,
+            burnt: 0,
+            fractions: 14,
+            electrification: "partial",
+            status: "resolved",
+            submittedBy: "Karima Hadj",
+            importance: "critical"
+        },
+        {
+            id: 3,
+            title: "Incendie de forêt à Tizi Ouzou",
+            date: "2 Avril, 2025",
+            time: "11:15",
+            crisisType: "forest_fire",
+            description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
+            location: "Tizi Ouzou, Algérie",
+            lat: "36.7169",
+            lng: "4.0476",
+            roadStatus: "smoke_covered",
+            burntArea: 1240,
+            spreadRate: "rapid",
+            evacuated: 860,
+            threatenedStructures: 126,
+            containmentPercent: 35,
+            status: "active",
+            submittedBy: "Sofiane Amrouche",
+            importance: "high"
+        },
+        {
+            id: 4,
+            title: "Incendie industriel à Oran",
+            date: "28 Mars, 2025",
+            time: "16:45",
+            crisisType: "industrial_fire",
+            description: "Incendie dans une usine chimique avec risque potentiel de libération de matières dangereuses.",
+            location: "Oran, Algérie",
+            lat: "35.6969",
+            lng: "-0.6331",
+            roadStatus: "closed",
+            burnt: 3500,
+            explosion: "Yes",
+            institutionType: "chemical_plant",
+            trapped: 5,
+            electrification: "offline",
+            status: "in_progress",
+            submittedBy: "Karim Boudiaf",
+            importance: "critical"
+        },
+        {
+            id: 5,
+            title: "Inondation côtière à Annaba",
+            date: "5 Avril, 2025",
+            time: "09:00",
+            crisisType: "flood",
+            description: "Inondation côtière affectant les plages et le centre-ville.",
+            location: "Annaba, Algérie",
+            lat: "36.9142",
+            lng: "7.7427",
+            roadStatus: "flooded",
+            missing: 0,
+            trapped: 8,
+            submergedDwelling: 23,
+            electrification: "partial",
+            status: "active",
+            submittedBy: "Amina Khelifi",
+            importance: "medium"
+        }
+    ];
+
     useEffect(() => {
-        const fetchReports = async () => {
-            const data = [
-                {
-                    id: 1,
-                    title: "Inondation à Alger",
-                    date: "10 Mars, 2025",
-                    time: "08:30",
-                    crisisType: "flood",
-                    description: "Inondation majeure dans le centre-ville d'Alger affectant les zones résidentielles de Bab El Oued.",
-                    location: "Alger, Algérie",
-                    lat: "36.7538",
-                    lng: "3.0588",
-                    roadStatus: "flooded",
-                    missing: 3,
-                    trapped: 12,
-                    submergedDwelling: 48,
-                    electrification: "dangerous",
-                    status: "active",
-                    submittedBy: "Ahmed Benali",
-                    importance: "high"
-                },
-                {
-                    id: 2,
-                    title: "Séisme à Béjaïa",
-                    date: "15 Mars, 2025",
-                    time: "14:22",
-                    crisisType: "earthquake",
-                    description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
-                    location: "Béjaïa, Algérie",
-                    lat: "36.7509",
-                    lng: "5.0567",
-                    roadStatus: "partially_blocked",
-                    injuredNumber: 24,
-                    bleedingNumber: 8,
-                    throttled: 3,
-                    burnt: 0,
-                    fractions: 14,
-                    electrification: "partial",
-                    status: "resolved",
-                    submittedBy: "Karima Hadj",
-                    importance: "critical"
-                },
-                {
-                    id: 3,
-                    title: "Incendie de forêt à Tizi Ouzou",
-                    date: "2 Avril, 2025",
-                    time: "11:15",
-                    crisisType: "forest_fire",
-                    description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
-                    location: "Tizi Ouzou, Algérie",
-                    lat: "36.7169",
-                    lng: "4.0476",
-                    roadStatus: "smoke_covered",
-                    burntArea: 1240,
-                    spreadRate: "rapid",
-                    evacuated: 860,
-                    threatenedStructures: 126,
-                    containmentPercent: 35,
-                    status: "active",
-                    submittedBy: "Sofiane Amrouche",
-                    importance: "high"
-                },
-                {
-                    id: 4,
-                    title: "Incendie industriel à Oran",
-                    date: "28 Mars, 2025",
-                    time: "16:45",
-                    crisisType: "industrial_fire",
-                    description: "Incendie dans une usine chimique avec risque potentiel de libération de matières dangereuses.",
-                    location: "Oran, Algérie",
-                    lat: "35.6969",
-                    lng: "-0.6331",
-                    roadStatus: "closed",
-                    burnt: 3500,
-                    explosion: "Yes",
-                    institutionType: "chemical_plant",
-                    trapped: 5,
-                    electrification: "offline",
-                    status: "in_progress",
-                    submittedBy: "Karim Boudiaf",
-                    importance: "critical"
-                },
-                {
-                    id: 5,
-                    title: "Inondation côtière à Annaba",
-                    date: "5 Avril, 2025",
-                    time: "09:00",
-                    crisisType: "flood",
-                    description: "Inondation côtière affectant les plages et le centre-ville.",
-                    location: "Annaba, Algérie",
-                    lat: "36.9142",
-                    lng: "7.7427",
-                    roadStatus: "flooded",
-                    missing: 0,
-                    trapped: 8,
-                    submergedDwelling: 23,
-                    electrification: "partial",
-                    status: "active",
-                    submittedBy: "Amina Khelifi",
-                    importance: "medium"
+        const fetchReports = () => {
+            try {
+                // Try to get reports from localStorage first
+                const storedReports = localStorage.getItem('adminReports');
+                if (storedReports) {
+                    const parsedReports = JSON.parse(storedReports);
+                    // If we have stored reports, use them
+                    if (parsedReports && parsedReports.length > 0) {
+                        setReports(parsedReports);
+                        return;
+                    }
                 }
-            ];
-            setReports(data);
+                // If no stored reports or empty array, use sample data
+                setReports(sampleReports);
+            } catch (error) {
+                console.error('Error loading reports from localStorage:', error);
+                // Fallback to sample data if there's an error
+                setReports(sampleReports);
+            }
         };
         fetchReports();
+
+        // Add event listener to update reports when localStorage changes
+        const handleStorageChange = (e) => {
+            if (e.key === 'adminReports') {
+                fetchReports();
+            }
+        };
+        window.addEventListener('storage', handleStorageChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const handleReportClick = (report) => {
@@ -124,6 +155,32 @@ const ReportsOverview = () => {
 
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    const handleStatusChange = (reportId, newStatus) => {
+        const updatedReports = reports.map(report => 
+            report.id === reportId ? {...report, status: newStatus} : report
+        );
+        setReports(updatedReports);
+        
+        // Update the selected report if it's open in the modal
+        if (selectedReport && selectedReport.id === reportId) {
+            setSelectedReport({...selectedReport, status: newStatus});
+        }
+        
+        // Update in localStorage
+        localStorage.setItem('adminReports', JSON.stringify(updatedReports));
+        
+        // Also update in user reports if it exists there
+        try {
+            const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
+            const updatedUserReports = userReports.map(report => 
+                report.id === reportId ? {...report, status: newStatus} : report
+            );
+            localStorage.setItem('userReports', JSON.stringify(updatedUserReports));
+        } catch (error) {
+            console.error('Error updating user reports:', error);
+        }
     };
 
     const getStatusBadge = (status) => {
@@ -545,13 +602,36 @@ const ReportsOverview = () => {
                                 {renderCrisisDetails(selectedReport)}
                             </div>
 
-                            <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end">
-                                <button
-                                    onClick={closeModal}
-                                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                                >
-                                    Close
-                                </button>
+                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                <h4 className="font-semibold text-gray-800 mb-3">Change Status</h4>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <button
+                                        onClick={() => handleStatusChange(selectedReport.id, "active")}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "active" ? 'bg-red-600 text-white' : 'bg-red-100 text-red-800 hover:bg-red-200'}`}
+                                    >
+                                        Active
+                                    </button>
+                                    <button
+                                        onClick={() => handleStatusChange(selectedReport.id, "in_progress")}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "in_progress" ? 'bg-yellow-600 text-white' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'}`}
+                                    >
+                                        In Progress
+                                    </button>
+                                    <button
+                                        onClick={() => handleStatusChange(selectedReport.id, "resolved")}
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "resolved" ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
+                                    >
+                                        Resolved
+                                    </button>
+                                </div>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={closeModal}
+                                        className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -139,7 +139,39 @@ const AddReport = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Form validation
+        if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
+            alert("Please fill in all required fields (title, description, crisis type, and location)");
+            return;
+        }
+
         try {
+            // Create a new report object with all the necessary data
+            const currentDate = new Date();
+            const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })}, ${currentDate.getFullYear()}`;
+            
+            // Get user info (in a real app, this would come from authentication)
+            const userFullName = localStorage.getItem('userFullName') || 'Current User';
+            
+            const newReport = {
+                id: Date.now(), // Use timestamp as a temporary ID
+                title: reportData.title,
+                date: formattedDate,
+                crisisType: reportData.crisisType,
+                description: reportData.description,
+                location: "Algeria", // This would ideally be determined from coordinates
+                lat: reportData.lat,
+                lng: reportData.lng,
+                roadStatus: reportDetailsData.roadStatus || "unknown",
+                status: "active", // New reports start as active
+                submittedBy: userFullName,
+                importance: "high", // Default importance
+                // Include all the specific crisis type details
+                ...reportDetailsData,
+                ...additionalData
+            };
+
+            // Prepare form data for API submission
             const formDataToSend = new FormData();
             formDataToSend.append('reportData', JSON.stringify(reportData));
             formDataToSend.append('reportDetailsData', JSON.stringify(reportDetailsData));
@@ -147,16 +179,46 @@ const AddReport = () => {
             if (reportData.image) {
                 formDataToSend.append('image', reportData.image);
             }
-            const response = await axios.post('/api/reports', formDataToSend, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
 
-            console.log('Report submitted successfully:', response.data);
+            // Send to API
+            try {
+                const response = await axios.post('/api/reports', formDataToSend, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log('Report submitted successfully to API:', response.data);
+                
+                // If the API returns an ID, use it instead of our temporary one
+                if (response.data && response.data.id) {
+                    newReport.id = response.data.id;
+                }
+            } catch (error) {
+                console.error('Error submitting report to API:', error);
+                // Continue with local storage even if API fails
+            }
+
+            // Save to local storage for MyReports component
+            const existingReports = JSON.parse(localStorage.getItem('userReports') || '[]');
+            const updatedReports = [newReport, ...existingReports];
+            localStorage.setItem('userReports', JSON.stringify(updatedReports));
+
+            // Also save to admin reports
+            const existingAdminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+            const updatedAdminReports = [newReport, ...existingAdminReports];
+            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
+
+            // Reset the form
+            setReportData(initialReportData);
+            setReportDetailsData(initialReportDetailsData);
+            setAdditionalData(initialAdditionalData);
+
+            // Show success message
+            alert("Report submitted successfully!");
 
         } catch (error) {
             console.error('Error submitting report:', error);
+            alert("Error submitting report. Please try again.");
         }
     };
 
