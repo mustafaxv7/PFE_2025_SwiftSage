@@ -11,6 +11,13 @@ const AdminUsers = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+    
+    {/*const chelfCommunes = [
+        "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
+        "Bénairia", "Bouzeghaia", "Ouled Fares", "Chettia", "Labiod Medjadja", "Boukadir", "Oued Sly", "Sobha", "Ouled Ben Abdelkader", "El Hadjadj",
+        "Aïn Merane", "Herenfa", "Taougrite", "Dahra", "Ténès", "Sidi Akkacha", "Sidi Abderrahmane", "Abou El Hassan", "Talassa", "Tadjena",
+        "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
+    ];*/}
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -25,7 +32,7 @@ const AdminUsers = () => {
                         email: "mohammed@example.com",
                         phone: "+213 555-123-456",
                         type: "individual",
-                        status: "active",
+                        community: "Chlef Chlef",
                         createdAt: "2025-03-10",
                         reportTime: "08:30"
                     },
@@ -35,7 +42,7 @@ const AdminUsers = () => {
                         email: "fatima@example.com",
                         phone: "+213 555-987-654",
                         type: "individual",
-                        status: "active",
+                        community: "Ténès",
                         createdAt: "2025-03-15",
                         reportTime: "14:22"
                     },
@@ -46,7 +53,7 @@ const AdminUsers = () => {
                         phone: "+213 555-111-222",
                         type: "organization",
                         orgType: "public",
-                        status: "active",
+                        community: "Beni Haoua",
                         createdAt: "2025-04-02",
                         reportTime: "11:15"
                     },
@@ -57,7 +64,7 @@ const AdminUsers = () => {
                         phone: "+213 555-333-444",
                         type: "organization",
                         orgType: "private",
-                        status: "suspended",
+                        community: "Ouled Fares",
                         createdAt: "2025-03-28",
                         reportTime: "16:45"
                     },
@@ -67,7 +74,7 @@ const AdminUsers = () => {
                         email: "karim@example.com",
                         phone: "+213 555-555-555",
                         type: "individual",
-                        status: "inactive",
+                        community: "Boukadir",
                         createdAt: "2025-04-01",
                         reportTime: "09:00"
                     },
@@ -88,14 +95,15 @@ const AdminUsers = () => {
     useEffect(() => {
         let result = [...users];
         if (currentFilter !== "all") {
-            result = result.filter(user => user.status === currentFilter);
+            result = result.filter(user => user.community.toLowerCase() === currentFilter.toLowerCase());
         }
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
             result = result.filter(user =>
                 user.name.toLowerCase().includes(term) ||
                 user.email.toLowerCase().includes(term) ||
-                user.phone.toLowerCase().includes(term)
+                user.phone.toLowerCase().includes(term) ||
+                user.community.toLowerCase().includes(term)
             );
         }
 
@@ -139,13 +147,13 @@ const AdminUsers = () => {
         }
     };
 
-    const handleStatusChange = async (userId, newStatus) => {
+    const handleCommunityChange = async (userId, newCommunity) => {
         try {
             setUsers(users.map(user =>
-                user.id === userId ? {...user, status: newStatus} : user
+                user.id === userId ? {...user, community: newCommunity} : user
             ));
         } catch (error) {
-            console.error("Error updating user status:", error);
+            console.error("Error updating user community:", error);
         }
     };
 
@@ -171,7 +179,7 @@ const AdminUsers = () => {
             phone: "",
             password: "",
             type: "individual",
-            status: "active",
+            community: "Chlef Chlef",
             mode: "create",
             isOrganization: false,
             orgType: "public"
@@ -199,16 +207,10 @@ const AdminUsers = () => {
         }
     };
 
-    const StatusBadge = ({status}) => {
-        const statusStyles = {
-            active: "bg-green-100 text-green-800",
-            inactive: "bg-gray-100 text-gray-800",
-            suspended: "bg-red-100 text-red-800"
-        };
-
+    const CommunityBadge = ({community}) => {
         return (
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[status]}`}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
+            <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {community}
             </span>
         );
     };
@@ -362,22 +364,28 @@ const AdminUsers = () => {
                                     </div>
                                 </div>
                             )}
-                            {!isCreate && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Status</label>
-                                    <select
-                                        name="status"
-                                        value={formData.status || "active"}
-                                        onChange={handleChange}
-                                        disabled={isViewOnly}
-                                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="suspended">Suspended</option>
-                                    </select>
-                                </div>
-                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Community</label>
+                                <select
+                                    name="community"
+                                    value={formData.community || ""}
+                                    onChange={handleChange}
+                                    disabled={isViewOnly}
+                                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                    <option value="">Select your community</option>
+                                    <option value="Chlef Chlef">Chlef Chlef</option>
+                                    <option value="Ténès">Ténès</option>
+                                    <option value="Beni Haoua">Beni Haoua</option>
+                                    <option value="Ouled Fares">Ouled Fares</option>
+                                    <option value="Boukadir">Boukadir</option>
+                                    <option value="Zeboudja">Zeboudja</option>
+                                    <option value="Abou El Hassan">Abou El Hassan</option>
+                                    <option value="El Karimia">El Karimia</option>
+                                    <option value="Taougrite">Taougrite</option>
+                                    <option value="Beni Rached">Beni Rached</option>
+                                </select>
+                            </div>
 
                             {!isViewOnly && (
                                 <div className="flex justify-between pt-4">
@@ -481,34 +489,34 @@ const AdminUsers = () => {
                             All
                         </button>
                         <button
-                            onClick={() => handleFilterChange("active")}
+                            onClick={() => handleFilterChange("Chlef Chlef")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "active"
+                                currentFilter === "Chlef Chlef"
                                     ? "bg-blue-600 text-white"
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
-                            Active
+                            Chlef Chlef
                         </button>
                         <button
-                            onClick={() => handleFilterChange("inactive")}
+                            onClick={() => handleFilterChange("Ténès")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "inactive"
+                                currentFilter === "Ténès"
                                     ? "bg-blue-600 text-white"
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
-                            Inactive
+                            Ténès
                         </button>
                         <button
-                            onClick={() => handleFilterChange("suspended")}
+                            onClick={() => handleFilterChange("Beni Haoua")}
                             className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "suspended"
+                                currentFilter === "Beni Haoua"
                                     ? "bg-blue-600 text-white"
                                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                         >
-                            Suspended
+                            Beni Haoua
                         </button>
                     </div>
                     <button
@@ -545,7 +553,7 @@ const AdminUsers = () => {
                                     Type
                                 </th>
                                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
+                                    Community
                                 </th>
                                 <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Created
@@ -581,7 +589,7 @@ const AdminUsers = () => {
                                         )}
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap">
-                                        <StatusBadge status={user.status}/>
+                                        <CommunityBadge community={user.community}/>
                                     </td>
                                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {user.createdAt}
@@ -602,23 +610,7 @@ const AdminUsers = () => {
                                             >
                                                 <Edit size={16}/>
                                             </button>
-                                            {user.status === "active" ? (
-                                                <button
-                                                    onClick={() => handleStatusChange(user.id, "suspended")}
-                                                    className="text-yellow-600 hover:text-yellow-900"
-                                                    title="Suspend user"
-                                                >
-                                                    <Ban size={16}/>
-                                                </button>
-                                            ) : user.status === "suspended" ? (
-                                                <button
-                                                    onClick={() => handleStatusChange(user.id, "active")}
-                                                    className="text-green-600 hover:text-green-900"
-                                                    title="Activate user"
-                                                >
-                                                    <CheckCircle size={16}/>
-                                                </button>
-                                            ) : null}
+
                                             <button
                                                 onClick={() => handleDeletePrompt(user)}
                                                 className="text-red-600 hover:text-red-900"
