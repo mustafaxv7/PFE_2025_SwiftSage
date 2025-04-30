@@ -3,16 +3,17 @@ import {createAuthUser} from '../controllers/createAuthUser.js';
 import { getAuthUsers } from '../controllers/getAuthUsers.js';
 import { updateAuthUser } from '../controllers/updateAuthUser.js';
 import { deleteAuthUser } from '../controllers/deleteAuthUser.js';
+import adminMiddleware from '../middleware/adminMiddleware.js';
 
 
 const router = express.Router();
 //Get all users
-router.get('/', getAuthUsers);
+router.get('/', adminMiddleware,getAuthUsers);
 
-router.post('/', createAuthUser);
+router.post('/',adminMiddleware,createAuthUser);
 
-router.put('/:id', updateAuthUser);
+router.put('/:id',adminMiddleware,updateAuthUser);
 
-router.delete('/:id', deleteAuthUser);
+router.delete('/:id',adminMiddleware,deleteAuthUser);
 
 export default router;
