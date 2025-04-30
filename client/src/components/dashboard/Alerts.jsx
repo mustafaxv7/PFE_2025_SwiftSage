@@ -7,7 +7,8 @@ const Alerts = () => {
     const [showDetails, setShowDetails] = useState(null);
 
     useEffect(() => {
-        const receivedAlerts = [
+        // Default sample alerts to use if no alerts in localStorage
+        const sampleAlerts = [
             {
                 id: 1,
                 message: "Inondation à Alger",
@@ -43,11 +44,59 @@ const Alerts = () => {
             }
         ];
 
-        setAlerts(receivedAlerts);
+        // Try to get alerts from localStorage (set by admin)
+        try {
+            const storedAlerts = localStorage.getItem('userAlerts');
+            if (storedAlerts) {
+                const parsedAlerts = JSON.parse(storedAlerts);
+                if (parsedAlerts && parsedAlerts.length > 0) {
+                    // Format status to match expected format (Active/Resolved instead of active/resolved)
+                    const formattedAlerts = parsedAlerts.map(alert => ({
+                        ...alert,
+                        // Ensure status is properly formatted
+                        status: alert.status === "active" ? "Active" : 
+                               alert.status === "resolved" ? "Resolved" : alert.status
+                    }));
+                    setAlerts(formattedAlerts);
+                    return;
+                }
+            }
+            // If no stored alerts or empty array, use sample data
+            setAlerts(sampleAlerts);
+        } catch (error) {
+            console.error('Error loading alerts from localStorage:', error);
+            // Fallback to sample data if there's an error
+            setAlerts(sampleAlerts);
+        }
+
+        // Add event listener to update alerts when localStorage changes
+        const handleStorageChange = (e) => {
+            if (e.key === 'userAlerts') {
+                try {
+                    const updatedAlerts = JSON.parse(e.newValue);
+                    if (updatedAlerts && updatedAlerts.length > 0) {
+                        setAlerts(updatedAlerts);
+                    }
+                } catch (error) {
+                    console.error('Error parsing updated alerts:', error);
+                }
+            }
+        };
+        
+        window.addEventListener('storage', handleStorageChange);
+        
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const dismissAlert = (id) => {
-        setAlerts(alerts.filter(alert => alert.id !== id));
+        const updatedAlerts = alerts.filter(alert => alert.id !== id);
+        setAlerts(updatedAlerts);
+        
+        // Update localStorage when a user dismisses an alert
+        // This ensures consistency between admin and user views
+        localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
     };
 
     const getAlertIcon = (type) => {
