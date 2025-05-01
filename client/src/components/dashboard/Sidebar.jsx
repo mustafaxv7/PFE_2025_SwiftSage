@@ -32,7 +32,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
   return (
     <>
-      {/* Mobile menu toggle button - visible only on small screens */}
+      
       <button
         className="fixed top-4 left-4 z-50 p-2 rounded-md bg-red-600 text-white md:hidden"
         onClick={toggleSidebar}
@@ -41,11 +41,11 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
       </button>
 
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-900 text-white flex flex-col shadow-xl transition-all duration-300 ease-in-out
+        className={`fixed top-0 left-0 h-screen bg-gray-900 text-white flex flex-col shadow-xl transition-all duration-300 ease-in-out
           ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-0"}
-          md:translate-x-0 md:w-64 z-40`}
+          md:translate-x-0 md:w-64 z-40 overflow-hidden`}
       >
-        {/* Logo and branding section */}
+        
         <div className="p-5 border-b border-gray-800 bg-gray-950">
           <div className="flex items-center justify-center mb-2">
             <img src={Logo} alt="SwiftSage Logo" className="w-10 h-10" />
@@ -54,7 +54,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           <p className="text-xs text-gray-400 text-center">Crisis Management System</p>
         </div>
 
-        {/* Primary action button */}
+        
         <div className="px-4 py-4">
           <button
             onClick={() => navigate("/dashboard/add-report")}
@@ -65,8 +65,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           </button>
         </div>
 
-        {/* Navigation section - simplified */}
-        <div className="flex-1 overflow-y-auto py-4 px-3">
+        
+        <div className="flex-1 overflow-y-auto py-4 px-3 min-h-0">
           <div className="space-y-1">
             {navItems.map((item) => (
               <NavLink
@@ -86,7 +86,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
           </div>
         </div>
 
-        {/* User profile and logout section */}
+        
         <div className="p-4 border-t border-gray-800 bg-gray-950">
           <div className="flex items-center mb-3">
             <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white font-semibold">

@@ -76,7 +76,7 @@ const AdminSidebar = ({ isMobile = false }) => {
             :
             'fixed w-64'
         }
-        h-screen bg-gray-900 text-white flex flex-col shadow-xl
+        h-screen bg-gray-900 text-white flex flex-col shadow-xl overflow-hidden
     `;
 
     return (
@@ -92,7 +92,7 @@ const AdminSidebar = ({ isMobile = false }) => {
             )}
 
             <div className={sidebarClasses}>
-                {/* Logo and branding */}
+                
                 <div className="p-4 sm:p-5 flex flex-col items-center border-b border-gray-800">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2">
                         <img src={logo} alt="Logo" className="w-8 h-8 sm:w-10 sm:h-10" />
@@ -101,8 +101,8 @@ const AdminSidebar = ({ isMobile = false }) => {
                     <div className="mt-1 text-xs text-gray-400">Admin Control Panel</div>
                 </div>
 
-                {/* Navigation */}
-                <nav className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-5">
+                
+                <nav className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-5 min-h-0">
                     <div className="mb-3 sm:mb-4 text-xs uppercase text-gray-500 font-semibold tracking-wider px-2">
                         Main Navigation
                     </div>
@@ -127,7 +127,7 @@ const AdminSidebar = ({ isMobile = false }) => {
                     </div>
                 </nav>
 
-                {/* User profile and logout */}
+                
                 <div className="border-t border-gray-800 p-3 sm:p-4">
                     <div className="mb-3 sm:mb-4">
                         <div className="flex items-center mb-2">
