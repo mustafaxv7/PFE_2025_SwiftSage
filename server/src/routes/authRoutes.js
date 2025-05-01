@@ -7,17 +7,20 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, phone, password, isOrganisationMember } = req.body;
+        const { name, email, phone, password, isOrganisationMember, community } = req.body;
 
-        if (!name || !email || !phone|| !password) {
-            return res.status(400).json({ message: "Please fill all fields" });
+        if (!name || !email || !phone || !password || !community) {
+            return res.status(400).json({ message: "Please fill all required fields" });
         }
 
-        
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const query = `INSERT INTO users(username, email, phone_number, password, is_organization_member) VALUES($1, $2, $3, $4,$5);`;
-        const values = [name, email, phone, hashedPassword, isOrganisationMember];
+        const query = `
+            INSERT INTO users (username, email, phone_number, password, is_organization_member, community)
+            VALUES ($1, $2, $3, $4, $5, $6);
+        `;
+
+        const values = [name, email, phone, hashedPassword, isOrganisationMember, community];
 
         try {
             await con.query(query, values);
@@ -26,12 +29,12 @@ router.post('/register', async (req, res) => {
             if (err.code === '23505') { 
                 return res.status(400).json({ message: "User already exists" });
             }
-            console.error(err.message);
+            console.error("Database error:", err.message);
             return res.status(500).json({ message: "Server error" });
         }
 
     } catch (err) {
-        console.error(err.message);
+        console.error("Registration error:", err.message);
         return res.status(500).json({ message: "Server error" });
     }
 });

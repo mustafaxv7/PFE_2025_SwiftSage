@@ -23,7 +23,7 @@ const AdminUsers = () => {
         const fetchUsers = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch("/api/auth/users");
+                const response = await fetch("/api/users/");
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
@@ -107,7 +107,7 @@ const AdminUsers = () => {
 
     const handleDeleteUser = async () => {
         try {
-            const response = await fetch(`/api/auth/users/${userToDelete.id}`, {
+            const response = await fetch(`/api/users/${userToDelete.id}`, {
                 method: 'DELETE',
             });
 
@@ -142,7 +142,7 @@ const AdminUsers = () => {
                 password: '' // Required by the API but we don't want to change it
             };
 
-            const response = await fetch(`/api/auth/users/${userId}`, {
+            const response = await fetch(`/api/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ const AdminUsers = () => {
                     community: userData.community
                 };
 
-                const response = await fetch(`/api/auth/users/${userData.id}`, {
+                const response = await fetch(`/api/users/${userData.id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -232,7 +232,7 @@ const AdminUsers = () => {
                 community: userData.community
             };
 
-            const response = await fetch('/api/auth/users', {
+            const response = await fetch('/api/users/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
