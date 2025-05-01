@@ -142,7 +142,7 @@ const ReportsOverview = () => {
             }
         };
         window.addEventListener('storage', handleStorageChange);
-        
+
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
@@ -158,24 +158,24 @@ const ReportsOverview = () => {
     };
 
     const handleStatusChange = (reportId, newStatus) => {
-        const updatedReports = reports.map(report => 
-            report.id === reportId ? {...report, status: newStatus} : report
+        const updatedReports = reports.map(report =>
+            report.id === reportId ? { ...report, status: newStatus } : report
         );
         setReports(updatedReports);
-        
+
         // Update the selected report if it's open in the modal
         if (selectedReport && selectedReport.id === reportId) {
-            setSelectedReport({...selectedReport, status: newStatus});
+            setSelectedReport({ ...selectedReport, status: newStatus });
         }
-        
+
         // Update in localStorage
         localStorage.setItem('adminReports', JSON.stringify(updatedReports));
-        
+
         // Also update in user reports if it exists there
         try {
             const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-            const updatedUserReports = userReports.map(report => 
-                report.id === reportId ? {...report, status: newStatus} : report
+            const updatedUserReports = userReports.map(report =>
+                report.id === reportId ? { ...report, status: newStatus } : report
             );
             localStorage.setItem('userReports', JSON.stringify(updatedUserReports));
         } catch (error) {
@@ -484,49 +484,49 @@ const ReportsOverview = () => {
             <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full bg-white">
                     <thead className="bg-gray-100">
-                    <tr>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
-                        <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reported By</th>
-                    </tr>
+                        <tr>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reported By</th>
+                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
-                    {filteredReports.length === 0 ? (
-                        <tr>
-                            <td colSpan="7" className="py-8 px-4 text-center text-gray-500">
-                                No reports match your filters
-                            </td>
-                        </tr>
-                    ) : (
-                        filteredReports.map(report => (
-                            <tr
-                                key={report.id}
-                                onClick={() => handleReportClick(report)}
-                                className="hover:bg-gray-50 cursor-pointer transition-colors"
-                            >
-                                <td className="py-4 px-4">
-                                    <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
-                                        {getCrisisTypeIcon(report.crisisType)}
-                                    </span>
+                        {filteredReports.length === 0 ? (
+                            <tr>
+                                <td colSpan="7" className="py-8 px-4 text-center text-gray-500">
+                                    No reports match your filters
                                 </td>
-                                <td className="py-4 px-4 font-medium text-gray-900">{report.title}</td>
-                                <td className="py-4 px-4 text-gray-600">
-                                    <div className="flex items-center">
-                                        <MapPin size={14} className="mr-1 text-gray-400" />
-                                        {report.location}
-                                    </div>
-                                </td>
-                                <td className="py-4 px-4 text-gray-500">{report.date}</td>
-                                <td className="py-4 px-4">{getStatusBadge(report.status)}</td>
-                                <td className="py-4 px-4">{getImportanceBadge(report.importance)}</td>
-                                <td className="py-4 px-4 text-gray-600">{report.submittedBy}</td>
                             </tr>
-                        ))
-                    )}
+                        ) : (
+                            filteredReports.map(report => (
+                                <tr
+                                    key={report.id}
+                                    onClick={() => handleReportClick(report)}
+                                    className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                >
+                                    <td className="py-4 px-4">
+                                        <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
+                                            {getCrisisTypeIcon(report.crisisType)}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4 font-medium text-gray-900">{report.title}</td>
+                                    <td className="py-4 px-4 text-gray-600">
+                                        <div className="flex items-center">
+                                            <MapPin size={14} className="mr-1 text-gray-400" />
+                                            {report.location}
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4 text-gray-500">{report.date}</td>
+                                    <td className="py-4 px-4">{getStatusBadge(report.status)}</td>
+                                    <td className="py-4 px-4">{getImportanceBadge(report.importance)}</td>
+                                    <td className="py-4 px-4 text-gray-600">{report.submittedBy}</td>
+                                </tr>
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
