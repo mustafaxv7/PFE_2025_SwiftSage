@@ -1,5 +1,5 @@
-import {useState, useEffect} from "react";
-import {Bell, AlertTriangle, Trash2, Send, Shield, MapPin} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, AlertTriangle, Trash2, Send, Shield, MapPin } from "lucide-react";
 
 const AdminAlerts = () => {
     const [message, setMessage] = useState("");
@@ -79,7 +79,7 @@ const AdminAlerts = () => {
         if (!message.trim()) return;
 
         const now = new Date();
-        
+
         const newAlert = {
             id: Date.now(),
             message: message,
@@ -105,7 +105,7 @@ const AdminAlerts = () => {
         setAlerts(updatedAlerts);
         // Save to localStorage for user alerts view
         localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
-        
+
         setMessage("");
     };
 
@@ -119,7 +119,7 @@ const AdminAlerts = () => {
     const toggleStatus = (id) => {
         const updatedAlerts = alerts.map(alert =>
             alert.id === id
-                ? {...alert, status: alert.status === "Active" ? "Resolved" : "Active"}
+                ? { ...alert, status: alert.status === "Active" ? "Resolved" : "Active" }
                 : alert
         );
         setAlerts(updatedAlerts);
@@ -130,13 +130,13 @@ const AdminAlerts = () => {
     const getAlertIcon = (type) => {
         switch (type) {
             case "info":
-                return <span className="text-blue-500"><Bell size={20}/></span>;
+                return <span className="text-blue-500"><Bell size={20} /></span>;
             case "danger":
-                return <span className="text-red-500"><AlertTriangle size={20}/></span>;
+                return <span className="text-red-500"><AlertTriangle size={20} /></span>;
             case "warning":
-                return <span className="text-orange-500"><Shield size={20}/></span>;
+                return <span className="text-orange-500"><Shield size={20} /></span>;
             default:
-                return <span className="text-gray-500"><Bell size={20}/></span>;
+                return <span className="text-gray-500"><Bell size={20} /></span>;
         }
     };
 
@@ -182,26 +182,26 @@ const AdminAlerts = () => {
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'info' ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('info')}
                             >
-                                <Bell size={14} className="mr-1"/>
+                                <Bell size={14} className="mr-1" />
                                 Information
                             </button>
                             <button
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'warning' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('warning')}
                             >
-                                <Shield size={14} className="mr-1"/>
+                                <Shield size={14} className="mr-1" />
                                 Warning
                             </button>
                             <button
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'danger' ? 'bg-red-100 text-red-800 border border-red-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('danger')}
                             >
-                                <AlertTriangle size={14} className="mr-1"/>
+                                <AlertTriangle size={14} className="mr-1" />
                                 Critical
                             </button>
                         </div>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Affected Location</label>
                         <div className="relative">
@@ -225,7 +225,7 @@ const AdminAlerts = () => {
                         className="flex items-center bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium mt-4 sm:mt-0"
                         onClick={sendAlert}
                     >
-                        <Send size={16} className="mr-2"/>
+                        <Send size={16} className="mr-2" />
                         Send Alert
                     </button>
                 </div>
@@ -267,78 +267,79 @@ const AdminAlerts = () => {
             <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead>
-                    <tr className="bg-gray-100">
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
+                        <tr className="bg-gray-100">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                    {(() => {
-                        const filteredAlerts = alerts.filter(alert => {
-                            // Filter by type
-                            if (filterType !== "All Types") {
-                                if (filterType === "Information" && alert.type !== "info") return false;
-                                if (filterType === "Warning" && alert.type !== "warning") return false;
-                                if (filterType === "Critical" && alert.type !== "danger") return false;
-                            }
-                            // Filter by status
-                            if (filterStatus !== "All Status") {
-                                if (filterStatus === "Active" && alert.status !== "Active") return false;
-                                if (filterStatus === "Resolved" && alert.status !== "Resolved") return false;
-                            }
-                            // Filter by location
-                            if (filterLocation !== "All Locations") {
-                                if (filterLocation === "Toutes les communes" && alert.affectedArea !== "Toutes les communes") return false;
-                                if (filterLocation !== "Toutes les communes" && alert.location !== filterLocation) return false;
-                            }
-                            return true;
-                        });
-                        
-                        return filteredAlerts.length === 0 ? (
-                        <tr>
-                            <td colSpan="7" className="px-4 py-6 text-sm text-gray-500 text-center">No alerts found</td>
-                        </tr>
-                    ) : (
-                        filteredAlerts.map((alert) => (
-                            <tr key={alert.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-4 py-4 whitespace-nowrap">{getAlertIcon(alert.type)}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{alert.message}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div>{alert.date}</div>
-                                    <div className="text-xs">{alert.time}</div>
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div className="flex items-center">
-                                        <MapPin size={14} className="text-gray-400 mr-1"/>
-                                        <span>{alert.location}</span>
-                                    </div>
-                                </td>
-                                <td className="px-4 py-4 whitespace-nowrap">{getStatusBadge(alert.status)}</td>
-                                <td className="px-4 py-4 whitespace-nowrap">{getImportanceBadge(alert.importance)}</td>
-                                <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                    <div className="flex space-x-3">
-                                        <button
-                                            onClick={() => toggleStatus(alert.id)}
-                                            className={`text-sm px-3 py-1 rounded ${alert.status === "Active" ? "text-green-600 hover:bg-green-50" : "text-blue-600 hover:bg-blue-50"}`}
-                                        >
-                                            {alert.status === "Active" ? "Resolve" : "Reactivate"}
-                                        </button>
-                                        <button
-                                            onClick={() => deleteAlert(alert.id)}
-                                            className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded p-1"
-                                        >
-                                            <Trash2 size={16}/>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))
-                    )})()}
+                        {(() => {
+                            const filteredAlerts = alerts.filter(alert => {
+                                // Filter by type
+                                if (filterType !== "All Types") {
+                                    if (filterType === "Information" && alert.type !== "info") return false;
+                                    if (filterType === "Warning" && alert.type !== "warning") return false;
+                                    if (filterType === "Critical" && alert.type !== "danger") return false;
+                                }
+                                // Filter by status
+                                if (filterStatus !== "All Status") {
+                                    if (filterStatus === "Active" && alert.status !== "Active") return false;
+                                    if (filterStatus === "Resolved" && alert.status !== "Resolved") return false;
+                                }
+                                // Filter by location
+                                if (filterLocation !== "All Locations") {
+                                    if (filterLocation === "Toutes les communes" && alert.affectedArea !== "Toutes les communes") return false;
+                                    if (filterLocation !== "Toutes les communes" && alert.location !== filterLocation) return false;
+                                }
+                                return true;
+                            });
+
+                            return filteredAlerts.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" className="px-4 py-6 text-sm text-gray-500 text-center">No alerts found</td>
+                                </tr>
+                            ) : (
+                                filteredAlerts.map((alert) => (
+                                    <tr key={alert.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-4 py-4 whitespace-nowrap">{getAlertIcon(alert.type)}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{alert.message}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div>{alert.date}</div>
+                                            <div className="text-xs">{alert.time}</div>
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div className="flex items-center">
+                                                <MapPin size={14} className="text-gray-400 mr-1" />
+                                                <span>{alert.location}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-4 py-4 whitespace-nowrap">{getStatusBadge(alert.status)}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap">{getImportanceBadge(alert.importance)}</td>
+                                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                            <div className="flex space-x-3">
+                                                <button
+                                                    onClick={() => toggleStatus(alert.id)}
+                                                    className={`text-sm px-3 py-1 rounded ${alert.status === "Active" ? "text-green-600 hover:bg-green-50" : "text-blue-600 hover:bg-blue-50"}`}
+                                                >
+                                                    {alert.status === "Active" ? "Resolve" : "Reactivate"}
+                                                </button>
+                                                <button
+                                                    onClick={() => deleteAlert(alert.id)}
+                                                    className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded p-1"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))
+                            )
+                        })()}
                     </tbody>
                 </table>
             </div>

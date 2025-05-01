@@ -1,7 +1,7 @@
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
-import {useState, useEffect} from "react";
-import {FiMenu, FiX} from "react-icons/fi";
+import { useState, useEffect } from "react";
+import { FiMenu, FiX } from "react-icons/fi";
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -35,7 +35,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-16">
                     <div className="flex-shrink-0 flex items-center">
                         <Link to="/" className="flex items-center space-x-3">
-                            <img src={Logo} alt="Logo" className="w-12 h-12 object-contain"/>
+                            <img src={Logo} alt="Logo" className="w-12 h-12 object-contain" />
                             <span
                                 className="text-2xl font-bold bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent">
                                 Swift Sage
@@ -84,9 +84,9 @@ const Navbar = () => {
                             className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-red-600 focus:outline-none transition duration-150 ease-in-out"
                         >
                             {isOpen ? (
-                                <FiX className="h-6 w-6"/>
+                                <FiX className="h-6 w-6" />
                             ) : (
-                                <FiMenu className="h-6 w-6"/>
+                                <FiMenu className="h-6 w-6" />
                             )}
                         </button>
                     </div>

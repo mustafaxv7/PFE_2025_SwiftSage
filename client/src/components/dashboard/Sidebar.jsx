@@ -1,8 +1,8 @@
 import { useNavigate, NavLink } from "react-router-dom";
-import { 
-  AlertTriangle, 
-  FileText, 
-  PlusCircle, 
+import {
+  AlertTriangle,
+  FileText,
+  PlusCircle,
   LogOut,
   Menu
 } from "lucide-react";
@@ -18,22 +18,22 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
 
   // Navigation items - simplified to only include Alerts and My Reports
   const navItems = [
-    { 
-      path: "/dashboard/alerts", 
-      name: "Alerts", 
-      icon: <AlertTriangle size={18} className="mr-3" /> 
+    {
+      path: "/dashboard/alerts",
+      name: "Alerts",
+      icon: <AlertTriangle size={18} className="mr-3" />
     },
-    { 
-      path: "/dashboard/my-reports", 
-      name: "My Reports", 
-      icon: <FileText size={18} className="mr-3" /> 
+    {
+      path: "/dashboard/my-reports",
+      name: "My Reports",
+      icon: <FileText size={18} className="mr-3" />
     }
   ];
 
   return (
     <>
       {/* Mobile menu toggle button - visible only on small screens */}
-      <button 
+      <button
         className="fixed top-4 left-4 z-50 p-2 rounded-md bg-red-600 text-white md:hidden"
         onClick={toggleSidebar}
       >
@@ -73,10 +73,9 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center px-4 py-2.5 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-red-700 text-white font-medium"
-                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                  `flex items-center px-4 py-2.5 rounded-lg transition-colors ${isActive
+                    ? "bg-red-700 text-white font-medium"
+                    : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`
                 }
               >
