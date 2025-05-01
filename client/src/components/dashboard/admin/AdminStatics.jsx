@@ -12,7 +12,7 @@ const COLORS = [
     "#14b8a6", "#f97316", "#06b6d4", "#84cc16", "#a855f7", "#d946ef", "#0ea5e9"
 ];
 
-const AdminStatistics = () => {
+const AdminStatics = () => {
     const [view, setView] = useState("daily");
     const [chartType, setChartType] = useState("bar");
     const dashboardRef = useRef(); // REF for html2canvas
@@ -38,18 +38,28 @@ const AdminStatistics = () => {
             { date: "Feb 2025", count: 18 },
             { date: "Mar 2025", count: 22 },
             { date: "Apr 2025", count: 15 },
+        ],
+        yearly: [
+            { date: "2022", count: 32 },
+            { date: "2023", count: 48 },
+            { date: "2024", count: 67 },
+            { date: "2025", count: 46 },
         ]
     };
 
     const distributionByWilaya = [
-        { name: "Alger", value: 6 },
-        { name: "Oran", value: 4 },
-        { name: "Tizi Ouzou", value: 3 },
-        { name: "Constantine", value: 5 },
         { name: "Chlef", value: 6 },
-        { name: "Blida", value: 2 },
-        { name: "Annaba", value: 3 },
-        { name: "Sétif", value: 4 },
+        { name: "Sendjas", value: 4 },
+        { name: "Oum Drou", value: 3 },
+        { name: "Oued Fodda", value: 5 },
+        { name: "Beni Rached", value: 2 },
+        { name: "Ouled Abbes", value: 3 },
+        { name: "El Karimia", value: 4 },
+        { name: "Harchoun", value: 3 },
+        { name: "Beni Bouateb", value: 2 },
+        { name: "Zeboudja", value: 5 },
+        { name: "Bénairia", value: 3 },
+        { name: "Bouzeghaia", value: 4 },
     ];
 
     const crisisTypeData = [
@@ -66,94 +76,94 @@ const AdminStatistics = () => {
         avgResponseTime: "4.2 hours",
         criticalEvents: 8
     };
-    
 
-const exportPDF = () => {
-    try {
-        const input = dashboardRef.current;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const width = pdf.internal.pageSize.getWidth();
-        const height = pdf.internal.pageSize.getHeight();
-        
-        // Create a promise to handle the async operation
-        const generatePdf = async () => {
-            // First capture the stats cards
-            const statsSection = input.querySelector('.grid');
-            if (!statsSection) throw new Error("Stats section not found");
-            
-            const statsCanvas = await html2canvas(statsSection, {
-                scale: 1.5,
-                backgroundColor: '#ffffff',
-                logging: false,
-                useCORS: true,
-                allowTaint: true
+
+    const exportPDF = () => {
+        try {
+            const input = dashboardRef.current;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const width = pdf.internal.pageSize.getWidth();
+            const height = pdf.internal.pageSize.getHeight();
+
+            // Create a promise to handle the async operation
+            const generatePdf = async () => {
+                // First capture the stats cards
+                const statsSection = input.querySelector('.grid');
+                if (!statsSection) throw new Error("Stats section not found");
+
+                const statsCanvas = await html2canvas(statsSection, {
+                    scale: 1.5,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                });
+
+                // Add stats to PDF
+                const statsImgData = statsCanvas.toDataURL('image/png');
+                pdf.addImage(statsImgData, 'PNG', 10, 10, width - 20, 40);
+
+                // Add title
+                pdf.setFontSize(18);
+                pdf.setTextColor(0, 0, 0);
+                pdf.text('Analytics Dashboard Report', width / 2, 60, { align: 'center' });
+                pdf.setFontSize(12);
+                pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, width / 2, 68, { align: 'center' });
+
+                // Add report data as table
+                pdf.setFontSize(14);
+                pdf.text('Reports Timeline Data', 14, 80);
+
+                // Create table for report data
+                const tableData = reportData[view].map(item => [item.date, item.count.toString()]);
+                pdf.autoTable({
+                    startY: 85,
+                    head: [['Date', 'Report Count']],
+                    body: tableData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [59, 130, 246] }
+                });
+
+                // Add distribution data
+                const tableY = pdf.previousAutoTable.finalY + 15;
+                pdf.text('Distribution by Region', 14, tableY);
+
+                const regionData = distributionByWilaya.map(item => [item.name, item.value.toString()]);
+                pdf.autoTable({
+                    startY: tableY + 5,
+                    head: [['Region', 'Count']],
+                    body: regionData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [16, 185, 129] }
+                });
+
+                // Add crisis type data
+                const crisisY = pdf.previousAutoTable.finalY + 15;
+                pdf.text('Crisis Type Distribution', 14, crisisY);
+
+                const crisisData = crisisTypeData.map(item => [item.name, item.value.toString()]);
+                pdf.autoTable({
+                    startY: crisisY + 5,
+                    head: [['Crisis Type', 'Count']],
+                    body: crisisData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [239, 68, 68] }
+                });
+
+                // Save the PDF
+                pdf.save('dashboard_report.pdf');
+            };
+
+            // Execute the async function and catch any errors
+            generatePdf().catch(error => {
+                console.error("Error generating PDF:", error);
+                alert("Failed to generate PDF. Please try again.");
             });
-            
-            // Add stats to PDF
-            const statsImgData = statsCanvas.toDataURL('image/png');
-            pdf.addImage(statsImgData, 'PNG', 10, 10, width - 20, 40);
-            
-            // Add title
-            pdf.setFontSize(18);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text('Analytics Dashboard Report', width / 2, 60, { align: 'center' });
-            pdf.setFontSize(12);
-            pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, width / 2, 68, { align: 'center' });
-            
-            // Add report data as table
-            pdf.setFontSize(14);
-            pdf.text('Reports Timeline Data', 14, 80);
-            
-            // Create table for report data
-            const tableData = reportData[view].map(item => [item.date, item.count.toString()]);
-            pdf.autoTable({
-                startY: 85,
-                head: [['Date', 'Report Count']],
-                body: tableData,
-                theme: 'grid',
-                headStyles: { fillColor: [59, 130, 246] }
-            });
-            
-            // Add distribution data
-            const tableY = pdf.previousAutoTable.finalY + 15;
-            pdf.text('Distribution by Region', 14, tableY);
-            
-            const regionData = distributionByWilaya.map(item => [item.name, item.value.toString()]);
-            pdf.autoTable({
-                startY: tableY + 5,
-                head: [['Region', 'Count']],
-                body: regionData,
-                theme: 'grid',
-                headStyles: { fillColor: [16, 185, 129] }
-            });
-            
-            // Add crisis type data
-            const crisisY = pdf.previousAutoTable.finalY + 15;
-            pdf.text('Crisis Type Distribution', 14, crisisY);
-            
-            const crisisData = crisisTypeData.map(item => [item.name, item.value.toString()]);
-            pdf.autoTable({
-                startY: crisisY + 5,
-                head: [['Crisis Type', 'Count']],
-                body: crisisData,
-                theme: 'grid',
-                headStyles: { fillColor: [239, 68, 68] }
-            });
-            
-            // Save the PDF
-            pdf.save('dashboard_report.pdf');
-        };
-        
-        // Execute the async function and catch any errors
-        generatePdf().catch(error => {
-            console.error("Error generating PDF:", error);
+        } catch (error) {
+            console.error("Error in PDF export:", error);
             alert("Failed to generate PDF. Please try again.");
-        });
-    } catch (error) {
-        console.error("Error in PDF export:", error);
-        alert("Failed to generate PDF. Please try again.");
-    }
-};
+        }
+    };
     return (
         <div className="space-y-6" ref={dashboardRef}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
@@ -202,7 +212,7 @@ const exportPDF = () => {
                     <h3 className="text-lg font-semibold text-gray-800">Reports Timeline</h3>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
                         <div className="flex flex-wrap gap-2">
-                            {["daily", "weekly", "monthly"].map((type) => (
+                            {["daily", "weekly", "monthly", "yearly"].map((type) => (
                                 <button
                                     key={type}
                                     onClick={() => setView(type)}
@@ -237,19 +247,19 @@ const exportPDF = () => {
                         {chartType === 'bar' ? (
                             <BarChart data={reportData[view]}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="date" tick={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
-                                <YAxis tick={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
+                                <XAxis dataKey="date" tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
+                                <YAxis tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
                                 <Tooltip />
-                                <Legend wrapperStyle={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
+                                <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
                                 <Bar dataKey="count" fill="#3b82f6" name="Reports" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         ) : (
                             <LineChart data={reportData[view]}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="date" tick={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
-                                <YAxis tick={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
+                                <XAxis dataKey="date" tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
+                                <YAxis tick={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
                                 <Tooltip />
-                                <Legend wrapperStyle={{fontSize: window.innerWidth < 768 ? 10 : 12}} />
+                                <Legend wrapperStyle={{ fontSize: window.innerWidth < 768 ? 10 : 12 }} />
                                 <Line
                                     type="monotone"
                                     dataKey="count"
@@ -277,7 +287,7 @@ const exportPDF = () => {
                                     innerRadius={window.innerWidth < 768 ? 40 : 60}
                                     outerRadius={window.innerWidth < 768 ? 70 : 90}
                                     paddingAngle={2}
-                                    label={{fontSize: window.innerWidth < 768 ? 10 : 12}}
+                                    label={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
                                 >
                                     {distributionByWilaya.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -319,7 +329,7 @@ const exportPDF = () => {
                                     innerRadius={0}
                                     outerRadius={window.innerWidth < 768 ? 70 : 90}
                                     paddingAngle={0}
-                                    label={{fontSize: window.innerWidth < 768 ? 10 : 12}}
+                                    label={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
                                 >
                                     {crisisTypeData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -354,4 +364,4 @@ const exportPDF = () => {
     );
 };
 
-export default AdminStatistics;
+export default AdminStatics;
