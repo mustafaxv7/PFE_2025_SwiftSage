@@ -130,7 +130,8 @@
       "addReport": "إضافة تقرير جديد",
       "alerts": "التنبيهات",
       "myReports": "تقاريري",
-      "logout": "تسجيل الخروج"
+      "logout": "تسجيل الخروج",
+      "language": "اللغة"
     },
     "reports": {
       "title": "تقاريري",

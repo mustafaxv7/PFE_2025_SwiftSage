@@ -141,11 +141,24 @@
     }
   },
   "dashboard": {
+    "admin": {
+      "title": "Centre de Commande",
+      "subtitle": "Panneau d'Administration",
+      "reportsOverview": "Aperçu des Rapports",
+      "manageAlerts": "Gérer les Alertes",
+      "crisisMap": "Carte des Crises",
+      "statistics": "Statistiques",
+      "manageUsers": "Gérer les Utilisateurs"
+    },
     "sidebar": {
-      "addReport": "Ajouter un rapport",
       "alerts": "Alertes",
-      "myReports": "Mes rapports",
-      "logout": "Déconnexion"
+      "myReports": "Mes Rapports",
+      "newReport": "Nouveau Rapport de Crise",
+      "userName": "Nom d'Utilisateur",
+      "userRole": "Intervenant d'Urgence",
+      "logout": "Déconnexion",
+      "language": "Langue",
+      "addReport": "Ajouter un rapport"
     },
     "reports": {
       "title": "Mes rapports",

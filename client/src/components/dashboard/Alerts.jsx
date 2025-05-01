@@ -54,8 +54,8 @@ const Alerts = () => {
                     const formattedAlerts = parsedAlerts.map(alert => ({
                         ...alert,
                         // Ensure status is properly formatted
-                        status: alert.status === "active" ? "Active" : 
-                               alert.status === "resolved" ? "Resolved" : alert.status
+                        status: alert.status === "active" ? "Active" :
+                            alert.status === "resolved" ? "Resolved" : alert.status
                     }));
                     setAlerts(formattedAlerts);
                     return;
@@ -82,9 +82,9 @@ const Alerts = () => {
                 }
             }
         };
-        
+
         window.addEventListener('storage', handleStorageChange);
-        
+
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
@@ -93,7 +93,7 @@ const Alerts = () => {
     const dismissAlert = (id) => {
         const updatedAlerts = alerts.filter(alert => alert.id !== id);
         setAlerts(updatedAlerts);
-        
+
         // Update localStorage when a user dismisses an alert
         // This ensures consistency between admin and user views
         localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));

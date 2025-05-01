@@ -47,11 +47,24 @@
     }
   },
   "dashboard": {
+    "admin": {
+      "title": "Crisis Command",
+      "subtitle": "Admin Control Panel",
+      "reportsOverview": "Reports Overview",
+      "manageAlerts": "Manage Alerts",
+      "crisisMap": "Crisis Map",
+      "statistics": "Statistics",
+      "manageUsers": "Manage Users"
+    },
     "sidebar": {
-      "addReport": "Add New Report",
       "alerts": "Alerts",
       "myReports": "My Reports",
-      "logout": "Log Out"
+      "newReport": "New Crisis Report",
+      "userName": "User Name",
+      "userRole": "Emergency Responder",
+      "logout": "Log Out",
+      "language": "Language",
+      "addReport": "Add New Report"
     },
     "reports": {
       "title": "My Reports",
