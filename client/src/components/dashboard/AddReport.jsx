@@ -45,7 +45,7 @@ const AddReport = () => {
     const [reportDetailsData, setReportDetailsData] = useState(initialReportDetailsData);
     // Additional data that might need special handling
     const [additionalData, setAdditionalData] = useState(initialAdditionalData);
-
+    
     const formData = {
         ...reportData,
         ...reportDetailsData,
@@ -65,35 +65,40 @@ const AddReport = () => {
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
+        
+        // Validate file type and size
         if (file) {
-
+            // Check if file is an image
             if (!file.type.match('image.*')) {
                 alert('Please select an image file (PNG, JPG, GIF)');
                 return;
             }
-
+            
+            // Check file size (10MB max)
             if (file.size > 10 * 1024 * 1024) {
                 alert('File size exceeds 10MB limit');
                 return;
             }
-
+            
+            // Set the image in state
             setReportData(prev => ({ ...prev, image: file }));
             console.log('Image selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
         }
     };
-
+    
+    // Function to display image preview
     const getImagePreview = () => {
         if (!reportData.image) return null;
-
+        
         return (
             <div className="mt-2 relative">
-                <img
-                    src={URL.createObjectURL(reportData.image)}
-                    alt="Preview"
-                    className="h-32 w-auto rounded-md object-cover"
+                <img 
+                    src={URL.createObjectURL(reportData.image)} 
+                    alt="Preview" 
+                    className="h-32 w-auto rounded-md object-cover" 
                 />
-                <button
-                    type="button"
+                <button 
+                    type="button" 
                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                     onClick={() => setReportData(prev => ({ ...prev, image: null }))}
                 >
@@ -118,18 +123,19 @@ const AddReport = () => {
                 return <AlertTriangle className="text-yellow-500" />;
         }
     };
-
+    
+    // Get marker color based on crisis type (matching MapView.jsx)
     const getMarkerColor = (type) => {
-        switch (type) {
+        switch(type) {
             case "flood":
-                return "#3b82f6";
+                return "#3b82f6"; // blue
             case "earthquake":
-                return "#f59e0b";
+                return "#f59e0b"; // orange
             case "forest_fire":
             case "industrial_fire":
-                return "#ef4444";
+                return "#ef4444"; // red
             default:
-                return "#10b981";
+                return "#10b981"; // green
         }
     };
 
@@ -143,10 +149,11 @@ const AddReport = () => {
     };
 
     const center = {
-        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538,
+        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538, // Center of Algeria
         lng: reportData.lng ? parseFloat(reportData.lng) : 3.0588
     };
-
+    
+    // Load Google Maps API
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -174,18 +181,20 @@ const AddReport = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Form validation
         if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
             alert("Please fill in all required fields (title, description, crisis type, and location)");
             return;
         }
 
         try {
+            // Get user ID from localStorage or JWT token
             const token = localStorage.getItem('token');
             if (!token) {
                 alert("You must be logged in to submit a report");
                 return;
             }
-
+            
             // Extract user ID from JWT token
             // JWT token is in format: header.payload.signature
             // We need to decode the payload part
@@ -193,30 +202,34 @@ const AddReport = () => {
             try {
                 const payload = token.split('.')[1];
                 const decodedPayload = JSON.parse(atob(payload));
-                userId = decodedPayload.id;
+                userId = decodedPayload.id; // The user ID is stored in the 'id' field of the JWT payload
                 console.log('Extracted user ID:', userId);
             } catch (error) {
                 console.error('Error extracting user ID from token:', error);
                 alert("Authentication error. Please log in again.");
                 return;
             }
-
+            
             if (!userId) {
                 alert("User ID not found. Please log in again.");
                 return;
             }
-
+            
+            // Prepare form data for API submission
             const formDataToSend = new FormData();
-
+            
+            // Create report data object with userId
             const reportDataWithUserId = {
                 ...reportData,
                 userId: userId
             };
-
+            
+            // Convert objects to JSON strings before appending to FormData
             formDataToSend.append('reportData', JSON.stringify(reportDataWithUserId));
             formDataToSend.append('reportDetailsData', JSON.stringify(reportDetailsData));
             formDataToSend.append('additionalData', JSON.stringify(additionalData));
-
+            
+            // Append image file if it exists
             if (reportData.image) {
                 try {
                     formDataToSend.append('image', reportData.image);
@@ -228,48 +241,57 @@ const AddReport = () => {
                 }
             }
 
-            console.log('Submitting report with data:', {
+            console.log('Submitting report with data:', { 
                 reportData: reportDataWithUserId,
                 reportDetailsData,
                 additionalData,
                 hasImage: !!reportData.image
             });
 
+            // Send to API
             try {
+                // Use the correct API endpoint with the full URL
                 const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
                 console.log('Sending request to:', `${baseURL}/api/reports`);
-
+                
+                // Set a timeout for the request
                 const response = await axios.post(`${baseURL}/api/reports`, formDataToSend, {
                     headers: {
-
+                        // Don't set Content-Type for multipart/form-data, axios will set it with boundary
                         'Authorization': `Bearer ${token}`
                     },
-                    timeout: 30000,
+                    timeout: 30000, // 30 seconds timeout
                     onUploadProgress: (progressEvent) => {
                         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
                         console.log(`Upload progress: ${percentCompleted}%`);
                     }
                 });
-
+                
                 console.log('Report submitted successfully to API:', response.data);
-
+                
+                // Reset the form
                 setReportData(initialReportData);
                 setReportDetailsData(initialReportDetailsData);
                 setAdditionalData(initialAdditionalData);
 
+                // Show success message
                 alert("Report submitted successfully!");
-
+                
             } catch (error) {
                 console.error('Error submitting report to API:', error);
-
+                
+                // Handle different types of errors
                 if (error.code === 'ECONNABORTED') {
                     alert("Request timed out. The server might be down or the image might be too large.");
                 } else if (error.response) {
+                    // The server responded with a status code outside the 2xx range
                     const errorMessage = error.response.data?.error || error.response.statusText || 'Unknown error';
                     alert(`Server error (${error.response.status}): ${errorMessage}`);
                 } else if (error.request) {
+                    // The request was made but no response was received
                     alert("No response from server. Please check your internet connection and try again.");
                 } else {
+                    // Something happened in setting up the request
                     alert("Error submitting report: " + error.message);
                 }
             }
@@ -280,6 +302,7 @@ const AddReport = () => {
         }
     };
 
+    // Function to handle cancel action
     const handleCancel = () => {
         setReportData(initialReportData);
         setReportDetailsData(initialReportDetailsData);
