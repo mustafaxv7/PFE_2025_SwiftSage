@@ -1,5 +1,5 @@
-import {useState, useEffect} from "react";
-import {Ban, CheckCircle, Edit, Eye, Search, Trash2, UserPlus, X} from "lucide-react";
+import { useState, useEffect } from "react";
+import { Ban, CheckCircle, ChevronDown, Edit, Eye, Search, Trash2, UserPlus, X } from "lucide-react";
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -11,79 +11,47 @@ const AdminUsers = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
-    
-    {/*const chelfCommunes = [
+
+    const chelfCommunes = [
         "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
         "Bénairia", "Bouzeghaia", "Ouled Fares", "Chettia", "Labiod Medjadja", "Boukadir", "Oued Sly", "Sobha", "Ouled Ben Abdelkader", "El Hadjadj",
         "Aïn Merane", "Herenfa", "Taougrite", "Dahra", "Ténès", "Sidi Akkacha", "Sidi Abderrahmane", "Abou El Hassan", "Talassa", "Tadjena",
         "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
-    ];*/}
+    ];
 
     useEffect(() => {
         const fetchUsers = async () => {
             setIsLoading(true);
             try {
-                // const response = await fetch("http://localhost:5030/admin/users");
-                // const data = await response.json();
-                const mockUsers = [
-                    {
-                        id: 1,
-                        name: "محمد بن علي",
-                        email: "mohammed@example.com",
-                        phone: "+213 555-123-456",
-                        type: "individual",
-                        community: "Chlef Chlef",
-                        createdAt: "2025-03-10",
-                        reportTime: "08:30"
-                    },
-                    {
-                        id: 2,
-                        name: "فاطمة الزهراء",
-                        email: "fatima@example.com",
-                        phone: "+213 555-987-654",
-                        type: "individual",
-                        community: "Ténès",
-                        createdAt: "2025-03-15",
-                        reportTime: "14:22"
-                    },
-                    {
-                        id: 3,
-                        name: "شركة سونلغاز",
-                        email: "contact@sonelgaz.dz",
-                        phone: "+213 555-111-222",
-                        type: "organization",
-                        orgType: "public",
-                        community: "Beni Haoua",
-                        createdAt: "2025-04-02",
-                        reportTime: "11:15"
-                    },
-                    {
-                        id: 4,
-                        name: "شركة حلول التكنولوجيا",
-                        email: "info@techsolutions.dz",
-                        phone: "+213 555-333-444",
-                        type: "organization",
-                        orgType: "private",
-                        community: "Ouled Fares",
-                        createdAt: "2025-03-28",
-                        reportTime: "16:45"
-                    },
-                    {
-                        id: 5,
-                        name: "كريم حمدي",
-                        email: "karim@example.com",
-                        phone: "+213 555-555-555",
-                        type: "individual",
-                        community: "Boukadir",
-                        createdAt: "2025-04-01",
-                        reportTime: "09:00"
-                    },
-                ];
+                const response = await fetch("/api/auth/users");
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
 
-                setUsers(mockUsers);
-                setFilteredUsers(mockUsers);
+                // Transform the data to match our component's expected format
+                const formattedUsers = data.map(user => ({
+                    id: user.user_id,
+                    name: user.username,
+                    email: user.email,
+                    phone: user.phone_number,
+                    type: user.is_organization_member ? "organization" : "individual",
+                    orgType: user.is_organization_member ? (user.organization_type || "public") : null,
+                    community: user.community || "Chlef Chlef",
+                    createdAt: new Date(user.created_at || Date.now()).toISOString().split('T')[0],
+                    reportTime: new Date(user.created_at || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+                }));
+
+                setUsers(formattedUsers);
+                setFilteredUsers(formattedUsers);
             } catch (error) {
                 console.error("Error fetching users:", error);
+                // Display a user-friendly error message
+                alert(`Failed to load users: ${error.message}`);
+                // Set empty arrays to prevent undefined errors
+                setUsers([]);
+                setFilteredUsers([]);
             } finally {
                 setIsLoading(false);
             }
@@ -119,7 +87,7 @@ const AdminUsers = () => {
     };
 
     const handleViewUser = (user) => {
-        setCurrentUser({...user, mode: "view"});
+        setCurrentUser({ ...user, mode: "view" });
         setShowUserModal(true);
     };
 
@@ -139,35 +107,100 @@ const AdminUsers = () => {
 
     const handleDeleteUser = async () => {
         try {
+            const response = await fetch(`/api/auth/users/${userToDelete.id}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+
             setUsers(users.filter(user => user.id !== userToDelete.id));
             setShowDeleteModal(false);
             setUserToDelete(null);
+            alert('User deleted successfully');
         } catch (error) {
             console.error("Error deleting user:", error);
+            alert(`Failed to delete user: ${error.message}`);
         }
     };
 
     const handleCommunityChange = async (userId, newCommunity) => {
         try {
+            // Find the user to update
+            const userToUpdate = users.find(user => user.id === userId);
+            if (!userToUpdate) return;
+
+            // Prepare data for API with field names matching the backend expectations
+            const apiPayload = {
+                name: userToUpdate.name,
+                email: userToUpdate.email,
+                phone: userToUpdate.phone,
+                community: newCommunity,
+                isOrganisationMember: userToUpdate.type === "organization",
+                password: '' // Required by the API but we don't want to change it
+            };
+
+            const response = await fetch(`/api/auth/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiPayload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+
+            // Update local state
             setUsers(users.map(user =>
-                user.id === userId ? {...user, community: newCommunity} : user
+                user.id === userId ? { ...user, community: newCommunity } : user
             ));
         } catch (error) {
             console.error("Error updating user community:", error);
+            alert(`Failed to update user community: ${error.message}`);
         }
     };
 
     const handleSaveUser = async (userData) => {
         try {
             if (userData.mode === "edit") {
+                // Prepare data for API with field names matching the backend expectations
+                const apiPayload = {
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone,
+                    password: userData.password || '',  // Include password if provided
+                    isOrganisationMember: userData.type === "organization",
+                    community: userData.community
+                };
+
+                const response = await fetch(`/api/auth/users/${userData.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(apiPayload),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+                }
+
+                // Update local state
                 setUsers(users.map(user =>
-                    user.id === userData.id ? {...userData, mode: undefined, isOrganization: undefined} : user
+                    user.id === userData.id ? { ...userData, mode: undefined, isOrganization: undefined } : user
                 ));
             }
             setShowUserModal(false);
             setCurrentUser(null);
         } catch (error) {
             console.error("Error saving user:", error);
+            alert(`Failed to save user: ${error.message}`);
         }
     };
 
@@ -189,25 +222,54 @@ const AdminUsers = () => {
 
     const handleCreateUser = async (userData) => {
         try {
-            const newUser = {
-                ...userData,
-                id: users.length + 1,
-                createdAt: new Date().toISOString().split('T')[0],
-                reportTime: new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false})
+            // Prepare data for API with field names matching the backend expectations
+            const apiPayload = {
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                password: userData.password,
+                isOrganisationMember: userData.isOrganization,
+                community: userData.community
             };
 
-            delete newUser.isOrganization;
-            delete newUser.mode;
+            const response = await fetch('/api/auth/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(apiPayload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            // Create a new user object with the response data and additional UI-specific properties
+            const newUser = {
+                id: result.user_id || users.length + 1,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                type: userData.isOrganization ? "organization" : "individual",
+                orgType: userData.isOrganization ? userData.orgType : null,
+                community: userData.community,
+                createdAt: new Date().toISOString().split('T')[0],
+                reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+            };
 
             setUsers([...users, newUser]);
             setShowUserModal(false);
             setCurrentUser(null);
         } catch (error) {
             console.error("Error creating user:", error);
+            alert(`Failed to create user: ${error.message}`);
         }
     };
 
-    const CommunityBadge = ({community}) => {
+    const CommunityBadge = ({ community }) => {
         return (
             <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                 {community}
@@ -215,7 +277,7 @@ const AdminUsers = () => {
         );
     };
 
-    const UserModal = ({user, onClose, onSave}) => {
+    const UserModal = ({ user, onClose, onSave }) => {
         const [formData, setFormData] = useState(user || {});
         const isViewOnly = user?.mode === "view";
         const isCreate = user?.mode === "create";
@@ -227,7 +289,7 @@ const AdminUsers = () => {
         }, [user]);
 
         const handleChange = (e) => {
-            const {name, value, type, checked} = e.target;
+            const { name, value, type, checked } = e.target;
             setFormData(prev => ({
                 ...prev,
                 [name]: type === "checkbox" ? checked : value,
@@ -260,7 +322,7 @@ const AdminUsers = () => {
                             onClick={onClose}
                             className="text-gray-400 hover:text-gray-500"
                         >
-                            <X size={20}/>
+                            <X size={20} />
                         </button>
                     </div>
                     <form onSubmit={handleSubmit}>
@@ -375,15 +437,9 @@ const AdminUsers = () => {
                                 >
                                     <option value="">Select your community</option>
                                     <option value="Chlef Chlef">Chlef Chlef</option>
-                                    <option value="Ténès">Ténès</option>
-                                    <option value="Beni Haoua">Beni Haoua</option>
-                                    <option value="Ouled Fares">Ouled Fares</option>
-                                    <option value="Boukadir">Boukadir</option>
-                                    <option value="Zeboudja">Zeboudja</option>
-                                    <option value="Abou El Hassan">Abou El Hassan</option>
-                                    <option value="El Karimia">El Karimia</option>
-                                    <option value="Taougrite">Taougrite</option>
-                                    <option value="Beni Rached">Beni Rached</option>
+                                    {chelfCommunes.map((commune, index) => (
+                                        <option key={index} value={commune}>{commune}</option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -423,13 +479,13 @@ const AdminUsers = () => {
         );
     };
 
-    const DeleteModal = ({user, onClose, onConfirm}) => {
+    const DeleteModal = ({ user, onClose, onConfirm }) => {
         return (
             <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4">
                     <div className="mb-6 text-center">
                         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <Trash2 className="h-6 w-6 text-red-600"/>
+                            <Trash2 className="h-6 w-6 text-red-600" />
                         </div>
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Delete User</h3>
                         <p className="text-sm text-gray-500">
@@ -465,65 +521,41 @@ const AdminUsers = () => {
             </div>
             <div className="bg-white shadow-md rounded-lg p-4 mb-4">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="relative w-full sm:w-auto">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search size={18} className="text-gray-400"/>
+                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <div className="relative w-full sm:w-64">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={18} className="text-gray-400" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Search users..."
+                                value={searchTerm}
+                                onChange={handleSearch}
+                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Search users..."
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
-                        />
-                    </div>
-                    <div className="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
-                        <button
-                            onClick={() => handleFilterChange("all")}
-                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "all"
-                                    ? "bg-gray-900 text-white"
-                                    : "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                            }`}
-                        >
-                            All
-                        </button>
-                        <button
-                            onClick={() => handleFilterChange("Chlef Chlef")}
-                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "Chlef Chlef"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Chlef Chlef
-                        </button>
-                        <button
-                            onClick={() => handleFilterChange("Ténès")}
-                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "Ténès"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Ténès
-                        </button>
-                        <button
-                            onClick={() => handleFilterChange("Beni Haoua")}
-                            className={`px-3 py-1.5 text-xs sm:text-sm rounded-md ${
-                                currentFilter === "Beni Haoua"
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
-                        >
-                            Beni Haoua
-                        </button>
+                        <div className="relative w-full sm:w-48">
+                            <div className="absolute inset-y-0 right-2 flex items-center pointer-events-none">
+                                <ChevronDown size={16} className="text-gray-400" />
+                            </div>
+                            <select
+                                value={currentFilter}
+                                onChange={(e) => handleFilterChange(e.target.value)}
+                                className="appearance-none w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
+                            >
+                                <option value="all">All Communities</option>
+                                <option value="Chlef Chlef">Chlef Chlef</option>
+                                {chelfCommunes.map((commune, index) => (
+                                    <option key={index} value={commune}>{commune}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     <button
                         onClick={handleAddNewUser}
                         className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center w-full sm:w-auto justify-center"
                     >
-                        <UserPlus size={18} className="mr-1"/>
+                        <UserPlus size={18} className="mr-1" />
                         Add User
                     </button>
                 </div>
@@ -542,86 +574,106 @@ const AdminUsers = () => {
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
-                            <tr>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    User
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Contact Info
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Type
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Community
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Created
-                                </th>
-                                <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        User
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Contact Info
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Type
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Community
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Created
+                                    </th>
+                                    <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
-                            {filteredUsers.map((user) => (
-                                <tr key={user.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <span className="text-blue-600 font-medium">
-                                                    {user.name.charAt(0).toUpperCase()}
-                                                </span>
+                                {filteredUsers.map((user) => (
+                                    <tr key={user.id} className="hover:bg-gray-50">
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div className="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <span className="text-blue-600 font-medium">
+                                                        {user.name.charAt(0).toUpperCase()}
+                                                    </span>
+                                                </div>
+                                                <div className="ml-3">
+                                                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                                </div>
                                             </div>
-                                            <div className="ml-3">
-                                                <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900">{user.email}</div>
+                                            <div className="text-sm text-gray-500">{user.phone}</div>
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="text-sm text-gray-900 capitalize">{user.type}</div>
+                                            {user.type === "organization" && (
+                                                <div className="text-xs text-gray-500 capitalize">{user.orgType}</div>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <CommunityBadge community={user.community} />
+                                                <div className="ml-2 relative group">
+                                                    <button className="text-gray-400 hover:text-blue-600 focus:outline-none">
+                                                        <ChevronDown size={14} />
+                                                    </button>
+                                                    <div className="absolute z-10 hidden group-hover:block mt-1 w-48 bg-white rounded-md shadow-lg py-1 right-0">
+                                                        <div className="max-h-48 overflow-y-auto">
+                                                            {chelfCommunes.map((commune, idx) => (
+                                                                <button
+                                                                    key={idx}
+                                                                    onClick={() => handleCommunityChange(user.id, commune)}
+                                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                                >
+                                                                    {commune}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900">{user.email}</div>
-                                        <div className="text-sm text-gray-500">{user.phone}</div>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900 capitalize">{user.type}</div>
-                                        {user.type === "organization" && (
-                                            <div className="text-xs text-gray-500 capitalize">{user.orgType}</div>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap">
-                                        <CommunityBadge community={user.community}/>
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
-                                        {user.createdAt}
-                                    </td>
-                                    <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                        <div className="flex justify-end space-x-2">
-                                            <button
-                                                onClick={() => handleViewUser(user)}
-                                                className="text-blue-600 hover:text-blue-900"
-                                                title="View user details"
-                                            >
-                                                <Eye size={16}/>
-                                            </button>
-                                            <button
-                                                onClick={() => handleEditUser(user)}
-                                                className="text-gray-600 hover:text-gray-900"
-                                                title="Edit user"
-                                            >
-                                                <Edit size={16}/>
-                                            </button>
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                                            {user.createdAt}
+                                        </td>
+                                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                                            <div className="flex justify-end space-x-2">
+                                                <button
+                                                    onClick={() => handleViewUser(user)}
+                                                    className="text-blue-600 hover:text-blue-900"
+                                                    title="View user details"
+                                                >
+                                                    <Eye size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleEditUser(user)}
+                                                    className="text-gray-600 hover:text-gray-900"
+                                                    title="Edit user"
+                                                >
+                                                    <Edit size={16} />
+                                                </button>
 
-                                            <button
-                                                onClick={() => handleDeletePrompt(user)}
-                                                className="text-red-600 hover:text-red-900"
-                                                title="Delete user"
-                                            >
-                                                <Trash2 size={16}/>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                                <button
+                                                    onClick={() => handleDeletePrompt(user)}
+                                                    className="text-red-600 hover:text-red-900"
+                                                    title="Delete user"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </div>
