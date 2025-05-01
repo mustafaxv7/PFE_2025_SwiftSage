@@ -106,26 +106,26 @@ const MyReports = () => {
         const updatedReports = reports.map(report =>
             report.id === editedReport.id ? editedReport : report
         );
-        
+
         // Update state
         setReports(updatedReports);
         setSelectedReport(editedReport);
         setIsEditing(false);
-        
+
         // Save to localStorage
         localStorage.setItem('userReports', JSON.stringify(updatedReports));
-        
+
         // Also update in admin reports if it exists there
         try {
             const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-            const updatedAdminReports = adminReports.map(report => 
+            const updatedAdminReports = adminReports.map(report =>
                 report.id === editedReport.id ? editedReport : report
             );
             localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
         } catch (error) {
             console.error('Error updating admin reports:', error);
         }
-        
+
         alert("Report updated successfully!");
     };
 

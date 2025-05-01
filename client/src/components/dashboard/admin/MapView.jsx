@@ -8,7 +8,7 @@ const mapContainerStyle = {
 };
 
 const center = {
-    lat: 36.7538, // Center of Algeria
+    lat: 36.7538,
     lng: 3.0588
 };
 
@@ -20,70 +20,112 @@ const MapView = () => {
     const [mapCenter, setMapCenter] = useState(center);
     const [mapZoom, setMapZoom] = useState(6);
     const [selectedReport, setSelectedReport] = useState(null);
-    
-    // Load Google Maps API
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: '' // You'll need to add your API key here
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
     });
-    
+
     const mapRef = useRef(null);
-    
+
     const onMapLoad = useCallback((map) => {
         mapRef.current = map;
     }, []);
 
     useEffect(() => {
         const fetchReports = async () => {
-            
-            const data = [
-                {
-                    id: 1,
-                    title: "Inondation à Alger",
-                    location: "Alger, Algérie",
-                    coordinates: { lat: 36.7538, lng: 3.0588 },
-                    severity: "high",
-                    type: "flood",
-                    date: "10 Mars, 2025",
-                    description: "Inondation majeure affectant le centre-ville avec fermetures de routes et dommages matériels.",
-                    affectedArea: "8 km²",
-                    evacuees: 180,
-                    status: "active"
-                },
-                {
-                    id: 2,
-                    title: "Séisme à Béjaïa",
-                    location: "Béjaïa, Algérie",
-                    coordinates: { lat: 36.7509, lng: 5.0567 },
-                    severity: "critical",
-                    type: "earthquake",
-                    date: "15 Mars, 2025",
-                    description: "Séisme de magnitude 5.8 causant des dommages structurels importants.",
-                    affectedArea: "40 km de rayon",
-                    injured: 35,
-                    status: "active"
-                },
-                {
-                    id: 3,
-                    title: "Incendie de forêt à Tizi Ouzou",
-                    location: "Tizi Ouzou, Algérie",
-                    coordinates: { lat: 36.7169, lng: 4.0476 },
-                    severity: "high",
-                    type: "forest_fire",
-                    date: "2 Avril, 2025",
-                    description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
-                    burntArea: "950 hectares",
-                    contained: "35%",
-                    status: "active"
+            try {
+                const sampleReports = [
+                    {
+                        id: 1,
+                        title: "Inondation à Alger",
+                        location: "Alger, Algérie",
+                        coordinates: { lat: 36.7538, lng: 3.0588 },
+                        severity: "high",
+                        type: "flood",
+                        date: "10 Mars, 2025",
+                        description: "Inondation majeure affectant le centre-ville avec fermetures de routes et dommages matériels.",
+                        affectedArea: "8 km²",
+                        evacuees: 180,
+                        status: "active"
+                    },
+                    {
+                        id: 2,
+                        title: "Séisme à Béjaïa",
+                        location: "Béjaïa, Algérie",
+                        coordinates: { lat: 36.7509, lng: 5.0567 },
+                        severity: "critical",
+                        type: "earthquake",
+                        date: "15 Mars, 2025",
+                        description: "Séisme de magnitude 5.8 causant des dommages structurels importants.",
+                        affectedArea: "40 km de rayon",
+                        injured: 35,
+                        status: "active"
+                    },
+                    {
+                        id: 3,
+                        title: "Incendie de forêt à Tizi Ouzou",
+                        location: "Tizi Ouzou, Algérie",
+                        coordinates: { lat: 36.7169, lng: 4.0476 },
+                        severity: "high",
+                        type: "forest_fire",
+                        date: "2 Avril, 2025",
+                        description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
+                        burntArea: "950 hectares",
+                        contained: "35%",
+                        status: "active"
+                    }
+                ];
+
+                let data = [];
+                const storedReports = localStorage.getItem('adminReports') || localStorage.getItem('userReports');
+
+                if (storedReports) {
+                    const parsedReports = JSON.parse(storedReports);
+                    if (parsedReports && parsedReports.length > 0) {
+                        data = parsedReports.map(report => ({
+                            id: report.id,
+                            title: report.title,
+                            location: report.location || `${report.lat}, ${report.lng}`,
+                            coordinates: {
+                                lat: parseFloat(report.lat) || (report.coordinates ? parseFloat(report.coordinates.lat) : 0),
+                                lng: parseFloat(report.lng) || (report.coordinates ? parseFloat(report.coordinates.lng) : 0)
+                            },
+                            severity: report.importance?.toLowerCase() || "medium",
+                            type: report.crisisType,
+                            date: report.date,
+                            description: report.description,
+                            status: report.status || "active"
+                        }));
+                    }
                 }
-            ];
-            setReports(data);
-            if (data.length > 0) {
-                setMapCenter(data[0].coordinates);
-                setMapZoom(6);
+
+                if (data.length === 0) {
+                    data = sampleReports;
+                }
+
+                setReports(data);
+                if (data.length > 0) {
+                    setMapCenter(data[0].coordinates);
+                    setMapZoom(6);
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                setReports([]);
             }
         };
+
         fetchReports();
+
+        const handleStorageChange = (e) => {
+            if (e.key === 'adminReports' || e.key === 'userReports') {
+                fetchReports();
+            }
+        };
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     const filteredReports = reports.filter(report => {
@@ -92,19 +134,18 @@ const MapView = () => {
         if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
     });
-    
-    // Get marker icon based on crisis type
+
     const getMarkerColor = (type) => {
-        switch(type) {
+        switch (type) {
             case "flood":
-                return "#3b82f6"; // blue
+                return "#3b82f6";
             case "earthquake":
-                return "#f59e0b"; // orange
+                return "#f59e0b";
             case "forest_fire":
             case "industrial_fire":
-                return "#ef4444"; // red
+                return "#ef4444";
             default:
-                return "#10b981"; // green
+                return "#10b981";
         }
     };
 
@@ -245,11 +286,10 @@ const MapView = () => {
                         <div className="flex items-start justify-between mb-2">
                             <h3 className="font-semibold text-gray-800">{report.title}</h3>
                             <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                    report.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${report.severity === 'critical' ? 'bg-red-100 text-red-800' :
                                         report.severity === 'high' ? 'bg-orange-100 text-orange-800' :
                                             'bg-blue-100 text-blue-800'
-                                }`}
+                                    }`}
                             >
                                 {report.severity}
                             </span>

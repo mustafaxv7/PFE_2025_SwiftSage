@@ -32,33 +32,33 @@ const AdminSidebar = ({ isMobile = false }) => {
     };
 
     const menuItems = [
-        { 
-            path: "/admin/reports", 
-            icon: <BarChart2 size={isMobile ? 16 : 18} />, 
-            text: "Reports Overview", 
-            bgColor: "bg-red-600", 
-            hoverColor: "hover:bg-red-700" 
+        {
+            path: "/admin/reports",
+            icon: <BarChart2 size={isMobile ? 16 : 18} />,
+            text: "Reports Overview",
+            bgColor: "bg-red-600",
+            hoverColor: "hover:bg-red-700"
         },
-        { 
-            path: "/admin/alerts", 
-            icon: <AlertTriangle size={isMobile ? 16 : 18} />, 
-            text: "Manage Alerts", 
-            bgColor: "bg-yellow-600", 
-            hoverColor: "hover:bg-yellow-700" 
+        {
+            path: "/admin/alerts",
+            icon: <AlertTriangle size={isMobile ? 16 : 18} />,
+            text: "Manage Alerts",
+            bgColor: "bg-yellow-600",
+            hoverColor: "hover:bg-yellow-700"
         },
-        { 
-            path: "/admin/map", 
-            icon: <Map size={isMobile ? 16 : 18} />, 
-            text: "Crisis Map", 
-            bgColor: "bg-blue-600", 
-            hoverColor: "hover:bg-blue-700" 
+        {
+            path: "/admin/map",
+            icon: <Map size={isMobile ? 16 : 18} />,
+            text: "Crisis Map",
+            bgColor: "bg-blue-600",
+            hoverColor: "hover:bg-blue-700"
         },
-        { 
-            path: "/admin/statistics", 
-            icon: <LineChart size={isMobile ? 16 : 18} />, 
-            text: "Statistics", 
-            bgColor: "bg-green-600", 
-            hoverColor: "hover:bg-green-700" 
+        {
+            path: "/admin/statistics",
+            icon: <LineChart size={isMobile ? 16 : 18} />,
+            text: "Statistics",
+            bgColor: "bg-green-600",
+            hoverColor: "hover:bg-green-700"
         },
         {
             path: "/admin/users",
@@ -71,9 +71,9 @@ const AdminSidebar = ({ isMobile = false }) => {
 
     // Updated sidebar classes to fix spacing issue
     const sidebarClasses = `
-        ${isMobile ? 
-            `fixed inset-y-0 left-0 z-50 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out` 
-            : 
+        ${isMobile ?
+            `fixed inset-y-0 left-0 z-50 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`
+            :
             'fixed w-64'
         }
         h-screen bg-gray-900 text-white flex flex-col shadow-xl
@@ -81,9 +81,9 @@ const AdminSidebar = ({ isMobile = false }) => {
 
     return (
         <>
-            
+
             {isMobile && (
-                <button 
+                <button
                     className="fixed top-3 sm:top-4 left-3 sm:left-4 z-50 p-1.5 sm:p-2 rounded-md bg-red-600 text-white md:hidden"
                     onClick={() => setIsMobileOpen(!isMobileOpen)}
                 >
