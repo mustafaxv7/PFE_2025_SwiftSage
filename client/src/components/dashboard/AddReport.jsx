@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from "react";
-import { MapPin, Upload, AlertTriangle, Search } from "lucide-react";
+import { MapPin, Upload, AlertTriangle, Search, X } from "lucide-react";
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import axios from 'axios';
 
 const AddReport = () => {
     // Initial state for resetting the form
@@ -44,7 +45,7 @@ const AddReport = () => {
     const [reportDetailsData, setReportDetailsData] = useState(initialReportDetailsData);
     // Additional data that might need special handling
     const [additionalData, setAdditionalData] = useState(initialAdditionalData);
-    
+
     const formData = {
         ...reportData,
         ...reportDetailsData,
@@ -64,7 +65,43 @@ const AddReport = () => {
 
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
-        setReportData(prev => ({ ...prev, image: file }));
+        if (file) {
+
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (PNG, JPG, GIF)');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size exceeds 10MB limit');
+                return;
+            }
+
+            setReportData(prev => ({ ...prev, image: file }));
+            console.log('Image selected:', file.name, 'Size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+        }
+    };
+
+    const getImagePreview = () => {
+        if (!reportData.image) return null;
+
+        return (
+            <div className="mt-2 relative">
+                <img
+                    src={URL.createObjectURL(reportData.image)}
+                    alt="Preview"
+                    className="h-32 w-auto rounded-md object-cover"
+                />
+                <button
+                    type="button"
+                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    onClick={() => setReportData(prev => ({ ...prev, image: null }))}
+                >
+                    <X size={16} />
+                </button>
+                <p className="text-sm text-gray-500 mt-1">{reportData.image.name}</p>
+            </div>
+        );
     };
 
     const getCrisisTypeIcon = (type) => {
@@ -81,19 +118,18 @@ const AddReport = () => {
                 return <AlertTriangle className="text-yellow-500" />;
         }
     };
-    
-    // Get marker color based on crisis type (matching MapView.jsx)
+
     const getMarkerColor = (type) => {
-        switch(type) {
+        switch (type) {
             case "flood":
-                return "#3b82f6"; // blue
+                return "#3b82f6";
             case "earthquake":
-                return "#f59e0b"; // orange
+                return "#f59e0b";
             case "forest_fire":
             case "industrial_fire":
-                return "#ef4444"; // red
+                return "#ef4444";
             default:
-                return "#10b981"; // green
+                return "#10b981";
         }
     };
 
@@ -107,11 +143,10 @@ const AddReport = () => {
     };
 
     const center = {
-        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538, // Center of Algeria
+        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538,
         lng: reportData.lng ? parseFloat(reportData.lng) : 3.0588
     };
-    
-    // Load Google Maps API
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
@@ -139,82 +174,105 @@ const AddReport = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Form validation
         if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
             alert("Please fill in all required fields (title, description, crisis type, and location)");
             return;
         }
 
         try {
-            // Create a new report object with all the necessary data
-            const currentDate = new Date();
-            const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })}, ${currentDate.getFullYear()}`;
-            
-            // Get user info (in a real app, this would come from authentication)
-            const userFullName = localStorage.getItem('userFullName') || 'Current User';
-            
-            const newReport = {
-                id: Date.now(), // Use timestamp as a temporary ID
-                title: reportData.title,
-                date: formattedDate,
-                crisisType: reportData.crisisType,
-                description: reportData.description,
-                location: "Algeria", // This would ideally be determined from coordinates
-                lat: reportData.lat,
-                lng: reportData.lng,
-                roadStatus: reportDetailsData.roadStatus || "unknown",
-                status: "active", // New reports start as active
-                submittedBy: userFullName,
-                importance: "high", // Default importance
-                // Include all the specific crisis type details
-                ...reportDetailsData,
-                ...additionalData
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("You must be logged in to submit a report");
+                return;
+            }
+
+            // Extract user ID from JWT token
+            // JWT token is in format: header.payload.signature
+            // We need to decode the payload part
+            let userId;
+            try {
+                const payload = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payload));
+                userId = decodedPayload.id;
+                console.log('Extracted user ID:', userId);
+            } catch (error) {
+                console.error('Error extracting user ID from token:', error);
+                alert("Authentication error. Please log in again.");
+                return;
+            }
+
+            if (!userId) {
+                alert("User ID not found. Please log in again.");
+                return;
+            }
+
+            const formDataToSend = new FormData();
+
+            const reportDataWithUserId = {
+                ...reportData,
+                userId: userId
             };
 
-            // Prepare form data for API submission
-            const formDataToSend = new FormData();
-            formDataToSend.append('reportData', JSON.stringify(reportData));
+            formDataToSend.append('reportData', JSON.stringify(reportDataWithUserId));
             formDataToSend.append('reportDetailsData', JSON.stringify(reportDetailsData));
             formDataToSend.append('additionalData', JSON.stringify(additionalData));
+
             if (reportData.image) {
-                formDataToSend.append('image', reportData.image);
+                try {
+                    formDataToSend.append('image', reportData.image);
+                    console.log('Image attached:', reportData.image.name, 'Size:', (reportData.image.size / 1024 / 1024).toFixed(2), 'MB');
+                } catch (error) {
+                    console.error('Error attaching image:', error);
+                    alert("Error attaching image. Please try again with a different image.");
+                    return;
+                }
             }
 
-            // Send to API
+            console.log('Submitting report with data:', {
+                reportData: reportDataWithUserId,
+                reportDetailsData,
+                additionalData,
+                hasImage: !!reportData.image
+            });
+
             try {
-                const response = await axios.post('/api/reports', formDataToSend, {
+                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+                console.log('Sending request to:', `${baseURL}/api/reports`);
+
+                const response = await axios.post(`${baseURL}/api/reports`, formDataToSend, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+
+                        'Authorization': `Bearer ${token}`
+                    },
+                    timeout: 30000,
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        console.log(`Upload progress: ${percentCompleted}%`);
                     }
                 });
+
                 console.log('Report submitted successfully to API:', response.data);
-                
-                // If the API returns an ID, use it instead of our temporary one
-                if (response.data && response.data.id) {
-                    newReport.id = response.data.id;
-                }
+
+                setReportData(initialReportData);
+                setReportDetailsData(initialReportDetailsData);
+                setAdditionalData(initialAdditionalData);
+
+                alert("Report submitted successfully!");
+
             } catch (error) {
                 console.error('Error submitting report to API:', error);
-                // Continue with local storage even if API fails
+
+                if (error.code === 'ECONNABORTED') {
+                    alert("Request timed out. The server might be down or the image might be too large.");
+                } else if (error.response) {
+                    const errorMessage = error.response.data?.error || error.response.statusText || 'Unknown error';
+                    alert(`Server error (${error.response.status}): ${errorMessage}`);
+                } else if (error.request) {
+                    alert("No response from server. Please check your internet connection and try again.");
+                } else {
+                    alert("Error submitting report: " + error.message);
+                }
             }
-
-            // Save to local storage for MyReports component
-            const existingReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-            const updatedReports = [newReport, ...existingReports];
-            localStorage.setItem('userReports', JSON.stringify(updatedReports));
-
-            // Also save to admin reports
-            const existingAdminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-            const updatedAdminReports = [newReport, ...existingAdminReports];
-            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
-
-            // Reset the form
-            setReportData(initialReportData);
-            setReportDetailsData(initialReportDetailsData);
-            setAdditionalData(initialAdditionalData);
-
-            // Show success message
-            alert("Report submitted successfully!");
 
         } catch (error) {
             console.error('Error submitting report:', error);
@@ -222,7 +280,6 @@ const AddReport = () => {
         }
     };
 
-    // Function to handle cancel action
     const handleCancel = () => {
         setReportData(initialReportData);
         setReportDetailsData(initialReportDetailsData);
@@ -350,23 +407,28 @@ const AddReport = () => {
                         <div
                             className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-gray-300 rounded-md">
                             <div className="space-y-1 text-center">
-                                <Upload className="mx-auto h-12 w-12 text-gray-400" strokeWidth={1} />
-                                <div className="flex text-sm text-gray-600">
-                                    <label htmlFor="file-upload"
-                                        className="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500">
-                                        <span>Upload a file</span>
-                                        <input
-                                            id="file-upload"
-                                            name="file-upload"
-                                            type="file"
-                                            className="sr-only"
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                        />
-                                    </label>
-                                    <p className="pl-1">or drag and drop</p>
-                                </div>
-                                <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                {!reportData.image && (
+                                    <>
+                                        <Upload className="mx-auto h-12 w-12 text-gray-400" strokeWidth={1} />
+                                        <div className="flex text-sm text-gray-600">
+                                            <label htmlFor="file-upload"
+                                                className="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500">
+                                                <span>Upload a file</span>
+                                                <input
+                                                    id="file-upload"
+                                                    name="file-upload"
+                                                    type="file"
+                                                    className="sr-only"
+                                                    accept="image/*"
+                                                    onChange={handleImageUpload}
+                                                />
+                                            </label>
+                                            <p className="pl-1">or drag and drop</p>
+                                        </div>
+                                        <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    </>
+                                )}
+                                {reportData.image && getImagePreview()}
                             </div>
                         </div>
                     </div>
