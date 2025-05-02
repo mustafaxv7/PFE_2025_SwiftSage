@@ -37,22 +37,22 @@ const MapView = () => {
                 const sampleReports = [
                     {
                         id: 1,
-                        title: "Inondation à Alger",
-                        location: "Alger, Algérie",
-                        coordinates: { lat: 36.7538, lng: 3.0588 },
+                        title: "Inondation à Chettia",
+                        location: "Chettia, Chlef",
+                        coordinates: { lat: 36.1647, lng: 1.3317 },
                         severity: "high",
                         type: "flood",
                         date: "10 Mars, 2025",
-                        description: "Inondation majeure affectant le centre-ville avec fermetures de routes et dommages matériels.",
+                        description: "Inondation majeure affectant le centre-ville de Chettia avec fermetures de routes et dommages matériels.",
                         affectedArea: "8 km²",
                         evacuees: 180,
                         status: "active"
                     },
                     {
                         id: 2,
-                        title: "Séisme à Béjaïa",
-                        location: "Béjaïa, Algérie",
-                        coordinates: { lat: 36.7509, lng: 5.0567 },
+                        title: "Séisme à Oued Fodda",
+                        location: "Oued Fodda, Chlef",
+                        coordinates: { lat: 36.2200, lng: 1.3383 },
                         severity: "critical",
                         type: "earthquake",
                         date: "15 Mars, 2025",
@@ -63,13 +63,13 @@ const MapView = () => {
                     },
                     {
                         id: 3,
-                        title: "Incendie de forêt à Tizi Ouzou",
-                        location: "Tizi Ouzou, Algérie",
-                        coordinates: { lat: 36.7169, lng: 4.0476 },
+                        title: "Incendie de forêt à Sendjas",
+                        location: "Sendjas, Chlef",
+                        coordinates: { lat: 36.0833, lng: 1.2167 },
                         severity: "high",
                         type: "forest_fire",
                         date: "2 Avril, 2025",
-                        description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
+                        description: "Feu de forêt se propageant à travers les forêts du nord de Sendjas.",
                         burntArea: "950 hectares",
                         contained: "35%",
                         status: "active"
@@ -129,7 +129,7 @@ const MapView = () => {
     }, []);
 
     const filteredReports = reports.filter(report => {
-        if (crisisType !== "all" && report.type !== crisisType) return false;
+        if (crisisType !== "all" && report.type !== CrisisType) return false;
         if (severity !== "all" && report.severity !== severity) return false;
         if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;
@@ -151,16 +151,16 @@ const MapView = () => {
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <div className="flex flex-col mb-6 gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Crisis Map Overview</h2>
-                    <p className="text-gray-600">Visualizing {filteredReports.length} active Crisis reports</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Crisis Map Overview</h2>
+                    <p className="text-gray-600 text-sm sm:text-base">Visualizing {filteredReports.length} active Crisis reports</p>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 mt-4 md:mt-0 w-full md:w-auto">
-                    <div className="relative w-full md:w-64">
+                <div className="flex flex-col sm:flex-row gap-3 w-full">
+                    <div className="relative flex-grow">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <Search size={18} className="text-gray-400" />
+                            <Search size={16} className="text-gray-400" />
                         </div>
                         <input
                             type="text"
@@ -171,8 +171,8 @@ const MapView = () => {
                         />
                     </div>
 
-                    <div className="flex gap-2">
-                        <div className="relative">
+                    <div className="flex gap-2 flex-wrap sm:flex-nowrap">
+                        <div className="relative flex-1 sm:flex-none min-w-[120px]">
                             <select
                                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-8 appearance-none"
                                 value={crisisType}
@@ -189,7 +189,7 @@ const MapView = () => {
                             </div>
                         </div>
 
-                        <div className="relative">
+                        <div className="relative flex-1 sm:flex-none min-w-[120px]">
                             <select
                                 className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 pr-8 appearance-none"
                                 value={severity}
@@ -210,10 +210,13 @@ const MapView = () => {
             </div>
 
 
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+            <div className="bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200 mb-6">
                 {isLoaded ? (
                     <GoogleMap
-                        mapContainerStyle={mapContainerStyle}
+                        mapContainerStyle={{
+                            width: '100%',
+                            height: window.innerWidth < 640 ? '300px' : '400px'
+                        }}
                         center={mapCenter}
                         zoom={mapZoom}
                         onLoad={onMapLoad}
@@ -272,11 +275,11 @@ const MapView = () => {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {filteredReports.slice(0, 3).map(report => (
                     <div
                         key={report.id}
-                        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                        className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
                         onClick={() => {
                             setSelectedReport(report);
                             setMapCenter(report.coordinates);
@@ -284,9 +287,9 @@ const MapView = () => {
                         }}
                     >
                         <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-semibold text-gray-800">{report.title}</h3>
+                            <h3 className="font-semibold text-gray-800 text-sm sm:text-base truncate mr-2">{report.title}</h3>
                             <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium ${report.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                                className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${report.severity === 'critical' ? 'bg-red-100 text-red-800' :
                                         report.severity === 'high' ? 'bg-orange-100 text-orange-800' :
                                             'bg-blue-100 text-blue-800'
                                     }`}
@@ -294,11 +297,11 @@ const MapView = () => {
                                 {report.severity}
                             </span>
                         </div>
-                        <div className="flex items-center text-sm text-gray-600 mb-2">
-                            <MapPin size={14} className="mr-1" />
-                            {report.location}
+                        <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-2 truncate">
+                            <MapPin size={12} className="mr-1 flex-shrink-0" />
+                            <span className="truncate">{report.location}</span>
                         </div>
-                        <p className="text-sm text-gray-700 line-clamp-2 mb-3">{report.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-3">{report.description}</p>
                         <div className="flex justify-between text-xs text-gray-500">
                             <span>{report.date}</span>
                             <span className="capitalize">{report.type.replace('_', ' ')}</span>

@@ -1,8 +1,10 @@
 
 import { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Routes, Route } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import MyReports from "./MyReports";
+import AddReport from "./AddReport";
+import Alerts from "./Alerts";
 
 const Dashboard = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -27,36 +29,25 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="flex h-screen w-full overflow-hidden">
-            {/* Mobile sidebar with overlay */}
-            {isMobile && isSidebarOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={toggleSidebar}></div>
-            )}
-
-            {/* Sidebar with conditional classes for mobile/desktop */}
-            <div className={`
-                ${isMobile ? 'fixed z-50' : 'relative'} 
-                ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                transition-transform duration-300 ease-in-out
-            `}>
-                <Sidebar isMobile={isMobile} closeSidebar={() => setIsSidebarOpen(false)} />
-            </div>
-
-            {/* Toggle button for mobile */}
-            <button
-                className={`fixed top-4 left-4 z-50 bg-gray-800 text-white p-2 rounded-md md:hidden transition-all ${isSidebarOpen ? 'translate-x-64' : 'translate-x-0'}`}
-                onClick={toggleSidebar}
-            >
-                {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+        <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden">
+            {/* Sidebar component with toggle functionality */}
+            <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
             {/* Main content area with responsive margin */}
             <div className={`
-                flex-1 min-h-screen bg-gray-100 transition-all p-4 sm:p-6
-                ${isSidebarOpen && !isMobile ? 'ml-64' : 'ml-0'}
+                flex-1 min-h-screen bg-gray-100 transition-all duration-300 p-3 sm:p-4 md:p-6
+                ${isSidebarOpen && !isMobile ? 'md:ml-64' : 'ml-0'}
                 ${isMobile ? 'pt-16' : ''}
+                overflow-y-auto
             `}>
-                <Outlet />
+                <div className="max-w-7xl mx-auto w-full">
+                    <Routes>
+                        <Route index element={<div className="p-4">Dashboard Home</div>} />
+                        <Route path="my-reports" element={<MyReports />} />
+                        <Route path="add-report" element={<AddReport />} />
+                        <Route path="alerts" element={<Alerts />} />
+                    </Routes>
+                </div>
             </div>
         </div>
     );

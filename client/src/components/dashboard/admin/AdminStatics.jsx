@@ -165,11 +165,11 @@ const AdminStatics = () => {
         }
     };
     return (
-        <div className="space-y-6" ref={dashboardRef}>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+        <div className="space-y-4 sm:space-y-6" ref={dashboardRef}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Analytics Dashboard</h2>
-                <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                    <select className="px-2 sm:px-3 py-2 border border-gray-300 rounded-md text-sm bg-white flex-grow sm:flex-grow-0">
+                <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <select className="px-2 sm:px-3 py-2 border border-gray-300 rounded-md text-xs sm:text-sm bg-white flex-grow sm:flex-grow-0">
                         <option>Last 7 days</option>
                         <option>Last 30 days</option>
                         <option>Last 90 days</option>
@@ -177,46 +177,46 @@ const AdminStatics = () => {
                     </select>
                     <button
                         onClick={exportPDF}
-                        className="px-3 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 flex-grow sm:flex-grow-0"
+                        className="px-3 py-2 bg-blue-600 text-white rounded-md text-xs sm:text-sm hover:bg-blue-700 flex-grow sm:flex-grow-0 flex items-center justify-center"
                     >
                         Export Report
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div className="text-blue-600 text-base sm:text-lg font-semibold mb-1">Total Reports</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{stats.totalReports}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div className="text-blue-600 text-sm sm:text-lg font-semibold mb-1">Total Reports</div>
+                    <div className="text-xl sm:text-3xl font-bold">{stats.totalReports}</div>
                     <div className="text-green-600 text-xs sm:text-sm mt-1 sm:mt-2">↑ 12% from last month</div>
                 </div>
-                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div className="text-yellow-600 text-base sm:text-lg font-semibold mb-1">Active Crises</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{stats.activeReports}</div>
+                <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div className="text-yellow-600 text-sm sm:text-lg font-semibold mb-1">Active Crises</div>
+                    <div className="text-xl sm:text-3xl font-bold">{stats.activeReports}</div>
                     <div className="text-red-600 text-xs sm:text-sm mt-1 sm:mt-2">↑ 3% from last month</div>
                 </div>
-                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div className="text-purple-600 text-base sm:text-lg font-semibold mb-1">Avg Response Time</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{stats.avgResponseTime}</div>
+                <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div className="text-purple-600 text-sm sm:text-lg font-semibold mb-1">Avg Response Time</div>
+                    <div className="text-xl sm:text-3xl font-bold">{stats.avgResponseTime}</div>
                     <div className="text-green-600 text-xs sm:text-sm mt-1 sm:mt-2">↓ 0.8 hrs improvement</div>
                 </div>
-                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div className="text-red-600 text-base sm:text-lg font-semibold mb-1">Critical Events</div>
-                    <div className="text-2xl sm:text-3xl font-bold">{stats.criticalEvents}</div>
+                <div className="bg-white p-3 sm:p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div className="text-red-600 text-sm sm:text-lg font-semibold mb-1">Critical Events</div>
+                    <div className="text-xl sm:text-3xl font-bold">{stats.criticalEvents}</div>
                     <div className="text-red-600 text-xs sm:text-sm mt-1 sm:mt-2">↑ 2 more than last month</div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 sm:p-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800">Reports Timeline</h3>
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-3 sm:p-6">
+                <div className="flex flex-col justify-between items-start gap-3 mb-4 sm:mb-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800">Reports Timeline</h3>
+                    <div className="flex flex-col gap-3 w-full">
                         <div className="flex flex-wrap gap-2">
                             {["daily", "weekly", "monthly", "yearly"].map((type) => (
                                 <button
                                     key={type}
                                     onClick={() => setView(type)}
-                                    className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm ${view === type
+                                    className={`px-2 sm:px-3 py-1 rounded text-xs ${view === type
                                         ? "bg-blue-100 text-blue-700 font-medium border border-blue-200"
                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                         }`}
@@ -230,7 +230,7 @@ const AdminStatics = () => {
                                 <button
                                     key={type}
                                     onClick={() => setChartType(type)}
-                                    className={`px-2 sm:px-3 py-1 rounded text-xs sm:text-sm ${chartType === type
+                                    className={`px-2 sm:px-3 py-1 rounded text-xs ${chartType === type
                                         ? "bg-green-100 text-green-700 font-medium border border-green-200"
                                         : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                                         }`}
@@ -242,7 +242,7 @@ const AdminStatics = () => {
                     </div>
                 </div>
 
-                <div className="h-60 sm:h-80">
+                <div className="h-48 sm:h-60 md:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                         {chartType === 'bar' ? (
                             <BarChart data={reportData[view]}>
@@ -274,10 +274,10 @@ const AdminStatics = () => {
                     </ResponsiveContainer>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6">Distribution by Region</h3>
-                    <div className="h-52 sm:h-64">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-3 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-6">Distribution by Region</h3>
+                    <div className="h-44 sm:h-52 md:h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -317,9 +317,9 @@ const AdminStatics = () => {
                         ))}
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 sm:p-6">
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 sm:mb-6">Crisis Type Distribution</h3>
-                    <div className="h-52 sm:h-64">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-3 sm:p-6">
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-6">Crisis Type Distribution</h3>
+                    <div className="h-44 sm:h-52 md:h-64">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie

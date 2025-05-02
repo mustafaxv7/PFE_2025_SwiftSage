@@ -19,38 +19,38 @@ const AdminAlerts = () => {
     const defaultAlerts = [
         {
             id: 1,
-            message: "Inondation à Alger",
+            message: "Inondation à Chettia",
             description: "Niveaux d'eau élevés signalés dans les zones résidentielles.",
             date: "10 Mars, 2025",
             time: "08:30",
             status: "Active",
             importance: "High",
             type: "info",
-            location: "Alger, Algérie",
+            location: "Chettia, Chlef",
             affectedArea: "12 km²"
         },
         {
             id: 2,
-            message: "Séisme à Béjaïa",
+            message: "Séisme à Oued Fodda",
             description: "Séisme de magnitude 5.8 avec des dommages structurels importants.",
             date: "15 Mars, 2025",
             time: "14:22",
             status: "Resolved",
             importance: "Critical",
             type: "danger",
-            location: "Béjaïa, Algérie",
+            location: "Oued Fodda, Chlef",
             affectedArea: "35 km²"
         },
         {
             id: 3,
-            message: "Incendie de forêt à Tizi Ouzou",
+            message: "Incendie de forêt à Sendjas",
             description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles.",
             date: "2 Avril, 2025",
             time: "11:15",
             status: "Active",
             importance: "High",
             type: "warning",
-            location: "Tizi Ouzou, Algérie",
+            location: "Sendjas, Chlef",
             affectedArea: "1240 hectares"
         }
     ];
