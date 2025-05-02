@@ -11,35 +11,35 @@ const Alerts = () => {
         const sampleAlerts = [
             {
                 id: 1,
-                message: "Inondation à Alger",
-                description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Bab El Oued.",
+                message: "Inondation à Chettia",
+                description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Chettia.",
                 date: "10 Mars, 2025",
                 status: "Active",
                 importance: "High",
                 type: "info",
-                location: "Alger, Algérie",
+                location: "Chettia, Chlef",
                 affectedArea: "12 km²"
             },
             {
                 id: 2,
-                message: "Séisme à Béjaïa",
+                message: "Séisme à Oued Fodda",
                 description: "Séisme de magnitude 5.8 avec des dommages structurels importants et des répliques potentielles attendues.",
                 date: "15 Mars, 2025",
                 status: "Resolved",
                 importance: "Critical",
                 type: "danger",
-                location: "Béjaïa, Algérie",
+                location: "Oued Fodda, Chlef",
                 affectedArea: "35 km²"
             },
             {
                 id: 3,
-                message: "Incendie de forêt à Tizi Ouzou",
+                message: "Incendie de forêt à Sendjas",
                 description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles. Ordres d'évacuation en place.",
                 date: "2 Avril, 2025",
                 status: "Active",
                 importance: "High",
                 type: "warning",
-                location: "Tizi Ouzou, Algérie",
+                location: "Sendjas, Chlef",
                 affectedArea: "1240 hectares"
             }
         ];
@@ -131,16 +131,18 @@ const Alerts = () => {
 
     return (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-                <div className="flex justify-between items-center">
-                    <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
                         <Bell className="mr-2 text-red-500" size={24} />
                         Alert Center
                     </h2>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Filter:</span>
-                        <Filter size={16} className="text-gray-400" />
-                        <div className="flex space-x-1">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-1 mb-2 sm:mb-0">
+                            <span className="text-sm text-gray-500">Filter:</span>
+                            <Filter size={16} className="text-gray-400" />
+                        </div>
+                        <div className="flex flex-wrap gap-1 w-full sm:w-auto">
                             <button
                                 onClick={() => setFilter("all")}
                                 className={`px-3 py-1 text-sm rounded-md transition ${filter === "all" ? "bg-gray-200 text-gray-800 font-medium" : "bg-gray-100 text-gray-600 hover:bg-gray-200"}`}
@@ -185,13 +187,13 @@ const Alerts = () => {
                                 key={alert.id}
                                 className={`border rounded-lg overflow-hidden shadow-sm transition ${getAlertClass(alert.type)}`}
                             >
-                                <div className="p-4 flex items-start justify-between">
-                                    <div className="flex items-start">
+                                <div className="p-3 sm:p-4 flex flex-col sm:flex-row items-start justify-between gap-2">
+                                    <div className="flex items-start w-full">
                                         <div className="mr-3 mt-1">{getAlertIcon(alert.type)}</div>
-                                        <div>
+                                        <div className="flex-1">
                                             <div className="font-medium">{alert.message}</div>
-                                            <div className="text-sm opacity-80 mt-1 flex items-center gap-2">
-                                                {alert.date}
+                                            <div className="text-sm opacity-80 mt-1 flex flex-wrap items-center gap-2">
+                                                <span>{alert.date}</span>
                                                 <span
                                                     className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
                                                     {alert.importance} Priority
@@ -199,7 +201,7 @@ const Alerts = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 mt-2 sm:mt-0 ml-auto sm:ml-0">
                                         <button
                                             onClick={() => setShowDetails(showDetails === alert.id ? null : alert.id)}
                                             className="p-1 rounded-full hover:bg-white/30 transition"
@@ -218,9 +220,9 @@ const Alerts = () => {
                                 </div>
 
                                 {showDetails === alert.id && (
-                                    <div className="p-4 border-t border-gray-200 bg-white/50">
+                                    <div className="p-3 sm:p-4 border-t border-gray-200 bg-white/50">
                                         <p className="text-sm mb-3">{alert.description}</p>
-                                        <div className="flex flex-wrap gap-4 text-xs text-gray-600">
+                                        <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 text-xs text-gray-600">
                                             <div>
                                                 <span className="font-medium">Location:</span> {alert.location}
                                             </div>
@@ -228,7 +230,7 @@ const Alerts = () => {
                                                 <span className="font-medium">Affected Area:</span> {alert.affectedArea}
                                             </div>
                                         </div>
-                                        <div className="mt-3 flex justify-between items-center">
+                                        <div className="mt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                                             <button
                                                 className="flex items-center text-xs text-gray-600 hover:text-gray-800"
                                             >

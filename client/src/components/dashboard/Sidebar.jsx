@@ -4,7 +4,8 @@ import {
   FileText,
   PlusCircle,
   LogOut,
-  Menu
+  Menu,
+  X
 } from "lucide-react";
 import Logo from "../../assets/Logo.png";
 
@@ -37,12 +38,20 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
         className="fixed top-4 left-4 z-50 p-2 rounded-md bg-red-600 text-white md:hidden"
         onClick={toggleSidebar}
       >
-        <Menu size={20} />
+        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
+
+      {/* Mobile overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden" 
+          onClick={toggleSidebar}
+        ></div>
+      )}
 
       <div
         className={`fixed top-0 left-0 h-screen bg-gray-900 text-white flex flex-col shadow-xl transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full w-0"}
+          ${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full"}
           md:translate-x-0 md:w-64 z-40 overflow-hidden`}
       >
         

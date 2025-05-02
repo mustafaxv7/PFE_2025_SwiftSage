@@ -6,13 +6,13 @@ const MyReports = () => {
     const sampleReports = [
         {
             id: 1,
-            title: "Inondation à Alger",
+            title: "Inondation à Chettia",
             date: "10 Mars, 2025",
             crisisType: "flood",
-            description: "Inondation majeure dans le centre-ville d'Alger affectant les zones résidentielles de Bab El Oued.",
-            location: "Alger, Algérie",
-            lat: "36.7538",
-            lng: "3.0588",
+            description: "Inondation majeure dans le centre-ville de Chettia affectant les zones résidentielles.",
+            location: "Chettia, Chlef",
+            lat: "36.1647",
+            lng: "1.3317",
             roadStatus: "flooded",
             missing: 3,
             trapped: 12,
@@ -24,13 +24,13 @@ const MyReports = () => {
         },
         {
             id: 2,
-            title: "Séisme à Béjaïa",
+            title: "Séisme à Oued Fodda",
             date: "15 Mars, 2025",
             crisisType: "earthquake",
             description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
-            location: "Béjaïa, Algérie",
-            lat: "36.7509",
-            lng: "5.0567",
+            location: "Oued Fodda, Chlef",
+            lat: "36.2200",
+            lng: "1.3383",
             roadStatus: "partially_blocked",
             injuredNumber: 24,
             bleedingNumber: 8,
@@ -44,13 +44,13 @@ const MyReports = () => {
         },
         {
             id: 3,
-            title: "Incendie de forêt à Tizi Ouzou",
+            title: "Incendie de forêt à Sendjas",
             date: "2 Avril, 2025",
             crisisType: "forest_fire",
-            description: "Feu de forêt se propageant à travers les forêts du nord de Tizi Ouzou.",
-            location: "Tizi Ouzou, Algérie",
-            lat: "36.7169",
-            lng: "4.0476",
+            description: "Feu de forêt se propageant à travers les forêts du nord de Sendjas.",
+            location: "Sendjas, Chlef",
+            lat: "36.0833",
+            lng: "1.2167",
             roadStatus: "smoke_covered",
             burntArea: 1240,
             spreadRate: "rapid",
@@ -195,7 +195,7 @@ const MyReports = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
                 {filteredReports.map((report) => (
                     <div
                         key={report.id}
@@ -203,52 +203,56 @@ const MyReports = () => {
                         onClick={() => handleReportClick(report)}
                     >
                         <div className="p-3 sm:p-4">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-center">
-                                    {getCrisisTypeIcon(report.crisisType)}
-                                    <h3 className="font-medium text-sm sm:text-base ml-2 line-clamp-1">{report.title}</h3>
+                            <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-center min-w-0">
+                                    <div className="flex-shrink-0">
+                                        {getCrisisTypeIcon(report.crisisType)}
+                                    </div>
+                                    <h3 className="font-medium text-sm sm:text-base ml-2 truncate">{report.title}</h3>
                                 </div>
-                                {getStatusBadge(report.status)}
+                                <div className="flex-shrink-0">
+                                    {getStatusBadge(report.status)}
+                                </div>
                             </div>
                             <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 line-clamp-2">{report.description}</div>
-                            <div className="mt-3 sm:mt-4 flex items-center text-xs text-gray-500">
-                                <MapPin size={12} className="mr-1" />
-                                <span className="line-clamp-1">{report.location}</span>
+                            <div className="mt-3 sm:mt-4 flex items-center text-xs text-gray-500 overflow-hidden">
+                                <MapPin size={12} className="flex-shrink-0 mr-1" />
+                                <span className="truncate">{report.location}</span>
                             </div>
                             <div className="mt-1 sm:mt-2 flex items-center text-xs text-gray-500">
-                                <Calendar size={12} className="mr-1" />
-                                {report.date}
+                                <Calendar size={12} className="flex-shrink-0 mr-1" />
+                                <span>{report.date}</span>
                             </div>
                             <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
                                 {getImportanceBadge(report.importance)}
-                                <span className="text-xs text-gray-500 line-clamp-1">Submitted by: {report.submittedBy}</span>
+                                <span className="text-xs text-gray-500 truncate max-w-full">Submitted by: {report.submittedBy}</span>
                             </div>
                         </div>
                     </div>
                 ))}
             </div>
             {isModalOpen && selectedReport && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-0">
                     <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-                            <h3 className="text-xl font-bold text-gray-800">Report Details</h3>
+                        <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
+                            <h3 className="text-lg sm:text-xl font-bold text-gray-800">Report Details</h3>
                             <button onClick={closeModal} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
                         </div>
 
-                        <div className="p-6">
+                        <div className="p-4 sm:p-6">
 
-                            <div className="flex justify-between items-start mb-4">
+                            <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
                                         {getCrisisTypeIcon(selectedReport.crisisType)}
-                                        <span className="ml-2">{selectedReport.title}</span>
+                                        <span className="ml-2 break-words">{selectedReport.title}</span>
                                     </h2>
                                     <div className="flex items-center mt-2 text-gray-600">
-                                        <MapPin size={16} className="mr-1" />
-                                        {selectedReport.location}
+                                        <MapPin size={16} className="mr-1 flex-shrink-0" />
+                                        <span className="break-words">{selectedReport.location}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
                                     {getStatusBadge(selectedReport.status)}
                                     {getImportanceBadge(selectedReport.importance)}
                                 </div>
@@ -270,10 +274,10 @@ const MyReports = () => {
                                 )}
                             </div>
 
-                            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                                 <div>
-                                    <h4 className="text-lg font-medium text-gray-800 mb-2">Details</h4>
-                                    <div className="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-2">
+                                    <h4 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Details</h4>
+                                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-y-2">
                                         <div className="text-sm text-gray-500">Date Reported:</div>
                                         <div className="text-sm font-medium">
                                             {selectedReport.date.replace('_', ' ')}
@@ -314,8 +318,8 @@ const MyReports = () => {
                                 </div>
 
                                 <div>
-                                    <h4 className="text-lg font-medium text-gray-800 mb-2">Impact</h4>
-                                    <div className="bg-gray-50 p-4 rounded-lg grid grid-cols-2 gap-y-2">
+                                    <h4 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Impact</h4>
+                                    <div className="bg-gray-50 p-3 sm:p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-y-2">
                                         {selectedReport.missing !== undefined && (
                                             <>
                                                 <div className="text-sm text-gray-500">Missing Persons:</div>
