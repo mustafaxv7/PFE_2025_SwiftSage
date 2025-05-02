@@ -297,8 +297,8 @@ const AddReport = () => {
             </div>
             <form onSubmit={handleSubmit}>
                 <div className="p-6">
-                    <div className="w-full h-64 bg-gray-100 rounded-lg mb-6 overflow-hidden">
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 h-full">
+                    <div className="w-full h-48 sm:h-64 bg-gray-100 rounded-lg mb-4 sm:mb-6 overflow-hidden">
+                        <div className="bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200 h-full">
                             {isLoaded ? (
                                 <GoogleMap
                                     mapContainerStyle={containerStyle}
@@ -335,21 +335,21 @@ const AddReport = () => {
                             ) : (
                                 <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg" style={containerStyle}>
                                     <div className="text-center">
-                                        <MapPin size={32} className="mx-auto text-gray-400 mb-2" />
-                                        <p className="text-gray-500">Loading map...</p>
+                                        <MapPin size={24} className="mx-auto text-gray-400 mb-2" />
+                                        <p className="text-sm text-gray-500">Loading map...</p>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
                             <input
                                 type="text"
                                 name="lat"
                                 placeholder="Latitude"
-                                className="w-full p-2 rounded-md border border-gray-300 "
+                                className="w-full p-2 rounded-md border border-gray-300"
                                 value={formData.lat}
                                 onChange={handleChange}
                             />
@@ -360,7 +360,7 @@ const AddReport = () => {
                                 type="text"
                                 name="lng"
                                 placeholder="Longitude"
-                                className="w-full p-2 rounded-md border border-gray-300  "
+                                className="w-full p-2 rounded-md border border-gray-300"
                                 value={formData.lng}
                                 onChange={handleChange}
                             />

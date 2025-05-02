@@ -23,7 +23,13 @@ const AdminUsers = () => {
         const fetchUsers = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch("/api/users/");
+                const token = localStorage.getItem('authToken');
+                const response = await fetch("/api/users", {
+                    method: "GET",
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
@@ -38,7 +44,7 @@ const AdminUsers = () => {
                     phone: user.phone_number,
                     type: user.is_organization_member ? "organization" : "individual",
                     orgType: user.is_organization_member ? (user.organization_type || "public") : null,
-                    community: user.community || "Chlef Chlef",
+                    community: user.community || "Chlef",
                     createdAt: new Date(user.created_at || Date.now()).toISOString().split('T')[0],
                     reportTime: new Date(user.created_at || Date.now()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
                 }));
@@ -107,15 +113,17 @@ const AdminUsers = () => {
 
     const handleDeleteUser = async () => {
         try {
+            const token = localStorage.getItem('authToken');
             const response = await fetch(`/api/users/${userToDelete.id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             });
-
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
             }
-
             setUsers(users.filter(user => user.id !== userToDelete.id));
             setShowDeleteModal(false);
             setUserToDelete(null);
@@ -128,34 +136,29 @@ const AdminUsers = () => {
 
     const handleCommunityChange = async (userId, newCommunity) => {
         try {
-            // Find the user to update
             const userToUpdate = users.find(user => user.id === userId);
             if (!userToUpdate) return;
-
-            // Prepare data for API with field names matching the backend expectations
+            const token = localStorage.getItem('authToken');
             const apiPayload = {
                 name: userToUpdate.name,
                 email: userToUpdate.email,
                 phone: userToUpdate.phone,
                 community: newCommunity,
-                isOrganisationMember: userToUpdate.type === "organization",
-                password: '' // Required by the API but we don't want to change it
+                is_organization_member: userToUpdate.type === "organization",
+                password: ''
             };
-
             const response = await fetch(`/api/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(apiPayload),
             });
-
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
             }
-
-            // Update local state
             setUsers(users.map(user =>
                 user.id === userId ? { ...user, community: newCommunity } : user
             ));
@@ -168,30 +171,27 @@ const AdminUsers = () => {
     const handleSaveUser = async (userData) => {
         try {
             if (userData.mode === "edit") {
-                // Prepare data for API with field names matching the backend expectations
+                const token = localStorage.getItem('authToken');
                 const apiPayload = {
                     name: userData.name,
                     email: userData.email,
                     phone: userData.phone,
-                    password: userData.password || '',  // Include password if provided
-                    isOrganisationMember: userData.type === "organization",
+                    password: userData.password || '',
+                    is_organization_member: userData.type === "organization",
                     community: userData.community
                 };
-
                 const response = await fetch(`/api/users/${userData.id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify(apiPayload),
                 });
-
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
                 }
-
-                // Update local state
                 setUsers(users.map(user =>
                     user.id === userData.id ? { ...userData, mode: undefined, isOrganization: undefined } : user
                 ));
@@ -222,7 +222,7 @@ const AdminUsers = () => {
 
     const handleCreateUser = async (userData) => {
         try {
-            // Prepare data for API with field names matching the backend expectations
+            const token = localStorage.getItem('authToken');
             const apiPayload = {
                 name: userData.name,
                 email: userData.email,
@@ -231,23 +231,19 @@ const AdminUsers = () => {
                 isOrganisationMember: userData.isOrganization,
                 community: userData.community
             };
-
-            const response = await fetch('/api/users/', {
+            const response = await fetch('/api/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(apiPayload),
             });
-
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
             }
-
             const result = await response.json();
-
-            // Create a new user object with the response data and additional UI-specific properties
             const newUser = {
                 id: result.user_id || users.length + 1,
                 name: userData.name,
@@ -259,7 +255,6 @@ const AdminUsers = () => {
                 createdAt: new Date().toISOString().split('T')[0],
                 reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
             };
-
             setUsers([...users, newUser]);
             setShowUserModal(false);
             setCurrentUser(null);
@@ -517,7 +512,7 @@ const AdminUsers = () => {
         <div className="p-4 max-w-6xl mx-auto bg-gray-50 min-h-screen">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-                <p className="text-gray-600">Manage all responders and organizations on the crisis management platform</p>
+                <p className="text-gray-600">Manage all responders and organizations on the Crisis management platform</p>
             </div>
             <div className="bg-white shadow-md rounded-lg p-4 mb-4">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
