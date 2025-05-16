@@ -5,6 +5,7 @@ const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [currentFilter, setCurrentFilter] = useState("all");
     const [showUserModal, setShowUserModal] = useState(false);
@@ -19,64 +20,65 @@ const AdminUsers = () => {
         "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
     ];
 
-    // Sample user data for testing
-    const sampleUsers = [
-        {
-            id: 1,
-            name: "Ahmed Benali",
-            email: "ahmed.benali@example.com",
-            phone: "0555123456",
-            type: "individual",
-            orgType: null,
-            community: "Chlef",
-            createdAt: "2025-01-15",
-            reportTime: "09:30"
-        },
-        {
-            id: 2,
-            name: "Ministère de l'Environnement",
-            email: "contact@environnement.gov.dz",
-            phone: "0555789012",
-            type: "organization",
-            orgType: "public",
-            community: "Chlef",
-            createdAt: "2025-01-10",
-            reportTime: "14:45"
-        },
-        {
-            id: 3,
-            name: "Entreprise Hydro-Chlef",
-            email: "contact@hydrochlef.dz",
-            phone: "0555666678",
-            type: "organization",
-            orgType: "private",
-            community: "Chettia",
-            createdAt: "2025-02-12",
-            reportTime: "16:15"
-        },
-        {
-            id: 4,
-            name: "Mohammed Amrouche",
-            email: "sofiane.amrouche@example.com",
-            phone: "0755555789",
-            type: "individual",
-            orgType: null,
-            community: "Chlef",
-            createdAt: "2025-03-01",
-            reportTime: "10:05"
-        }
-    ];
-
     useEffect(() => {
-        // Simulate API loading delay
-        setIsLoading(true);
-        setTimeout(() => {
-            setUsers(sampleUsers);
-            setFilteredUsers(sampleUsers);
-            setIsLoading(false);
-        }, 800); // Simulate network delay
-    }, []);
+        const fetchUsers = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
 
+                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+                console.log('Making API request to:', `${baseURL}/api/users`);
+                
+                const response = await fetch(`${baseURL}/api/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Received user data:', data.length, 'items');
+                
+                // Transform the API data to match our component's expected format
+                const formattedUsers = data.map(user => ({
+                    id: user.user_id,
+                    name: user.username,
+                    email: user.email,
+                    phone: user.phone_number,
+                    type: user.is_organization_member ? "organization" : "individual",
+                    orgType: null, // Update this if your database stores org_type
+                    community: user.community,
+                    createdAt: new Date(user.created_at).toLocaleDateString(),
+                    reportTime: new Date(user.created_at).toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        hour12: false 
+                    })
+                }));
+                
+                setUsers(formattedUsers);
+                setFilteredUsers(formattedUsers);
+            } catch (err) {
+                console.error('Error fetching users:', err);
+                setError(err.message);
+                // Fallback to empty array in case of error
+                setUsers([]);
+                setFilteredUsers([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
 
     useEffect(() => {
         let result = [...users];
@@ -123,12 +125,38 @@ const AdminUsers = () => {
         setShowDeleteModal(true);
     };
 
-    const handleDeleteUser = () => {
-        // Update local state by filtering out the deleted user
-        setUsers(users.filter(user => user.id !== userToDelete.id));
-        setShowDeleteModal(false);
-        setUserToDelete(null);
-        alert('User deleted successfully');
+    const handleDeleteUser = async () => {
+        if (!userToDelete) return;
+        
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Authentication required");
+                return;
+            }
+            
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const response = await fetch(`${baseURL}/api/users/${userToDelete.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete user');
+            }
+            
+            // Update local state by filtering out the deleted user
+            setUsers(users.filter(user => user.id !== userToDelete.id));
+            setShowDeleteModal(false);
+            setUserToDelete(null);
+            alert('User deleted successfully');
+        } catch (error) {
+            console.error('Error deleting user:', error);
+            alert(`Error deleting user: ${error.message}`);
+        }
     };
 
     const handleCommunityChange = (userId, newCommunity) => {
@@ -175,26 +203,67 @@ const AdminUsers = () => {
         setShowUserModal(true);
     };
 
-    const handleCreateUser = (userData) => {
-        // Create a new user with a generated ID
-        const newUser = {
-            id: users.length > 0 ? Math.max(...users.map(user => user.id)) + 1 : 1,
-            name: userData.name,
-            email: userData.email,
-            phone: userData.phone,
-            type: userData.isOrganization ? "organization" : "individual",
-            orgType: userData.isOrganization ? userData.orgType : null,
-            community: userData.community,
-            createdAt: new Date().toISOString().split('T')[0],
-            reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-        };
-        
-        // Add the new user to the local state
-        setUsers([...users, newUser]);
-        setShowUserModal(false);
-        setCurrentUser(null);
-        
-        alert('User created successfully');
+    const handleCreateUser = async (userData) => {
+        try {
+            // Get the auth token
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("You must be logged in as an admin to create users");
+                return;
+            }
+
+            // Prepare request data
+            const requestData = {
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                password: userData.password,
+                isOrganisationMember: userData.isOrganization,
+                community: userData.community,
+                orgType: userData.isOrganization ? userData.orgType : null
+            };
+
+            // Make API call to create user in the database
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const response = await fetch(`${baseURL}/api/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to create user');
+            }
+
+            const result = await response.json();
+
+            // Create a new user object with the returned ID and add to local state
+            const newUser = {
+                id: result.user_id,
+                name: userData.name,
+                email: userData.email,
+                phone: userData.phone,
+                type: userData.isOrganization ? "organization" : "individual",
+                orgType: userData.isOrganization ? userData.orgType : null,
+                community: userData.community,
+                createdAt: new Date().toISOString().split('T')[0],
+                reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+            };
+            
+            // Add the new user to the local state
+            setUsers([...users, newUser]);
+            setShowUserModal(false);
+            setCurrentUser(null);
+            
+            alert('User created successfully');
+        } catch (error) {
+            console.error('Error creating user:', error);
+            alert(`Error creating user: ${error.message}`);
+        }
     };
 
     const CommunityBadge = ({ community }) => {
@@ -511,6 +580,16 @@ const AdminUsers = () => {
                             <span className="sr-only">Loading...</span>
                         </div>
                         <p className="mt-4 text-gray-600">Loading users...</p>
+                    </div>
+                ) : error ? (
+                    <div className="p-8 text-center">
+                        <p className="text-red-500">Error: {error}</p>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                        >
+                            Try Again
+                        </button>
                     </div>
                 ) : filteredUsers.length === 0 ? (
                     <div className="p-8 text-center">

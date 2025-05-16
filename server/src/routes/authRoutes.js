@@ -93,6 +93,7 @@ router.post('/login', async (req, res) => {
 
         // verify password for normal user
         const validPassword = await bcrypt.compare(password, user.password);
+        
         if (!validPassword) {
             return res.status(400).json({ message: "Invalid credentials" });
         }
@@ -104,17 +105,15 @@ router.post('/login', async (req, res) => {
         );
 
         return res.status(200).json({
-            message: 'User Login Successful',
+            message: 'Login Successful',
             token,
             userRole
         });
         
     } catch (err) {
-        console.error(err);
+        console.error("Login error:", err.message);
         return res.status(500).json({ message: "Server error" });
     }
-    
 });
 
- 
 export default router;
