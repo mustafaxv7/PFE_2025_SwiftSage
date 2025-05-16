@@ -22,6 +22,8 @@ Changes made to getAuthUsers.js:
 
 import con from "../config/db.js";
 
+//testing
+
 export const getAuthUsers = async (req, res) => {
     try {
         // Log the request to help with debugging

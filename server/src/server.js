@@ -32,6 +32,8 @@ import authMiddleware from './middleware/authMiddleware.js';
 import authUsers from './routes/authUsers.js';
 import adminAuth from './routes/adminAuth.js';
 
+//testing
+
 dotenv.config();
 
 const app = express();
