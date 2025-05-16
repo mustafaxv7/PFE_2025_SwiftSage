@@ -1,10 +1,9 @@
-import { useState, useCallback, useRef } from "react";
-import { MapPin, Upload, AlertTriangle, Search, X } from "lucide-react";
-import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import { useState, useCallback, useRef, useEffect } from "react";
+import { MapPin, Upload, AlertTriangle, X } from "lucide-react";
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 import axios from 'axios';
 
 const AddReport = () => {
-    // Initial state for resetting the form
     const initialReportData = {
         lat: "",
         lng: "",
@@ -39,11 +38,8 @@ const AddReport = () => {
         explosion: undefined,
     };
 
-    // Reports table data
     const [reportData, setReportData] = useState(initialReportData);
-    // Report_details table data
     const [reportDetailsData, setReportDetailsData] = useState(initialReportDetailsData);
-    // Additional data that might need special handling
     const [additionalData, setAdditionalData] = useState(initialAdditionalData);
 
     const formData = {
@@ -66,7 +62,6 @@ const AddReport = () => {
     const handleImageUpload = (e) => {
         const file = e.target.files[0];
         if (file) {
-
             if (!file.type.match('image.*')) {
                 alert('Please select an image file (PNG, JPG, GIF)');
                 return;
@@ -133,27 +128,53 @@ const AddReport = () => {
         }
     };
 
-    const [autocomplete, setAutocomplete] = useState(null);
-    const searchInputRef = useRef(null);
-
     const [map, setMap] = useState(null);
+    const mapContainerRef = useRef(null);
+
     const containerStyle = {
         width: '100%',
         height: '400px'
     };
 
     const center = {
-        lat: reportData.lat ? parseFloat(reportData.lat) : 36.7538,
-        lng: reportData.lng ? parseFloat(reportData.lng) : 3.0588
+        lat: reportData.lat ? parseFloat(reportData.lat) : 36.1647,
+        lng: reportData.lng ? parseFloat(reportData.lng) : 1.3317
     };
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        libraries: ['places']
     });
 
     const onLoad = useCallback((map) => {
         setMap(map);
+
+        map.setOptions({
+            mapTypeControl: true,
+            mapTypeControlOptions: {
+                style: window.google?.maps?.MapTypeControlStyle.DROPDOWN_MENU
+            },
+            zoomControl: true,
+            streetViewControl: false,
+            fullscreenControl: true,
+            styles: [
+                {
+                    featureType: "administrative",
+                    elementType: "geometry",
+                    stylers: [{ visibility: "on" }]
+                },
+                {
+                    featureType: "poi",
+                    stylers: [{ visibility: "simplified" }]
+                },
+                {
+                    featureType: "road",
+                    elementType: "labels.icon",
+                    stylers: [{ visibility: "on" }]
+                }
+            ]
+        });
     }, []);
 
     const onUnmount = useCallback(() => {
@@ -186,9 +207,6 @@ const AddReport = () => {
                 return;
             }
 
-            // Extract user ID from JWT token
-            // JWT token is in format: header.payload.signature
-            // We need to decode the payload part
             let userId;
             try {
                 const payload = token.split('.')[1];
@@ -241,7 +259,6 @@ const AddReport = () => {
 
                 const response = await axios.post(`${baseURL}/api/reports`, formDataToSend, {
                     headers: {
-
                         'Authorization': `Bearer ${token}`
                     },
                     timeout: 30000,
@@ -286,6 +303,44 @@ const AddReport = () => {
         setAdditionalData(initialAdditionalData);
     };
 
+    const renderMap = () => {
+        return isLoaded ? (
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={center}
+                zoom={13}
+                onClick={handleMapClick}
+                onLoad={onLoad}
+                onUnmount={onUnmount}
+            >
+                {(reportData.lat && reportData.lng) && (
+                    <Marker
+                        position={{
+                            lat: parseFloat(reportData.lat),
+                            lng: parseFloat(reportData.lng)
+                        }}
+                        animation={window.google?.maps?.Animation.DROP}
+                        icon={{
+                            path: window.google?.maps?.SymbolPath?.CIRCLE,
+                            fillColor: getMarkerColor(reportData.crisisType || 'default'),
+                            fillOpacity: 1,
+                            strokeWeight: 2,
+                            strokeColor: '#FFFFFF',
+                            scale: 10
+                        }}
+                    />
+                )}
+            </GoogleMap>
+        ) : (
+            <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg">
+                <div className="text-center">
+                    <MapPin size={24} className="mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500">Loading map...</p>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="bg-white rounded-lg shadow-lg border border-gray-200">
             <div className="p-6 border-b border-gray-200">
@@ -297,51 +352,15 @@ const AddReport = () => {
             </div>
             <form onSubmit={handleSubmit}>
                 <div className="p-6">
-                    <div className="w-full h-48 sm:h-64 bg-gray-100 rounded-lg mb-4 sm:mb-6 overflow-hidden">
-                        <div className="bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200 h-full">
-                            {isLoaded ? (
-                                <GoogleMap
-                                    mapContainerStyle={containerStyle}
-                                    center={center}
-                                    zoom={6}
-                                    onClick={handleMapClick}
-                                    onLoad={onLoad}
-                                    onUnmount={onUnmount}
-                                    options={{
-                                        streetViewControl: false,
-                                        mapTypeControl: false,
-                                        fullscreenControl: false,
-                                        mapTypeControlOptions: {
-                                            position: window.google?.maps?.ControlPosition?.TOP_RIGHT
-                                        }
-                                    }}
-                                >
-                                    {(reportData.lat && reportData.lng) && (
-                                        <Marker
-                                            position={{
-                                                lat: parseFloat(reportData.lat),
-                                                lng: parseFloat(reportData.lng)
-                                            }}
-                                            icon={{
-                                                path: window.google?.maps?.SymbolPath?.CIRCLE,
-                                                fillColor: getMarkerColor(reportData.crisisType || 'default'),
-                                                fillOpacity: 1,
-                                                strokeWeight: 0,
-                                                scale: 8
-                                            }}
-                                        />
-                                    )}
-                                </GoogleMap>
-                            ) : (
-                                <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg" style={containerStyle}>
-                                    <div className="text-center">
-                                        <MapPin size={24} className="mx-auto text-gray-400 mb-2" />
-                                        <p className="text-sm text-gray-500">Loading map...</p>
-                                    </div>
-                                </div>
-                            )}
+                    <div className="bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200 mb-4 sm:mb-6">
+                        <div className="w-full h-80 rounded-lg overflow-hidden" ref={mapContainerRef}>
+                            {renderMap()}
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            Click on the map to set the crisis location
                         </div>
                     </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
