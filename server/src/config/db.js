@@ -10,7 +10,7 @@ const con = new Client({
     port: 5432,
     password: process.env.DB_CONNECTION_PASSWORD,
     database: "swiftsage",
-    ssl: { rejectUnauthorized: false } // Neon requires SSL
+    ssl: { rejectUnauthorized: false } 
 });
 
 export default con;

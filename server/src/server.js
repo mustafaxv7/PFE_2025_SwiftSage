@@ -57,7 +57,13 @@ app.get('/', (req,res)=>{
     res.sendFile(path.join(__dirname, 'client','dist','index.html'));
 });
 
-con.connect().then(()=>console.log('connected'));
+try{
+   await con.connect();
+   console.log('DB Connected!');
+}catch(err){
+   console.error('DB connection failed:', err);
+   process.exit(1);
+}
 
 app.listen(PORT , ()=>{
     console.log(`Server has started on port: ${PORT}`);
