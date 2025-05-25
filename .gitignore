@@ -1,2 +1,9 @@
 .env
 node_modules
+# Ignore IDE settings
+.vscode/
+.idea/
+client/.idea/
+
+# Ignore build files
+client/dist/
