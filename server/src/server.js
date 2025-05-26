@@ -15,8 +15,8 @@ import { get } from 'http';
 import { getAlerts } from './controllers/getAlerts.js';
 import { send } from 'process';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-import sendAlertRoutes from './routes/sendAlertRoutes.js';
-//testing
+
+
 
 dotenv.config();
 

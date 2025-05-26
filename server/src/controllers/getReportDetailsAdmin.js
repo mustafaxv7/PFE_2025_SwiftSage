@@ -1,22 +1,3 @@
-// EXPLANATION ONLY - NO CODE CHANGES
-/*
-Changes made to getReportDetailsAdmin.js:
-
-1. Added missing import:
-   - Added 'import con from '../config/db.js' which was missing but required for database access
-   
-2. Fixed SQL JOIN condition:
-   - Changed JOIN users u ON r.user_id = u.id to JOIN users u ON r.user_id = u.user_id
-   - This ensures the table reference matches the actual column name in the users table
-
-3. Updated column reference:
-   - Changed full_name to username to match the actual column in the users table
-   - This prevents "column not found" errors and ensures proper data retrieval
-
-4. Enhanced error handling:
-   - More specific error message and logging for easier debugging
-*/
-
 import dotenv from 'dotenv';
 import con from '../config/db.js'; 
 dotenv.config();
