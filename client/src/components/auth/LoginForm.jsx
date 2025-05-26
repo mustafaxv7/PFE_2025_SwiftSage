@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AuthInput from "./AuthInput";
+import AuthInput from ".Authinput";
 import { useNavigate, Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
 import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
@@ -110,7 +110,7 @@ const LoginForm = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg relative">
-                {/* Success Message Overlay */}
+                
                 {status.success && renderSuccessOverlay()}
 
                 <div className="text-center">
@@ -141,7 +141,6 @@ const LoginForm = () => {
                     </p>
                 </div>
 
-                {/* Error Message */}
                 {status.error && renderErrorMessage()}
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

@@ -30,10 +30,9 @@ const Dashboard = () => {
 
     return (
         <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden">
-            {/* Sidebar component with toggle functionality */}
+            
             <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-            {/* Main content area with responsive margin */}
             <div className={`
                 flex-1 min-h-screen bg-gray-100 transition-all duration-300 p-3 sm:p-4 md:p-6
                 ${isSidebarOpen && !isMobile ? 'md:ml-64' : 'ml-0'}

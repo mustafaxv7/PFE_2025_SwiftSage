@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ban, CheckCircle, ChevronDown, Edit, Eye, Search, Trash2, UserPlus, X } from "lucide-react";
-//testing
+
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -54,7 +54,7 @@ const AdminUsers = () => {
                     email: user.email,
                     phone: user.phone_number,
                     type: user.is_organization_member ? "organization" : "individual",
-                    orgType: null, // Update this if your database stores org_type
+                    orgType: null, 
                     community: user.community,
                     createdAt: new Date(user.created_at).toLocaleDateString(),
                     reportTime: new Date(user.created_at).toLocaleTimeString('en-US', { 
@@ -705,7 +705,6 @@ const AdminUsers = () => {
                 )}
             </div>
 
-            {/* User Modal */}
             {showUserModal && currentUser && (
                 <UserModal
                     user={currentUser}
@@ -717,7 +716,6 @@ const AdminUsers = () => {
                 />
             )}
 
-            {/* Delete Confirmation Modal */}
             {showDeleteModal && userToDelete && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4">

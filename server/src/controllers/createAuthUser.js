@@ -23,8 +23,6 @@ Changes made to createAuthUser.js:
 import con from "../config/db.js";
 import bcrypt from "bcrypt";
 
-//testing
-
 export const createAuthUser = async (req, res) => {
     try {
         const { name, email, phone, password, isOrganisationMember, community, orgType } = req.body;
