@@ -270,6 +270,44 @@ const AddReport = () => {
 
                 console.log('Report submitted successfully to API:', response.data);
 
+                // Create a report object to store in localStorage
+                const newReport = {
+                    id: response.data.id || Date.now(), // Use API response ID or generate one
+                    title: reportData.title,
+                    date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+                    time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+                    crisisType: reportData.crisisType,
+                    description: reportData.description,
+                    location: `${reportData.lat}, ${reportData.lng}`,
+                    lat: reportData.lat,
+                    lng: reportData.lng,
+                    status: "active",
+                    submittedBy: localStorage.getItem('username') || "User",
+                    importance: "medium",
+                    ...reportDetailsData,
+                    ...additionalData
+                };
+
+                // Save to userReports in localStorage
+                try {
+                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
+                    userReports.push(newReport);
+                    localStorage.setItem('userReports', JSON.stringify(userReports));
+                    console.log('Report saved to userReports in localStorage');
+                } catch (error) {
+                    console.error('Error saving to userReports:', error);
+                }
+
+                // Save to adminReports in localStorage
+                try {
+                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+                    adminReports.push(newReport);
+                    localStorage.setItem('adminReports', JSON.stringify(adminReports));
+                    console.log('Report saved to adminReports in localStorage');
+                } catch (error) {
+                    console.error('Error saving to adminReports:', error);
+                }
+
                 setReportData(initialReportData);
                 setReportDetailsData(initialReportDetailsData);
                 setAdditionalData(initialAdditionalData);
