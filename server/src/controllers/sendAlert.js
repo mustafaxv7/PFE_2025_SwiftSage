@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const sendAlert = async (req, res) => {
-  let parsedReportData = {}, parsedReportDetailsData = {}, parsedAdditionalData = {};
+  let parsedReportData = {};
 
   try {
     if (!req.body.reportData) {
@@ -12,14 +12,6 @@ export const sendAlert = async (req, res) => {
     }
 
     parsedReportData = JSON.parse(req.body.reportData);
-
-    if (req.body.reportDetailsData) {
-      parsedReportDetailsData = JSON.parse(req.body.reportDetailsData);
-    }
-
-    if (req.body.additionalData) {
-      parsedAdditionalData = JSON.parse(req.body.additionalData);
-    }
   } catch (err) {
     console.error('Error parsing JSON:', err);
     return res.status(400).json({ error: 'Invalid JSON format.' });
@@ -43,6 +35,7 @@ export const sendAlert = async (req, res) => {
       return res.status(400).json({ error: 'Missing one or more required fields.' });
     }
 
+    // Changed to PostgreSQL syntax with parameterized queries
     const query = `
       INSERT INTO alerts (
         message,
@@ -55,7 +48,8 @@ export const sendAlert = async (req, res) => {
         location,
         affected_area,
         created_by_admin_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING id
     `;
 
     const values = [
@@ -71,9 +65,14 @@ export const sendAlert = async (req, res) => {
       adminId
     ];
 
-    await con.promise().query(query, values);
+    const result = await con.query(query, values);
+    const alertId = result.rows[0].id;
 
-    res.status(201).json({ success: true, message: 'Alert successfully created.' });
+    res.status(201).json({ 
+      success: true, 
+      message: 'Alert successfully created.',
+      id: alertId
+    });
 
   } catch (error) {
     console.error('Database error:', error);

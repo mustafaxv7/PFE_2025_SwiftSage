@@ -53,9 +53,10 @@ const Alerts = () => {
                     
                     const formattedAlerts = parsedAlerts.map(alert => ({
                         ...alert,
-                        
-                        status: alert.status === "active" ? "Active" :
-                            alert.status === "resolved" ? "Resolved" : alert.status
+                        // Ensure status is properly formatted without relying on updated_at
+                        status: typeof alert.status === 'string' ? 
+                            alert.status.charAt(0).toUpperCase() + alert.status.slice(1) : 
+                            (alert.status === true ? "Active" : "Resolved")
                     }));
                     setAlerts(formattedAlerts);
                     return;

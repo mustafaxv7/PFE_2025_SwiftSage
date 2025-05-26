@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AuthInput from ".Authinput";
+import AuthInput from "./AuthInput";
 import { useNavigate, Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
 import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";

@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
-import { Bell, AlertTriangle, Trash2, Send, Shield, MapPin } from "lucide-react";
+import { Bell, AlertTriangle, Trash2, Send, Shield, MapPin, Loader } from "lucide-react";
 
 const AdminAlerts = () => {
     const [message, setMessage] = useState("");
+    const [description, setDescription] = useState("");
     const [alertType, setAlertType] = useState("info");
     const [selectedWilaya, setSelectedWilaya] = useState("Chlef");
     const [filterType, setFilterType] = useState("All Types");
     const [filterStatus, setFilterStatus] = useState("All Status");
     const [filterLocation, setFilterLocation] = useState("All Locations");
+    const [alerts, setAlerts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const [error, setError] = useState(null);
+    const [successMessage, setSuccessMessage] = useState(null);
+    
     // List of communes of Chlef
     const chelfCommunes = [
         "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
@@ -15,6 +22,7 @@ const AdminAlerts = () => {
         "Aïn Merane", "Herenfa", "Taougrite", "Dahra", "Ténès", "Sidi Akkacha", "Sidi Abderrahmane", "Abou El Hassan", "Talassa", "Tadjena",
         "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
     ];
+    
     // Default sample alerts
     const defaultAlerts = [
         {
@@ -54,77 +62,244 @@ const AdminAlerts = () => {
             affectedArea: "1240 hectares"
         }
     ];
-    const [alerts, setAlerts] = useState([]);
-    // Load alerts from localStorage or use defaults
+
+    // Fetch alerts from API
     useEffect(() => {
-        try {
-            const storedAlerts = localStorage.getItem('userAlerts');
-            if (storedAlerts) {
-                const parsedAlerts = JSON.parse(storedAlerts);
-                if (parsedAlerts && parsedAlerts.length > 0) {
-                    setAlerts(parsedAlerts);
-                    return;
+        const fetchAlerts = async () => {
+            setIsLoading(true);
+            setError(null);
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
                 }
+
+                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+                const response = await fetch(`${baseURL}/api/alerts`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || `HTTP error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Received alerts:', data);
+                
+                if (data && data.length > 0) {
+                    // Transform the status values to capitalize first letter
+                    const formattedAlerts = data.map(alert => ({
+                        ...alert,
+                        status: alert.status.charAt(0).toUpperCase() + alert.status.slice(1),
+                        importance: alert.importance.charAt(0).toUpperCase() + alert.importance.slice(1)
+                    }));
+                    setAlerts(formattedAlerts);
+                } else {
+                    // If no alerts from API, use defaults
+                    setAlerts(defaultAlerts);
+                }
+            } catch (err) {
+                console.error('Error fetching alerts:', err);
+                setError(err.message);
+                // Fallback to sample data
+                setAlerts(defaultAlerts);
+            } finally {
+                setIsLoading(false);
             }
-            // If no stored alerts, use defaults and initialize localStorage
-            setAlerts(defaultAlerts);
-            localStorage.setItem('userAlerts', JSON.stringify(defaultAlerts));
-        } catch (error) {
-            console.error('Error loading alerts from localStorage:', error);
-            setAlerts(defaultAlerts);
-        }
-    }, []);
-
-    const sendAlert = () => {
-        if (!message.trim()) return;
-
-        const now = new Date();
-
-        const newAlert = {
-            id: Date.now(),
-            message: message,
-            description: message, // Add description for user alerts view
-            date: now.toLocaleDateString('fr-FR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            }),
-            time: now.toLocaleTimeString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }),
-            status: "Active",
-            importance: alertType === "danger" ? "Critical" : "High",
-            type: alertType,
-            location: selectedWilaya, // Use selected wilaya as location
-            affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya // Set affected area based on selection
         };
 
-        const updatedAlerts = [newAlert, ...alerts];
-        setAlerts(updatedAlerts);
-        // Save to localStorage for user alerts view
-        localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
+        fetchAlerts();
+    }, []);
 
-        setMessage("");
+    // Send alert using API
+    const sendAlert = async () => {
+        if (!message.trim()) {
+            setError("Alert message cannot be empty");
+            return;
+        }
+
+        setIsSending(true);
+        setError(null);
+        setSuccessMessage(null);
+        
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication token not found');
+            }
+            
+            // Extract admin ID from token
+            let adminId;
+            try {
+                const payload = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payload));
+                adminId = decodedPayload.id;
+            } catch (err) {
+                throw new Error('Invalid token. Please log in again.');
+            }
+
+            const now = new Date();
+            
+            // Construct reportData as expected by the API
+            const reportData = {
+                message: message,
+                description: description || message,
+                date: now.toISOString().split('T')[0],
+                time: now.toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }),
+                status: "active",
+                importance: alertType === "danger" ? "critical" : alertType === "warning" ? "high" : "medium",
+                type: alertType,
+                location: selectedWilaya,
+                affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya,
+                adminId: adminId
+            };
+
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const response = await fetch(`${baseURL}/api/alerts`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    reportData: JSON.stringify(reportData)
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || errorData.error || 'Failed to send alert');
+            }
+
+            const result = await response.json();
+            
+            // Add the new alert to local state
+            const newAlert = {
+                id: result.id || Date.now(),
+                message: message,
+                description: description || message,
+                date: now.toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                time: now.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                status: "Active",
+                importance: alertType === "danger" ? "Critical" : "High",
+                type: alertType,
+                location: selectedWilaya,
+                affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya
+            };
+            
+            setAlerts([newAlert, ...alerts]);
+            setMessage("");
+            setDescription("");
+            setSuccessMessage("Alert sent successfully!");
+            
+            // Clear success message after 3 seconds
+            setTimeout(() => setSuccessMessage(null), 3000);
+            
+        } catch (error) {
+            console.error('Error sending alert:', error);
+            setError(error.message);
+        } finally {
+            setIsSending(false);
+        }
     };
 
-    const deleteAlert = (id) => {
-        const updatedAlerts = alerts.filter(alert => alert.id !== id);
-        setAlerts(updatedAlerts);
-        // Update localStorage when an alert is deleted
-        localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
+    // Delete alert via API
+    const deleteAlert = async (id) => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+            
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const response = await fetch(`${baseURL}/api/alerts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to delete alert');
+            }
+            
+            // Update local state by filtering out the deleted alert
+            const updatedAlerts = alerts.filter(alert => alert.id !== id);
+            setAlerts(updatedAlerts);
+            
+            setSuccessMessage("Alert deleted successfully!");
+            setTimeout(() => setSuccessMessage(null), 3000);
+            
+        } catch (error) {
+            console.error('Error deleting alert:', error);
+            setError(error.message);
+            setTimeout(() => setError(null), 3000);
+        }
     };
 
-    const toggleStatus = (id) => {
-        const updatedAlerts = alerts.map(alert =>
-            alert.id === id
-                ? { ...alert, status: alert.status === "Active" ? "Resolved" : "Active" }
-                : alert
-        );
-        setAlerts(updatedAlerts);
-        // Update localStorage when an alert's status changes
-        localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
+    // Toggle status via API
+    const toggleStatus = async (id) => {
+        try {
+            const alertToUpdate = alerts.find(alert => alert.id === id);
+            if (!alertToUpdate) return;
+            
+            const newStatus = alertToUpdate.status === "Active" ? "Resolved" : "Active";
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+            
+            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const response = await fetch(`${baseURL}/api/alerts/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    status: newStatus.toLowerCase() // Send lowercase to the API
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to update alert status');
+            }
+            
+            // Update the alert in the local state with capitalized status
+            const updatedAlerts = alerts.map(alert =>
+                alert.id === id ? { 
+                    ...alert, 
+                    status: newStatus 
+                } : alert
+            );
+            
+            setAlerts(updatedAlerts);
+            setSuccessMessage(`Alert marked as ${newStatus}`);
+            setTimeout(() => setSuccessMessage(null), 3000);
+            
+        } catch (error) {
+            console.error('Error updating alert status:', error);
+            setError(error.message);
+            setTimeout(() => setError(null), 3000);
+        }
     };
 
     const getAlertIcon = (type) => {
@@ -161,16 +336,42 @@ const AdminAlerts = () => {
                 </span>
             </div>
 
+            {/* Success/Error Messages */}
+            {successMessage && (
+                <div className="mb-4 bg-green-50 border border-green-200 text-green-800 rounded-md p-4">
+                    {successMessage}
+                </div>
+            )}
+            
+            {error && (
+                <div className="mb-4 bg-red-50 border border-red-200 text-red-800 rounded-md p-4">
+                    {error}
+                </div>
+            )}
+
             <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">Create New Alert</h3>
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Alert Message</label>
-                    <textarea
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Alert Title</label>
+                    <input
+                        type="text"
                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        placeholder="Write an alert message..."
+                        placeholder="Brief alert title..."
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
+                        disabled={isSending}
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Alert Description</label>
+                    <textarea
+                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        placeholder="Additional details about the alert..."
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         rows={3}
+                        disabled={isSending}
                     ></textarea>
                 </div>
 
@@ -181,6 +382,7 @@ const AdminAlerts = () => {
                             <button
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'info' ? 'bg-blue-100 text-blue-800 border border-blue-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('info')}
+                                disabled={isSending}
                             >
                                 <Bell size={14} className="mr-1" />
                                 Information
@@ -188,6 +390,7 @@ const AdminAlerts = () => {
                             <button
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'warning' ? 'bg-yellow-100 text-yellow-800 border border-yellow-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('warning')}
+                                disabled={isSending}
                             >
                                 <Shield size={14} className="mr-1" />
                                 Warning
@@ -195,6 +398,7 @@ const AdminAlerts = () => {
                             <button
                                 className={`px-4 py-2 rounded-md text-sm flex items-center ${alertType === 'danger' ? 'bg-red-100 text-red-800 border border-red-300' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                                 onClick={() => setAlertType('danger')}
+                                disabled={isSending}
                             >
                                 <AlertTriangle size={14} className="mr-1" />
                                 Critical
@@ -212,6 +416,7 @@ const AdminAlerts = () => {
                                 className="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 value={selectedWilaya}
                                 onChange={(e) => setSelectedWilaya(e.target.value)}
+                                disabled={isSending}
                             >
                                 <option value="Chlef">Toutes les communes de Chlef</option>
                                 {chelfCommunes.map((commune, index) => (
@@ -222,11 +427,21 @@ const AdminAlerts = () => {
                     </div>
 
                     <button
-                        className="flex items-center bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium mt-4 sm:mt-0"
+                        className={`flex items-center ${isSending ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'} text-white px-5 py-2 rounded-md transition-colors font-medium mt-4 sm:mt-0`}
                         onClick={sendAlert}
+                        disabled={isSending}
                     >
-                        <Send size={16} className="mr-2" />
-                        Send Alert
+                        {isSending ? (
+                            <>
+                                <Loader size={16} className="mr-2 animate-spin" />
+                                Sending...
+                            </>
+                        ) : (
+                            <>
+                                <Send size={16} className="mr-2" />
+                                Send Alert
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
@@ -265,83 +480,90 @@ const AdminAlerts = () => {
             </div>
 
             <div className="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {(() => {
-                            const filteredAlerts = alerts.filter(alert => {
-                                // Filter by type
-                                if (filterType !== "All Types") {
-                                    if (filterType === "Information" && alert.type !== "info") return false;
-                                    if (filterType === "Warning" && alert.type !== "warning") return false;
-                                    if (filterType === "Critical" && alert.type !== "danger") return false;
-                                }
-                                // Filter by status
-                                if (filterStatus !== "All Status") {
-                                    if (filterStatus === "Active" && alert.status !== "Active") return false;
-                                    if (filterStatus === "Resolved" && alert.status !== "Resolved") return false;
-                                }
-                                // Filter by location
-                                if (filterLocation !== "All Locations") {
-                                    if (filterLocation === "Toutes les communes" && alert.affectedArea !== "Toutes les communes") return false;
-                                    if (filterLocation !== "Toutes les communes" && alert.location !== filterLocation) return false;
-                                }
-                                return true;
-                            });
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-32">
+                        <Loader className="animate-spin h-6 w-6 text-blue-500 mr-2" />
+                        <span>Loading alerts...</span>
+                    </div>
+                ) : (
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {(() => {
+                                const filteredAlerts = alerts.filter(alert => {
+                                    // Filter by type
+                                    if (filterType !== "All Types") {
+                                        if (filterType === "Information" && alert.type !== "info") return false;
+                                        if (filterType === "Warning" && alert.type !== "warning") return false;
+                                        if (filterType === "Critical" && alert.type !== "danger") return false;
+                                    }
+                                    // Filter by status
+                                    if (filterStatus !== "All Status") {
+                                        if (filterStatus === "Active" && alert.status !== "Active") return false;
+                                        if (filterStatus === "Resolved" && alert.status !== "Resolved") return false;
+                                    }
+                                    // Filter by location
+                                    if (filterLocation !== "All Locations") {
+                                        if (filterLocation === "Toutes les communes" && alert.affectedArea !== "Toutes les communes") return false;
+                                        if (filterLocation !== "Toutes les communes" && alert.location !== filterLocation) return false;
+                                    }
+                                    return true;
+                                });
 
-                            return filteredAlerts.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" className="px-4 py-6 text-sm text-gray-500 text-center">No alerts found</td>
-                                </tr>
-                            ) : (
-                                filteredAlerts.map((alert) => (
-                                    <tr key={alert.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-4 py-4 whitespace-nowrap">{getAlertIcon(alert.type)}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{alert.message}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div>{alert.date}</div>
-                                            <div className="text-xs">{alert.time}</div>
-                                        </td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div className="flex items-center">
-                                                <MapPin size={14} className="text-gray-400 mr-1" />
-                                                <span>{alert.location}</span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-4 whitespace-nowrap">{getStatusBadge(alert.status)}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap">{getImportanceBadge(alert.importance)}</td>
-                                        <td className="px-4 py-4 whitespace-nowrap text-sm">
-                                            <div className="flex space-x-3">
-                                                <button
-                                                    onClick={() => toggleStatus(alert.id)}
-                                                    className={`text-sm px-3 py-1 rounded ${alert.status === "Active" ? "text-green-600 hover:bg-green-50" : "text-blue-600 hover:bg-blue-50"}`}
-                                                >
-                                                    {alert.status === "Active" ? "Resolve" : "Reactivate"}
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteAlert(alert.id)}
-                                                    className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded p-1"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
+                                return filteredAlerts.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="7" className="px-4 py-6 text-sm text-gray-500 text-center">No alerts found</td>
                                     </tr>
-                                ))
-                            )
-                        })()}
-                    </tbody>
-                </table>
+                                ) : (
+                                    filteredAlerts.map((alert) => (
+                                        <tr key={alert.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-4 py-4 whitespace-nowrap">{getAlertIcon(alert.type)}</td>
+                                            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{alert.message}</td>
+                                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div>{alert.date}</div>
+                                                <div className="text-xs">{alert.time}</div>
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <div className="flex items-center">
+                                                    <MapPin size={14} className="text-gray-400 mr-1" />
+                                                    <span>{alert.location}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 whitespace-nowrap">{getStatusBadge(alert.status)}</td>
+                                            <td className="px-4 py-4 whitespace-nowrap">{getImportanceBadge(alert.importance)}</td>
+                                            <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                                <div className="flex space-x-3">
+                                                    <button
+                                                        onClick={() => toggleStatus(alert.id)}
+                                                        className={`text-sm px-3 py-1 rounded ${alert.status === "Active" ? "text-green-600 hover:bg-green-50" : "text-blue-600 hover:bg-blue-50"}`}
+                                                    >
+                                                        {alert.status === "Active" ? "Resolve" : "Reactivate"}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteAlert(alert.id)}
+                                                        className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded p-1"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )
+                            })()}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );

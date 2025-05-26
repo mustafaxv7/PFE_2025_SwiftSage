@@ -31,6 +31,7 @@ import reportRoutes from './routes/reportRoutes.js';
 import authMiddleware from './middleware/authMiddleware.js';    
 import authUsers from './routes/authUsers.js';
 import adminAuth from './routes/adminAuth.js';
+import sendAlertRoutes from './routes/sendAlertRoutes.js';  
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use('/auth',authRoutes);
 app.use('/api/reports',authMiddleware,reportRoutes); // protected routes
 app.use('/api/users',authMiddleware, authUsers); 
 app.use('/api/admin', authMiddleware, adminAuth);
+app.use('/api/alerts', authMiddleware, sendAlertRoutes); // add this line
 app.get('/', (req,res)=>{
     res.sendFile(path.join(__dirname, 'client','dist','index.html'));
 });
