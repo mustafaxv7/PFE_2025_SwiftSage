@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const sendFeedback = async (req, res) => {
+export const sendFeedback = async (req, res) => {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
@@ -28,4 +28,4 @@ const sendFeedback = async (req, res) => {
   }
 };
 
-export default sendFeedback;
+
