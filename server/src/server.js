@@ -31,16 +31,13 @@ import reportRoutes from './routes/reportRoutes.js';
 import authMiddleware from './middleware/authMiddleware.js';    
 import authUsers from './routes/authUsers.js';
 import adminAuth from './routes/adminAuth.js';
-<<<<<<< HEAD
-import {sendAlertRoutes} from './routes/sendAlertRoutes.js'; 
+import sendAlertRoutes from './routes/sendAlertRoutes.js'; 
 import { get } from 'http';
 import { getAlerts } from './controllers/getAlerts.js';
 import { send } from 'process';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 
 
-=======
->>>>>>> ca025779ba8f207edaef929b1b8aed081c21625f
 
 dotenv.config();
 
