@@ -135,7 +135,6 @@ const ReportsOverview = () => {
         };
         fetchReports();
 
-        // Add event listener to update reports when localStorage changes
         const handleStorageChange = (e) => {
             if (e.key === 'adminReports') {
                 fetchReports();
@@ -163,7 +162,6 @@ const ReportsOverview = () => {
         );
         setReports(updatedReports);
 
-        // Update the selected report if it's open in the modal
         if (selectedReport && selectedReport.id === reportId) {
             setSelectedReport({ ...selectedReport, status: newStatus });
         }
@@ -171,7 +169,6 @@ const ReportsOverview = () => {
         // Update in localStorage
         localStorage.setItem('adminReports', JSON.stringify(updatedReports));
 
-        // Also update in user reports if it exists there
         try {
             const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
             const updatedUserReports = userReports.map(report =>

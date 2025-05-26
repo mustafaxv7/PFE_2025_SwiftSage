@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AuthInput from "./AuthInput";
+import AuthInput from "./Authinput";
 import { useNavigate, Link } from "react-router-dom";
 import Logo from "../../assets/Logo.png";
 import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
@@ -259,8 +259,6 @@ const SignupForm = () => {
                             </button>
                         </div>
                     </form>
-
-                    {/* Login Link */}
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
                             Already have an account?{" "}

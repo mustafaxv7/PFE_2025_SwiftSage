@@ -3,8 +3,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import con from '../config/db.js';
 
-//testing
-
 const router = express.Router();
 
 router.post('/register', async (req, res) => {

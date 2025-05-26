@@ -44,16 +44,16 @@ const Alerts = () => {
             }
         ];
 
-        // Try to get alerts from localStorage (set by admin)
+        
         try {
             const storedAlerts = localStorage.getItem('userAlerts');
             if (storedAlerts) {
                 const parsedAlerts = JSON.parse(storedAlerts);
                 if (parsedAlerts && parsedAlerts.length > 0) {
-                    // Format status to match expected format (Active/Resolved instead of active/resolved)
+                    
                     const formattedAlerts = parsedAlerts.map(alert => ({
                         ...alert,
-                        // Ensure status is properly formatted
+                        
                         status: alert.status === "active" ? "Active" :
                             alert.status === "resolved" ? "Resolved" : alert.status
                     }));
@@ -94,8 +94,6 @@ const Alerts = () => {
         const updatedAlerts = alerts.filter(alert => alert.id !== id);
         setAlerts(updatedAlerts);
 
-        // Update localStorage when a user dismisses an alert
-        // This ensures consistency between admin and user views
         localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
     };
 

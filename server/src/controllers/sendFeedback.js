@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const sendFeedback = async (req, res) => {
+const sendFeedback = async (req, res) => {
   const { name, email, message } = req.body;
 
   if (!name || !email || !message) {
@@ -27,3 +27,5 @@ export const sendFeedback = async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
+
+export default sendFeedback;
