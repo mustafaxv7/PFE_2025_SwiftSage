@@ -34,7 +34,7 @@ export const addReport = async (req, res) => {
     description,
     crisisType,
     userId,
-    status // new field
+    status 
   } = parsedReportData;
 
   if (!lat || !lng || !title || !crisisType || !userId) {
@@ -73,8 +73,6 @@ export const addReport = async (req, res) => {
 
     const result = await con.query(insertQuery, insertValues);
     const reportId = result.rows[0].id;
-
-    // Insert report_details
     if (Object.keys(parsedReportDetailsData).length > 0) {
       const reportDetailsQuery = `
         INSERT INTO report_details (
@@ -109,7 +107,6 @@ export const addReport = async (req, res) => {
       await con.query(reportDetailsQuery, reportDetailsValues);
     }
 
-    // Insert categories
     if (Object.keys(parsedAdditionalData).length > 0) {
       const categoriesQuery = `
         INSERT INTO categories (

@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown, Save } from "lucide-react";
 
 const MyReports = () => {
-    // Sample reports to use as fallback if no reports in localStorage
     const sampleReports = [
         {
             id: 1,
@@ -63,13 +62,14 @@ const MyReports = () => {
         }
     ];
 
-    // Load reports from localStorage or use sample reports if none exist
     const loadReportsFromStorage = () => {
         try {
             const storedReports = localStorage.getItem('userReports');
             if (storedReports) {
-                return JSON.parse(storedReports);
+                const parsedReports = JSON.parse(storedReports);
+                return parsedReports.length > 0 ? parsedReports : sampleReports;
             }
+            localStorage.setItem('userReports', JSON.stringify(sampleReports));
             return sampleReports;
         } catch (error) {
             console.error('Error loading reports from localStorage:', error);
@@ -77,12 +77,15 @@ const MyReports = () => {
         }
     };
 
-    const [reports, setReports] = useState(loadReportsFromStorage);
+    const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedReport, setEditedReport] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    useEffect(() => {
+        setReports(loadReportsFromStorage());
+    }, []);
 
     const handleReportClick = (report) => {
         setSelectedReport(report);
@@ -107,15 +110,10 @@ const MyReports = () => {
             report.id === editedReport.id ? editedReport : report
         );
 
-        // Update state
         setReports(updatedReports);
         setSelectedReport(editedReport);
         setIsEditing(false);
-
-        // Save to localStorage
         localStorage.setItem('userReports', JSON.stringify(updatedReports));
-
-        // Also update in admin reports if it exists there
         try {
             const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
             const updatedAdminReports = adminReports.map(report =>
@@ -171,7 +169,18 @@ const MyReports = () => {
     };
 
     const getCrisisTypeIcon = (type) => {
-        return <AlertCircle className="text-red-500" />;
+        switch (type) {
+            case "earthquake":
+                return <AlertCircle className="text-orange-500" />;
+            case "flood":
+                return <AlertCircle className="text-blue-500" />;
+            case "industrial_fire":
+                return <AlertCircle className="text-red-500" />;
+            case "forest_fire":
+                return <AlertCircle className="text-red-600" />;
+            default:
+                return <AlertCircle className="text-gray-500" />;
+        }
     };
 
     const filteredReports = reports.filter(report => {
@@ -180,7 +189,6 @@ const MyReports = () => {
 
     return (
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800">My Reports</h2>
                 <div className="relative w-full sm:w-auto">
@@ -195,42 +203,49 @@ const MyReports = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-                {filteredReports.map((report) => (
-                    <div
-                        key={report.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
-                        onClick={() => handleReportClick(report)}
-                    >
-                        <div className="p-3 sm:p-4">
-                            <div className="flex items-start justify-between gap-2">
-                                <div className="flex items-center min-w-0">
-                                    <div className="flex-shrink-0">
-                                        {getCrisisTypeIcon(report.crisisType)}
+            {reports.length === 0 ? (
+                <div className="text-center py-10">
+                    <FileText className="mx-auto text-gray-400" size={48} />
+                    <p className="mt-2 text-gray-500">No reports found</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                    {filteredReports.map((report) => (
+                        <div
+                            key={report.id}
+                            className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition cursor-pointer"
+                            onClick={() => handleReportClick(report)}
+                        >
+                            <div className="p-3 sm:p-4">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex items-center min-w-0">
+                                        <div className="flex-shrink-0">
+                                            {getCrisisTypeIcon(report.crisisType)}
+                                        </div>
+                                        <h3 className="font-medium text-sm sm:text-base ml-2 truncate">{report.title}</h3>
                                     </div>
-                                    <h3 className="font-medium text-sm sm:text-base ml-2 truncate">{report.title}</h3>
+                                    <div className="flex-shrink-0">
+                                        {getStatusBadge(report.status)}
+                                    </div>
                                 </div>
-                                <div className="flex-shrink-0">
-                                    {getStatusBadge(report.status)}
+                                <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 line-clamp-2">{report.description}</div>
+                                <div className="mt-3 sm:mt-4 flex items-center text-xs text-gray-500 overflow-hidden">
+                                    <MapPin size={12} className="flex-shrink-0 mr-1" />
+                                    <span className="truncate">{report.location}</span>
                                 </div>
-                            </div>
-                            <div className="mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600 line-clamp-2">{report.description}</div>
-                            <div className="mt-3 sm:mt-4 flex items-center text-xs text-gray-500 overflow-hidden">
-                                <MapPin size={12} className="flex-shrink-0 mr-1" />
-                                <span className="truncate">{report.location}</span>
-                            </div>
-                            <div className="mt-1 sm:mt-2 flex items-center text-xs text-gray-500">
-                                <Calendar size={12} className="flex-shrink-0 mr-1" />
-                                <span>{report.date}</span>
-                            </div>
-                            <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
-                                {getImportanceBadge(report.importance)}
-                                <span className="text-xs text-gray-500 truncate max-w-full">Submitted by: {report.submittedBy}</span>
+                                <div className="mt-1 sm:mt-2 flex items-center text-xs text-gray-500">
+                                    <Calendar size={12} className="flex-shrink-0 mr-1" />
+                                    <span>{report.date}</span>
+                                </div>
+                                <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+                                    {getImportanceBadge(report.importance)}
+                                    <span className="text-xs text-gray-500 truncate max-w-full">Submitted by: {report.submittedBy}</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
             {isModalOpen && selectedReport && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3 sm:p-0">
                     <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">

@@ -2,7 +2,6 @@ import con from "../config/db.js";
 
 export const getAuthUsers = async (req, res) => {
     try {
-        // Log the request to help with debugging
         console.log('Fetching users - auth check passed');
         
         const query = `
@@ -21,7 +20,6 @@ export const getAuthUsers = async (req, res) => {
         const result = await con.query(query);
         console.log(`Found ${result.rows.length} users`);
         
-        // Return the raw data directly without transformation
         return res.status(200).json(result.rows);
     } catch (err) {
         console.error('Error fetching users:', err);

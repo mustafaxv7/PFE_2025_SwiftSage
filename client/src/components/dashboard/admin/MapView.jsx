@@ -76,37 +76,88 @@ const MapView = () => {
                     }
                 ];
 
-                let data = [];
-                const storedReports = localStorage.getItem('adminReports') || localStorage.getItem('userReports');
-
-                if (storedReports) {
-                    const parsedReports = JSON.parse(storedReports);
-                    if (parsedReports && parsedReports.length > 0) {
-                        data = parsedReports.map(report => ({
+                // Collect reports from all available sources
+                const allReports = [];
+                
+                // Try to get user reports
+                try {
+                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
+                    if (userReports.length > 0) {
+                        const formattedUserReports = userReports.map(report => ({
                             id: report.id,
                             title: report.title,
                             location: report.location || `${report.lat}, ${report.lng}`,
                             coordinates: {
-                                lat: parseFloat(report.lat) || (report.coordinates ? parseFloat(report.coordinates.lat) : 0),
-                                lng: parseFloat(report.lng) || (report.coordinates ? parseFloat(report.coordinates.lng) : 0)
+                                lat: parseFloat(report.lat) || 0,
+                                lng: parseFloat(report.lng) || 0
                             },
                             severity: report.importance?.toLowerCase() || "medium",
                             type: report.crisisType,
                             date: report.date,
                             description: report.description,
-                            status: report.status || "active"
+                            status: report.status?.toLowerCase() || "active",
+                            source: "user"
                         }));
+                        allReports.push(...formattedUserReports);
                     }
+                } catch (err) {
+                    console.error('Error parsing user reports:', err);
+                }
+                
+                // Try to get admin reports if they differ from user reports
+                try {
+                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+                    if (adminReports.length > 0) {
+                        // Filter out duplicates that might already be in userReports
+                        const newAdminReports = adminReports.filter(adminReport => 
+                            !allReports.some(report => report.id === adminReport.id)
+                        );
+                        
+                        const formattedAdminReports = newAdminReports.map(report => ({
+                            id: report.id,
+                            title: report.title,
+                            location: report.location || `${report.lat}, ${report.lng}`,
+                            coordinates: {
+                                lat: parseFloat(report.lat) || 0,
+                                lng: parseFloat(report.lng) || 0
+                            },
+                            severity: report.importance?.toLowerCase() || "medium",
+                            type: report.crisisType,
+                            date: report.date,
+                            description: report.description,
+                            status: report.status?.toLowerCase() || "active",
+                            source: "admin"
+                        }));
+                        allReports.push(...formattedAdminReports);
+                    }
+                } catch (err) {
+                    console.error('Error parsing admin reports:', err);
                 }
 
-                if (data.length === 0) {
-                    data = sampleReports;
+                // Use sample data only if no reports were found
+                if (allReports.length === 0) {
+                    console.log('No reports found, using sample data');
+                    allReports.push(...sampleReports);
+                } else {
+                    console.log(`Loaded ${allReports.length} reports from localStorage`);
                 }
 
-                setReports(data);
-                if (data.length > 0) {
-                    setMapCenter(data[0].coordinates);
-                    setMapZoom(6);
+                // Set reports and update map
+                setReports(allReports);
+                if (allReports.length > 0) {
+                    // Find a valid coordinate to center on
+                    const validReport = allReports.find(r => 
+                        r.coordinates && 
+                        r.coordinates.lat && 
+                        r.coordinates.lng &&
+                        !isNaN(r.coordinates.lat) && 
+                        !isNaN(r.coordinates.lng)
+                    );
+                    
+                    if (validReport) {
+                        setMapCenter(validReport.coordinates);
+                        setMapZoom(7);
+                    }
                 }
             } catch (error) {
                 console.error('Error loading reports:', error);
@@ -116,20 +167,24 @@ const MapView = () => {
 
         fetchReports();
 
-        const handleStorageChange = (e) => {
-            if (e.key === 'adminReports' || e.key === 'userReports') {
-                fetchReports();
-            }
+        // Listen for storage changes
+        const handleStorageChange = () => {
+            fetchReports();
         };
+        
         window.addEventListener('storage', handleStorageChange);
-
+        
+        // Also check periodically for changes within the same window
+        const intervalId = setInterval(fetchReports, 30000); // Check every 30 seconds
+        
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            clearInterval(intervalId);
         };
     }, []);
 
     const filteredReports = reports.filter(report => {
-        if (crisisType !== "all" && report.type !== CrisisType) return false;
+        if (crisisType !== "all" && report.type !== crisisType) return false;
         if (severity !== "all" && report.severity !== severity) return false;
         if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
         return true;

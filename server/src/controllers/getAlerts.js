@@ -7,7 +7,6 @@ export const getAlerts = async (req, res) => {
     const { id } = req.params;
 
     try {
-        // If an ID is provided, fetch a specific alert
         if (id) {
             const query = `
                 SELECT id, message, description, date, time, status, importance, 
@@ -25,14 +24,12 @@ export const getAlerts = async (req, res) => {
 
             res.status(200).json(result.rows[0]);
         } 
-        // Otherwise, fetch all alerts (for admin) or community-specific alerts (for users)
         else {
             const isAdmin = req.user?.role === 'admin';
             let query;
             let values = [];
 
             if (isAdmin) {
-                // Admins can see all alerts
                 query = `
                     SELECT id, message, description, date, time, status, importance, 
                     type, location, affected_area, created_at, created_by_admin_id
@@ -40,7 +37,6 @@ export const getAlerts = async (req, res) => {
                     ORDER BY created_at DESC
                 `;
             } else {
-                // Regular users only see alerts for their community
                 query = `
                     SELECT id, message, description, date, time, status, importance, 
                     type, location, affected_area, created_at, created_by_admin_id

@@ -41,6 +41,17 @@ const AddReport = () => {
     const [reportData, setReportData] = useState(initialReportData);
     const [reportDetailsData, setReportDetailsData] = useState(initialReportDetailsData);
     const [additionalData, setAdditionalData] = useState(initialAdditionalData);
+    const [success, setSuccess] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState(() => {
+        try {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+            return userInfo?.username || "anonymous";
+        } catch {
+            return "anonymous";
+        }
+    });
 
     const formData = {
         ...reportData,
@@ -194,147 +205,62 @@ const AddReport = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
-            alert("Please fill in all required fields (title, description, crisis type, and location)");
-            return;
-        }
-
+        setError(null);
+        setSuccess(null);
+        setLoading(true);
+        
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("You must be logged in to submit a report");
-                return;
+            // Validate required fields
+            if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
+                throw new Error("Please fill in all required fields");
             }
-
-            let userId;
-            try {
-                const payload = token.split('.')[1];
-                const decodedPayload = JSON.parse(atob(payload));
-                userId = decodedPayload.id;
-                console.log('Extracted user ID:', userId);
-            } catch (error) {
-                console.error('Error extracting user ID from token:', error);
-                alert("Authentication error. Please log in again.");
-                return;
-            }
-
-            if (!userId) {
-                alert("User ID not found. Please log in again.");
-                return;
-            }
-
-            const formDataToSend = new FormData();
-
-            const reportDataWithUserId = {
-                ...reportData,
-                userId: userId
-            };
-
-            formDataToSend.append('reportData', JSON.stringify(reportDataWithUserId));
-            formDataToSend.append('reportDetailsData', JSON.stringify(reportDetailsData));
-            formDataToSend.append('additionalData', JSON.stringify(additionalData));
-
-            if (reportData.image) {
-                try {
-                    formDataToSend.append('image', reportData.image);
-                    console.log('Image attached:', reportData.image.name, 'Size:', (reportData.image.size / 1024 / 1024).toFixed(2), 'MB');
-                } catch (error) {
-                    console.error('Error attaching image:', error);
-                    alert("Error attaching image. Please try again with a different image.");
-                    return;
-                }
-            }
-
-            console.log('Submitting report with data:', {
-                reportData: reportDataWithUserId,
-                reportDetailsData,
-                additionalData,
-                hasImage: !!reportData.image
+            
+            // Generate a unique ID for the report
+            const reportId = Date.now().toString();
+            const currentDate = new Date();
+            const formattedDate = currentDate.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
             });
-
-            try {
-                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
-                console.log('Sending request to:', `${baseURL}/api/reports`);
-
-                const response = await axios.post(`${baseURL}/api/reports`, formDataToSend, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    timeout: 30000,
-                    onUploadProgress: (progressEvent) => {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        console.log(`Upload progress: ${percentCompleted}%`);
-                    }
-                });
-
-                console.log('Report submitted successfully to API:', response.data);
-
-                // Create a report object to store in localStorage
-                const newReport = {
-                    id: response.data.id || Date.now(), // Use API response ID or generate one
-                    title: reportData.title,
-                    date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
-                    time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
-                    crisisType: reportData.crisisType,
-                    description: reportData.description,
-                    location: `${reportData.lat}, ${reportData.lng}`,
-                    lat: reportData.lat,
-                    lng: reportData.lng,
-                    status: "active",
-                    submittedBy: localStorage.getItem('username') || "User",
-                    importance: "medium",
-                    ...reportDetailsData,
-                    ...additionalData
-                };
-
-                // Save to userReports in localStorage
-                try {
-                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-                    userReports.push(newReport);
-                    localStorage.setItem('userReports', JSON.stringify(userReports));
-                    console.log('Report saved to userReports in localStorage');
-                } catch (error) {
-                    console.error('Error saving to userReports:', error);
-                }
-
-                // Save to adminReports in localStorage
-                try {
-                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-                    adminReports.push(newReport);
-                    localStorage.setItem('adminReports', JSON.stringify(adminReports));
-                    console.log('Report saved to adminReports in localStorage');
-                } catch (error) {
-                    console.error('Error saving to adminReports:', error);
-                }
-
-                setReportData(initialReportData);
-                setReportDetailsData(initialReportDetailsData);
-                setAdditionalData(initialAdditionalData);
-
-                alert("Report submitted successfully!");
-
-            } catch (error) {
-                console.error('Error submitting report to API:', error);
-
-                if (error.code === 'ECONNABORTED') {
-                    alert("Request timed out. The server might be down or the image might be too large.");
-                } else if (error.response) {
-                    const errorMessage = error.response.data?.error || error.response.statusText || 'Unknown error';
-                    alert(`Server error (${error.response.status}): ${errorMessage}`);
-                } else if (error.request) {
-                    alert("No response from server. Please check your internet connection and try again.");
-                } else {
-                    alert("Error submitting report: " + error.message);
-                }
-            }
-
-        } catch (error) {
-            console.error('Error submitting report:', error);
-            alert("Error submitting report. Please try again.");
+            
+            // Construct the new report object
+            const newReport = {
+                id: reportId,
+                title: reportData.title,
+                description: reportData.description,
+                crisisType: reportData.crisisType,
+                lat: reportData.lat,
+                lng: reportData.lng,
+                date: formattedDate,
+                time: currentDate.toLocaleTimeString('fr-FR', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                location: reportData.location || `Latitude: ${reportData.lat}, Longitude: ${reportData.lng}`,
+                status: "Active", 
+            };
+            
+            let userReports = JSON.parse(localStorage.getItem("userReports")) || [];
+            userReports.unshift(newReport);
+            localStorage.setItem("userReports", JSON.stringify(userReports));
+            
+            let adminReports = JSON.parse(localStorage.getItem("adminReports")) || [];
+            adminReports.unshift(newReport);
+            localStorage.setItem("adminReports", JSON.stringify(adminReports));
+            
+            setReportData(initialReportData);
+            setReportDetailsData(initialReportDetailsData);
+            setAdditionalData(initialAdditionalData);
+            
+            setSuccess("Report submitted successfully!");
+        } catch (err) {
+            setError(err.message || "Failed to submit report. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
-
+    
     const handleCancel = () => {
         setReportData(initialReportData);
         setReportDetailsData(initialReportDetailsData);
@@ -428,7 +354,7 @@ const AddReport = () => {
                         <input
                             type="text"
                             name="title"
-                            placeholder="Brief title describing the crisis"
+                            placeholder="Brief title describing the Crisis"
                             className="w-full p-2 rounded-md border border-gray-300 "
                             value={formData.title}
                             onChange={handleChange}
@@ -733,6 +659,16 @@ const AddReport = () => {
                             )}
                         </div>
                     )}
+                    {success && (
+                        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-md">
+                            {success}
+                        </div>
+                    )}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-800 rounded-md">
+                            {error}
+                        </div>
+                    )}
                     <div className="mt-8 flex justify-end space-x-4">
                         <button
                             type="button"
@@ -743,9 +679,10 @@ const AddReport = () => {
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                            className="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 flex items-center"
+                            disabled={loading}
                         >
-                            Submit Report
+                            {loading ? "Submitting..." : "Submit Report"}
                         </button>
                     </div>
                 </div>

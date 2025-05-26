@@ -2,8 +2,6 @@ import dotenv from 'dotenv';
 import con from '../config/db.js'; 
 dotenv.config();
 
-//testing
-
 export const getReportDetailsAdmin = async (req, res) => {
     const reportId = req.params.id;
     try {

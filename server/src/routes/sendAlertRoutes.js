@@ -10,12 +10,10 @@ import { deleteAlert } from '../controllers/deleteAlert.js';
 dotenv.config();
 const router = express.Router();
 
-// For admin
 router.post('/', authMiddleware, adminMiddleware, sendAlert);
 router.put('/:id', authMiddleware, adminMiddleware, updateAlert);
 router.delete('/:id', authMiddleware, adminMiddleware, deleteAlert); 
 
-// For user
 router.get('/:id', authMiddleware, getAlerts);
 router.get('/', authMiddleware, adminMiddleware, getAlerts);
 

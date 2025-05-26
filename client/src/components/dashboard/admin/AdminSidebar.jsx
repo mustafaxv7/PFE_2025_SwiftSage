@@ -18,7 +18,7 @@ const AdminSidebar = ({ isMobile = false }) => {
     const [isMobileOpen, setIsMobileOpen] = useState(false);
 
     useEffect(() => {
-        // Close mobile sidebar when route changes
+        
         setIsMobileOpen(false);
     }, [location.pathname]);
 
@@ -69,7 +69,6 @@ const AdminSidebar = ({ isMobile = false }) => {
         }
     ];
 
-    // Updated sidebar classes to fix spacing issue
     const sidebarClasses = `
         ${isMobile ?
             `fixed inset-y-0 left-0 z-50 transform ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`

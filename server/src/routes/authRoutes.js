@@ -52,7 +52,6 @@ router.post('/login', async (req, res) => {
 
         let userRole = "user"; // default role
 
-        // check if the user is an admin 
         const adminQuery = `SELECT * FROM admins WHERE email = $1;`;
         const adminValues = [email];
         const adminResult = await con.query(adminQuery, adminValues);
@@ -60,7 +59,6 @@ router.post('/login', async (req, res) => {
         if (adminResult.rows.length > 0) {
             const admin = adminResult.rows[0];
 
-            // verify password for admin
             const validPassword = await bcrypt.compare(password, admin.password);
             if (!validPassword) {
                 return res.status(400).json({ message: "Invalid credentials" });
@@ -80,7 +78,6 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // if not an admin check inside users table
         const userQuery = `SELECT * FROM users WHERE email = $1;`;
         const userValues = [email];
         const userResult = await con.query(userQuery, userValues);
@@ -91,7 +88,6 @@ router.post('/login', async (req, res) => {
 
         const user = userResult.rows[0];
 
-        // verify password for normal user
         const validPassword = await bcrypt.compare(password, user.password);
         
         if (!validPassword) {

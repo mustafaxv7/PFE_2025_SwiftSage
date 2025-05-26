@@ -3,9 +3,6 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell, CartesianGrid, LineChart, Line
 } from "recharts";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import 'jspdf-autotable';
 
 const COLORS = [
     "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#6366f1", "#8b5cf6", "#ec4899",
@@ -15,7 +12,7 @@ const COLORS = [
 const AdminStatics = () => {
     const [view, setView] = useState("daily");
     const [chartType, setChartType] = useState("bar");
-    const dashboardRef = useRef(); // REF for html2canvas
+    const dashboardRef = useRef(); 
 
     const reportData = {
         daily: [
@@ -66,8 +63,6 @@ const AdminStatics = () => {
         { name: "Flood", value: 12 },
         { name: "Earthquake", value: 8 },
         { name: "Fire", value: 14 },
-        { name: "Storm", value: 9 },
-        { name: "Other", value: 3 }
     ];
 
     const stats = {
@@ -77,110 +72,11 @@ const AdminStatics = () => {
         criticalEvents: 8
     };
 
-
-    const exportPDF = () => {
-        try {
-            const input = dashboardRef.current;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const width = pdf.internal.pageSize.getWidth();
-            const height = pdf.internal.pageSize.getHeight();
-
-            // Create a promise to handle the async operation
-            const generatePdf = async () => {
-                // First capture the stats cards
-                const statsSection = input.querySelector('.grid');
-                if (!statsSection) throw new Error("Stats section not found");
-
-                const statsCanvas = await html2canvas(statsSection, {
-                    scale: 1.5,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    useCORS: true,
-                    allowTaint: true
-                });
-
-                // Add stats to PDF
-                const statsImgData = statsCanvas.toDataURL('image/png');
-                pdf.addImage(statsImgData, 'PNG', 10, 10, width - 20, 40);
-
-                // Add title
-                pdf.setFontSize(18);
-                pdf.setTextColor(0, 0, 0);
-                pdf.text('Analytics Dashboard Report', width / 2, 60, { align: 'center' });
-                pdf.setFontSize(12);
-                pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, width / 2, 68, { align: 'center' });
-
-                // Add report data as table
-                pdf.setFontSize(14);
-                pdf.text('Reports Timeline Data', 14, 80);
-
-                // Create table for report data
-                const tableData = reportData[view].map(item => [item.date, item.count.toString()]);
-                pdf.autoTable({
-                    startY: 85,
-                    head: [['Date', 'Report Count']],
-                    body: tableData,
-                    theme: 'grid',
-                    headStyles: { fillColor: [59, 130, 246] }
-                });
-
-                // Add distribution data
-                const tableY = pdf.previousAutoTable.finalY + 15;
-                pdf.text('Distribution by Region', 14, tableY);
-
-                const regionData = distributionByWilaya.map(item => [item.name, item.value.toString()]);
-                pdf.autoTable({
-                    startY: tableY + 5,
-                    head: [['Region', 'Count']],
-                    body: regionData,
-                    theme: 'grid',
-                    headStyles: { fillColor: [16, 185, 129] }
-                });
-
-                // Add crisis type data
-                const crisisY = pdf.previousAutoTable.finalY + 15;
-                pdf.text('Crisis Type Distribution', 14, crisisY);
-
-                const crisisData = crisisTypeData.map(item => [item.name, item.value.toString()]);
-                pdf.autoTable({
-                    startY: crisisY + 5,
-                    head: [['Crisis Type', 'Count']],
-                    body: crisisData,
-                    theme: 'grid',
-                    headStyles: { fillColor: [239, 68, 68] }
-                });
-
-                // Save the PDF
-                pdf.save('dashboard_report.pdf');
-            };
-
-            // Execute the async function and catch any errors
-            generatePdf().catch(error => {
-                console.error("Error generating PDF:", error);
-                alert("Failed to generate PDF. Please try again.");
-            });
-        } catch (error) {
-            console.error("Error in PDF export:", error);
-            alert("Failed to generate PDF. Please try again.");
-        }
-    };
     return (
         <div className="space-y-4 sm:space-y-6" ref={dashboardRef}>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                 <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Analytics Dashboard</h2>
                 <div className="flex flex-wrap gap-2 w-full sm:w-auto mt-2 sm:mt-0">
-                    <select className="px-2 sm:px-3 py-2 border border-gray-300 rounded-md text-xs sm:text-sm bg-white flex-grow sm:flex-grow-0">
-                        <option>Last 7 days</option>
-                        <option>Last 30 days</option>
-                        <option>Last 90 days</option>
-                        <option>Custom range</option>
-                    </select>
-                    <button
-                        onClick={exportPDF}
-                        className="px-3 py-2 bg-blue-600 text-white rounded-md text-xs sm:text-sm hover:bg-blue-700 flex-grow sm:flex-grow-0 flex items-center justify-center"
-                    >
-                        Export Report
-                    </button>
                 </div>
             </div>
 

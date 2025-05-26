@@ -15,7 +15,6 @@ const AdminAlerts = () => {
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
     
-    // List of communes of Chlef
     const chelfCommunes = [
         "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
         "Bénairia", "Bouzeghaia", "Ouled Fares", "Chettia", "Labiod Medjadja", "Boukadir", "Oued Sly", "Sobha", "Ouled Ben Abdelkader", "El Hadjadj",
@@ -23,7 +22,7 @@ const AdminAlerts = () => {
         "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
     ];
     
-    // Default sample alerts
+    
     const defaultAlerts = [
         {
             id: 1,
@@ -63,7 +62,7 @@ const AdminAlerts = () => {
         }
     ];
 
-    // Fetch alerts from API
+
     useEffect(() => {
         const fetchAlerts = async () => {
             setIsLoading(true);
@@ -99,13 +98,13 @@ const AdminAlerts = () => {
                     }));
                     setAlerts(formattedAlerts);
                 } else {
-                    // If no alerts from API, use defaults
+                    
                     setAlerts(defaultAlerts);
                 }
             } catch (err) {
                 console.error('Error fetching alerts:', err);
                 setError(err.message);
-                // Fallback to sample data
+                
                 setAlerts(defaultAlerts);
             } finally {
                 setIsLoading(false);
@@ -115,7 +114,7 @@ const AdminAlerts = () => {
         fetchAlerts();
     }, []);
 
-    // Send alert using API
+    
     const sendAlert = async () => {
         if (!message.trim()) {
             setError("Alert message cannot be empty");
@@ -132,7 +131,7 @@ const AdminAlerts = () => {
                 throw new Error('Authentication token not found');
             }
             
-            // Extract admin ID from token
+            
             let adminId;
             try {
                 const payload = token.split('.')[1];
@@ -144,7 +143,7 @@ const AdminAlerts = () => {
 
             const now = new Date();
             
-            // Construct reportData as expected by the API
+            
             const reportData = {
                 message: message,
                 description: description || message,
@@ -181,7 +180,7 @@ const AdminAlerts = () => {
 
             const result = await response.json();
             
-            // Add the new alert to local state
+            
             const newAlert = {
                 id: result.id || Date.now(),
                 message: message,
@@ -203,11 +202,18 @@ const AdminAlerts = () => {
             };
             
             setAlerts([newAlert, ...alerts]);
+            try {
+                const existingAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
+                localStorage.setItem('userAlerts', JSON.stringify([newAlert, ...existingAlerts]));
+                window.dispatchEvent(new Event('storage'));
+            } catch (err) {
+                console.error('Error saving alert to localStorage:', err);
+            }
+            
             setMessage("");
             setDescription("");
             setSuccessMessage("Alert sent successfully!");
             
-            // Clear success message after 3 seconds
             setTimeout(() => setSuccessMessage(null), 3000);
             
         } catch (error) {
@@ -218,7 +224,7 @@ const AdminAlerts = () => {
         }
     };
 
-    // Delete alert via API
+    
     const deleteAlert = async (id) => {
         try {
             const token = localStorage.getItem('token');
@@ -243,6 +249,18 @@ const AdminAlerts = () => {
             const updatedAlerts = alerts.filter(alert => alert.id !== id);
             setAlerts(updatedAlerts);
             
+            // Update localStorage to sync with user component
+            try {
+                const userAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
+                const updatedUserAlerts = userAlerts.filter(alert => alert.id !== id);
+                localStorage.setItem('userAlerts', JSON.stringify(updatedUserAlerts));
+                
+                // Dispatch storage event to notify other components
+                window.dispatchEvent(new Event('storage'));
+            } catch (err) {
+                console.error('Error updating localStorage after delete:', err);
+            }
+            
             setSuccessMessage("Alert deleted successfully!");
             setTimeout(() => setSuccessMessage(null), 3000);
             
@@ -253,7 +271,6 @@ const AdminAlerts = () => {
         }
     };
 
-    // Toggle status via API
     const toggleStatus = async (id) => {
         try {
             const alertToUpdate = alerts.find(alert => alert.id === id);
@@ -274,7 +291,7 @@ const AdminAlerts = () => {
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    status: newStatus.toLowerCase() // Send lowercase to the API
+                    status: newStatus.toLowerCase()
                 })
             });
             
@@ -282,8 +299,7 @@ const AdminAlerts = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to update alert status');
             }
-            
-            // Update the alert in the local state with capitalized status
+        
             const updatedAlerts = alerts.map(alert =>
                 alert.id === id ? { 
                     ...alert, 
@@ -292,6 +308,19 @@ const AdminAlerts = () => {
             );
             
             setAlerts(updatedAlerts);
+            
+            try {
+                const userAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
+                const updatedUserAlerts = userAlerts.map(alert => 
+                    alert.id === id ? { ...alert, status: newStatus } : alert
+                );
+                localStorage.setItem('userAlerts', JSON.stringify(updatedUserAlerts));
+                
+                window.dispatchEvent(new Event('storage'));
+            } catch (err) {
+                console.error('Error updating localStorage after status change:', err);
+            }
+            
             setSuccessMessage(`Alert marked as ${newStatus}`);
             setTimeout(() => setSuccessMessage(null), 3000);
             
@@ -336,7 +365,6 @@ const AdminAlerts = () => {
                 </span>
             </div>
 
-            {/* Success/Error Messages */}
             {successMessage && (
                 <div className="mb-4 bg-green-50 border border-green-200 text-green-800 rounded-md p-4">
                     {successMessage}

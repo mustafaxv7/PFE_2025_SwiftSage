@@ -10,7 +10,6 @@ export const editReport = async (req, res) => {
     }
 
     try {
-        // making sure that the user owns the report
         const reportCheck = await con.query(
         `SELECT id FROM reports WHERE id = $1 AND user_id = $2`,
         [id, req.user.id]
@@ -20,7 +19,6 @@ export const editReport = async (req, res) => {
         return res.status(403).json({ error: 'Unauthorized or report not found.' });
         }
 
-        // update report description if provided
         if (description) {
         await con.query(
             `UPDATE reports SET description = $1 WHERE id = $2`,
@@ -28,7 +26,6 @@ export const editReport = async (req, res) => {
         );
         }
 
-        //  update report_details table
         const allowedFields = [
         "spread_rate",
         "road_status",
@@ -54,7 +51,7 @@ export const editReport = async (req, res) => {
         }
 
         if (updates.length > 0) {
-            values.push(id); // report_id
+            values.push(id); 
             const query = `
             UPDATE report_details
             SET ${updates.join(', ')}

@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 
 function authMiddleware(req, res, next) {
-    // Check if the request has an Authorization header
     const authHeader = req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: "Access denied" });

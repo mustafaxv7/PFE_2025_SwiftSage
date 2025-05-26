@@ -31,13 +31,8 @@ import reportRoutes from './routes/reportRoutes.js';
 import authMiddleware from './middleware/authMiddleware.js';    
 import authUsers from './routes/authUsers.js';
 import adminAuth from './routes/adminAuth.js';
-import sendAlertRoutes from './routes/sendAlertRoutes.js'; 
-import { get } from 'http';
-import { getAlerts } from './controllers/getAlerts.js';
-import { send } from 'process';
+import sendAlertRoutes from './routes/sendAlertRoutes.js';  
 import feedbackRoutes from './routes/feedbackRoutes.js';
-
-
 
 dotenv.config();
 
@@ -54,9 +49,11 @@ app.use(helmet({contentSecurityPolicy: false})); // helps secure the app by sett
 app.use(morgan("dev")); // log the requests
 app.use(cors()); // allows requests from diffrent domains
 app.use('/auth',authRoutes);
-app.use('/api/reports',authMiddleware,reportRoutes); // protected routes
+app.use('/api/reports',authMiddleware,reportRoutes); 
 app.use('/api/users',authMiddleware, authUsers); 
 app.use('/api/admin', authMiddleware, adminAuth);
+app.use('/api/alerts', authMiddleware, sendAlertRoutes); 
+app.use('/api/feedback', authMiddleware, feedbackRoutes); 
 app.get('/', (req,res)=>{
     res.sendFile(path.join(__dirname, 'client','dist','index.html'));
 });

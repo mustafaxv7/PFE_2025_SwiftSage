@@ -11,7 +11,6 @@ export const switchStatus = async (req, res) => {
         return res.status(400).json({ error: 'Invalid status value' });
     }
 
-    // Ensure the user is an admin
     if (req.user.role !== 'admin') {
         return res.status(403).json({ error: 'Only admins can update report status' });
     }

@@ -9,7 +9,7 @@ const ReportsOverview = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Sample data to use as fallback if no reports in localStorage
+    // Sample reports as fallback
     const sampleReports = [
         {
             id: 1,
@@ -115,35 +115,84 @@ const ReportsOverview = () => {
     useEffect(() => {
         const fetchReports = () => {
             try {
-                // Try to get reports from localStorage first
-                const storedReports = localStorage.getItem('adminReports');
-                if (storedReports) {
-                    const parsedReports = JSON.parse(storedReports);
-                    // If we have stored reports, use them
-                    if (parsedReports && parsedReports.length > 0) {
-                        setReports(parsedReports);
-                        return;
+                // Collect reports from all available sources
+                const allReports = [];
+                
+                // Try to get user reports
+                try {
+                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
+                    if (userReports && userReports.length > 0) {
+                        // Add source info and ensure consistent formatting
+                        const formattedUserReports = userReports.map(report => ({
+                            ...report,
+                            submittedBy: report.submittedBy || "Anonymous User",
+                            status: report.status?.toLowerCase() || "active",
+                            source: "user"
+                        }));
+                        allReports.push(...formattedUserReports);
+                        console.log('Loaded user reports:', formattedUserReports.length);
                     }
+                } catch (err) {
+                    console.error('Error parsing user reports:', err);
                 }
-                // If no stored reports or empty array, use sample data
-                setReports(sampleReports);
+                
+                // Try to get admin reports if they differ from user reports
+                try {
+                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+                    if (adminReports && adminReports.length > 0) {
+                        // Filter out duplicates that might already be in userReports
+                        const newAdminReports = adminReports.filter(adminReport => 
+                            !allReports.some(report => report.id === adminReport.id)
+                        );
+                        
+                        if (newAdminReports.length > 0) {
+                            const formattedAdminReports = newAdminReports.map(report => ({
+                                ...report,
+                                submittedBy: report.submittedBy || "Admin",
+                                status: report.status?.toLowerCase() || "active",
+                                source: "admin"
+                            }));
+                            allReports.push(...formattedAdminReports);
+                            console.log('Loaded admin reports:', formattedAdminReports.length);
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error parsing admin reports:', err);
+                }
+                
+                // Use sample data only if no reports were found
+                if (allReports.length === 0) {
+                    console.log('No reports found, using sample data');
+                    allReports.push(...sampleReports);
+                } else {
+                    console.log(`Total reports loaded: ${allReports.length}`);
+                }
+                
+                setReports(allReports);
             } catch (error) {
-                console.error('Error loading reports from localStorage:', error);
-                // Fallback to sample data if there's an error
+                console.error('Error loading reports:', error);
                 setReports(sampleReports);
             }
         };
+        
+        // Initial fetch
         fetchReports();
 
+        // Listen for storage changes
         const handleStorageChange = (e) => {
-            if (e.key === 'adminReports') {
+            if (e.key === 'adminReports' || e.key === 'userReports' || e.key === null) {
                 fetchReports();
             }
         };
+        
         window.addEventListener('storage', handleStorageChange);
-
+        
+        // Check periodically for changes within the same window
+        const intervalId = setInterval(fetchReports, 60000); // Check every minute
+        
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            clearInterval(intervalId);
         };
     }, []);
 
@@ -166,17 +215,26 @@ const ReportsOverview = () => {
             setSelectedReport({ ...selectedReport, status: newStatus });
         }
 
-        // Update in localStorage
-        localStorage.setItem('adminReports', JSON.stringify(updatedReports));
-
+        // Update both localStorage entries to ensure consistency
         try {
+            // Update adminReports
+            const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
+            const updatedAdminReports = adminReports.map(report =>
+                report.id === reportId ? { ...report, status: newStatus } : report
+            );
+            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
+            
+            // Update userReports 
             const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
             const updatedUserReports = userReports.map(report =>
                 report.id === reportId ? { ...report, status: newStatus } : report
             );
             localStorage.setItem('userReports', JSON.stringify(updatedUserReports));
+            
+            // Dispatch storage event for cross-component communication
+            window.dispatchEvent(new Event('storage'));
         } catch (error) {
-            console.error('Error updating user reports:', error);
+            console.error('Error updating report status in localStorage:', error);
         }
     };
 

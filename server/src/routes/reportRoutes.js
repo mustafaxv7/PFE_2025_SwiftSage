@@ -12,14 +12,12 @@ dotenv.config();
 
 const router = express.Router();
 
-//user routes
 router.post('/', addReport);
 
 router.get('/:id/user', authMiddleware, getReportDetailsUser); 
 
 router.patch('/:id/edit', authMiddleware,editReport);
 
-//admin routes
 router.get('/:id', authMiddleware, adminMiddleware, getReportDetailsAdmin);
 
 router.patch('/:id/status', authMiddleware,adminMiddleware,switchStatus);

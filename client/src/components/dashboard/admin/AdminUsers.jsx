@@ -69,7 +69,6 @@ const AdminUsers = () => {
             } catch (err) {
                 console.error('Error fetching users:', err);
                 setError(err.message);
-                // Fallback to empty array in case of error
                 setUsers([]);
                 setFilteredUsers([]);
             } finally {
@@ -148,7 +147,6 @@ const AdminUsers = () => {
                 throw new Error(errorData.message || 'Failed to delete user');
             }
             
-            // Update local state by filtering out the deleted user
             setUsers(users.filter(user => user.id !== userToDelete.id));
             setShowDeleteModal(false);
             setUserToDelete(null);
@@ -240,8 +238,6 @@ const AdminUsers = () => {
             }
 
             const result = await response.json();
-
-            // Create a new user object with the returned ID and add to local state
             const newUser = {
                 id: result.user_id,
                 name: userData.name,

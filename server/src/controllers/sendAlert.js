@@ -35,7 +35,6 @@ export const sendAlert = async (req, res) => {
       return res.status(400).json({ error: 'Missing one or more required fields.' });
     }
 
-    // Changed to PostgreSQL syntax with parameterized queries
     const query = `
       INSERT INTO alerts (
         message,

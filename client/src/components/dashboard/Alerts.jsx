@@ -7,95 +7,98 @@ const Alerts = () => {
     const [showDetails, setShowDetails] = useState(null);
 
     useEffect(() => {
-        // Default sample alerts to use if no alerts in localStorage
-        const sampleAlerts = [
-            {
-                id: 1,
-                message: "Inondation à Chettia",
-                description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Chettia.",
-                date: "10 Mars, 2025",
-                status: "Active",
-                importance: "High",
-                type: "info",
-                location: "Chettia, Chlef",
-                affectedArea: "12 km²"
-            },
-            {
-                id: 2,
-                message: "Séisme à Oued Fodda",
-                description: "Séisme de magnitude 5.8 avec des dommages structurels importants et des répliques potentielles attendues.",
-                date: "15 Mars, 2025",
-                status: "Resolved",
-                importance: "Critical",
-                type: "danger",
-                location: "Oued Fodda, Chlef",
-                affectedArea: "35 km²"
-            },
-            {
-                id: 3,
-                message: "Incendie de forêt à Sendjas",
-                description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles. Ordres d'évacuation en place.",
-                date: "2 Avril, 2025",
-                status: "Active",
-                importance: "High",
-                type: "warning",
-                location: "Sendjas, Chlef",
-                affectedArea: "1240 hectares"
-            }
-        ];
-
-        
-        try {
-            const storedAlerts = localStorage.getItem('userAlerts');
-            if (storedAlerts) {
-                const parsedAlerts = JSON.parse(storedAlerts);
-                if (parsedAlerts && parsedAlerts.length > 0) {
-                    
-                    const formattedAlerts = parsedAlerts.map(alert => ({
-                        ...alert,
-                        // Ensure status is properly formatted without relying on updated_at
-                        status: typeof alert.status === 'string' ? 
-                            alert.status.charAt(0).toUpperCase() + alert.status.slice(1) : 
-                            (alert.status === true ? "Active" : "Resolved")
-                    }));
-                    setAlerts(formattedAlerts);
-                    return;
+        const loadAlerts = () => {
+            const sampleAlerts = [
+                {
+                    id: 1,
+                    message: "Inondation à Chettia",
+                    description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Chettia.",
+                    date: "10 Mars, 2025",
+                    status: "Active",
+                    importance: "High",
+                    type: "info",
+                    location: "Chettia, Chlef",
+                    affectedArea: "12 km²"
+                },
+                {
+                    id: 2,
+                    message: "Séisme à Oued Fodda",
+                    description: "Séisme de magnitude 5.8 avec des dommages structurels importants et des répliques potentielles attendues.",
+                    date: "15 Mars, 2025",
+                    status: "Resolved",
+                    importance: "Critical",
+                    type: "danger",
+                    location: "Oued Fodda, Chlef",
+                    affectedArea: "35 km²"
+                },
+                {
+                    id: 3,
+                    message: "Incendie de forêt à Sendjas",
+                    description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles. Ordres d'évacuation en place.",
+                    date: "2 Avril, 2025",
+                    status: "Active",
+                    importance: "High",
+                    type: "warning",
+                    location: "Sendjas, Chlef",
+                    affectedArea: "1240 hectares"
                 }
-            }
-            // If no stored alerts or empty array, use sample data
-            setAlerts(sampleAlerts);
-        } catch (error) {
-            console.error('Error loading alerts from localStorage:', error);
-            // Fallback to sample data if there's an error
-            setAlerts(sampleAlerts);
-        }
+            ];
 
-        // Add event listener to update alerts when localStorage changes
-        const handleStorageChange = (e) => {
-            if (e.key === 'userAlerts') {
-                try {
-                    const updatedAlerts = JSON.parse(e.newValue);
-                    if (updatedAlerts && updatedAlerts.length > 0) {
-                        setAlerts(updatedAlerts);
+            try {
+                const storedAlerts = localStorage.getItem('userAlerts');
+                if (storedAlerts) {
+                    const parsedAlerts = JSON.parse(storedAlerts);
+                    if (parsedAlerts && parsedAlerts.length > 0) {
+                        // Ensure consistent data format 
+                        const formattedAlerts = parsedAlerts.map(alert => ({
+                            ...alert,
+                            // Format status consistently
+                            status: typeof alert.status === 'string' ? 
+                                alert.status.charAt(0).toUpperCase() + alert.status.slice(1) : 
+                                (alert.status === true ? "Active" : "Resolved"),
+                            // Ensure other fields are present
+                            importance: alert.importance || "Medium",
+                            type: alert.type || "info"
+                        }));
+                        setAlerts(formattedAlerts);
+                        return;
                     }
-                } catch (error) {
-                    console.error('Error parsing updated alerts:', error);
                 }
+                // If no stored alerts or empty array, use sample data
+                setAlerts(sampleAlerts);
+            } catch (error) {
+                console.error('Error loading alerts from localStorage:', error);
+                setAlerts(sampleAlerts);
+            }
+        };
+
+        loadAlerts();
+        const handleStorageChange = (e) => {
+            if (e.key === 'userAlerts' || e.key === null) {
+                loadAlerts();
             }
         };
 
         window.addEventListener('storage', handleStorageChange);
 
+        const handleCustomEvent = () => loadAlerts();
+        window.addEventListener('alertsUpdated', handleCustomEvent);
+
         return () => {
             window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('alertsUpdated', handleCustomEvent);
         };
     }, []);
 
     const dismissAlert = (id) => {
-        const updatedAlerts = alerts.filter(alert => alert.id !== id);
-        setAlerts(updatedAlerts);
-
-        localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
+        try {
+            const updatedAlerts = alerts.filter(alert => alert.id !== id);
+            setAlerts(updatedAlerts);
+            localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
+            window.dispatchEvent(new CustomEvent('alertsUpdated'));
+        } catch (error) {
+            console.error('Error dismissing alert:', error);
+        }
     };
 
     const getAlertIcon = (type) => {

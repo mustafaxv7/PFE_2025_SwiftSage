@@ -17,7 +17,6 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
     navigate("/", { replace: true });
   };
 
-  // Navigation items - simplified to only include Alerts and My Reports
   const navItems = [
     {
       path: "/dashboard/alerts",
@@ -40,8 +39,6 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
       >
         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
-
-      {/* Mobile overlay */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden" 
