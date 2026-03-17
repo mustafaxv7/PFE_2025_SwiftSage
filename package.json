@@ -2,7 +2,7 @@
   "name": "pfe_2025_swiftsage",
   "version": "1.0.0",
   "description": "A Platform or a Website that implements this concept :  Crowdsourcing based decision making for crisis management",
-  "main": "src/server.js",
+  "main": "server/src/server.js",
   "type": "module",
   "scripts": {
     "dev": "nodemon ./server/src/server.js",
