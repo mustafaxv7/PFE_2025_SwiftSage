@@ -41,7 +41,8 @@ const PORT = process.env.PORT || 5030;
 
 const __dirname = path.resolve();
 
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
+const clientPath = path.join(__dirname, 'client', 'dist');
+app.use(express.static(clientPath));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -54,8 +55,9 @@ app.use('/api/users',authMiddleware, authUsers);
 app.use('/api/admin', authMiddleware, adminAuth);
 app.use('/api/alerts', authMiddleware, sendAlertRoutes); 
 app.use('/api/feedback', authMiddleware, feedbackRoutes); 
+
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+    res.sendFile(path.join(clientPath, 'index.html'));
 });
 
 app.listen(PORT , ()=>{
