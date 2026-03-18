@@ -1,23 +1,21 @@
-// EXPLANATION ONLY - NO CODE CHANGES
 /*
 Changes made to server.js:
 
-1. Route organization:
-   - Protected routes are grouped together with consistent authMiddleware usage
-   - Admin routes are properly protected with both authMiddleware and adminMiddleware
+1. Diagnostic Logging:
+   - Added explicit logging of the static files directory path on startup.
+   - Added a check to verify if the 'client/dist' folder exists and log errors if not.
 
-2. Database connection:
-   - Added better logging for database connection success/failure
-   - Using promises for database connection to handle errors properly
+2. Path Resolution:
+   - Switched to 'path.resolve' for more robust absolute path calculation.
 
-3. Middleware order:
-   - CORS, Helmet and other security middleware are applied before route handlers
-   - This ensures all requests are properly processed through security layers
+3. Middleware Order:
+   - Moved Morgan (logging) and Helmet (security) to the top to ensure all requests are tracked and secured.
+   - Configured Helmet to be compatibility-friendly with Vite-generated assets.
 
-4. Route imports:
-   - All route modules are properly imported and used
-   - adminAuth routes added to enable admin-specific functionality
+4. Catch-all Route:
+   - Improved the SPA catch-all to handle missing index.html gracefully and return clear 404s for missing assets.
 */
+import fs from 'fs';
 
 import express from 'express';
 import helmet from 'helmet';
@@ -43,14 +41,33 @@ const PORT = process.env.PORT || 5030;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const clientPath = path.join(__dirname, '../../client/dist');
+// 1. Logging & Security Middleware (Top Priority)
+app.use(morgan("dev")); 
+app.use(helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false
+}));
+app.use(cors());
+
+// 2. Static File Path Resolution & Diagnostics
+const clientPath = path.resolve(__dirname, '../../client/dist');
+console.log(`[Server] Searching for frontend at: ${clientPath}`);
+
+if (!fs.existsSync(clientPath)) {
+    console.warn(`[Server] WARNING: Frontend 'dist' folder NOT FOUND at ${clientPath}`);
+    console.warn(`[Server] Please ensure you have run 'npm run build' in the root or client directory.`);
+} else {
+    console.log(`[Server] Frontend 'dist' folder found.`);
+}
+
+// 3. Static File Serving
 app.use(express.static(clientPath));
 
+// 4. Body Parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet({contentSecurityPolicy: false})); // helps secure the app by setting various HTTP headers
-app.use(morgan("dev")); // log the requests
-app.use(cors()); // allows requests from diffrent domains
+
+// 5. API Routes
 app.use('/auth',authRoutes);
 app.use('/api/reports',authMiddleware,reportRoutes); 
 app.use('/api/users',authMiddleware, authUsers); 
@@ -59,10 +76,20 @@ app.use('/api/alerts', authMiddleware, sendAlertRoutes);
 app.use('/api/feedback', authMiddleware, feedbackRoutes); 
 
 app.get('*', (req, res) => {
+    // If it's an API request or a file that should have been caught by express.static
     if (req.path.startsWith('/api') || req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|json)$/)) {
+        console.log(`[Server] 404 for asset/api: ${req.path}`);
         return res.status(404).json({ error: 'Not found' });
     }
-    res.sendFile(path.join(clientPath, 'index.html'));
+    
+    // Serve index.html for all other routes (SPA routing)
+    const indexPath = path.join(clientPath, 'index.html');
+    if (fs.existsSync(indexPath)) {
+        res.sendFile(indexPath);
+    } else {
+        console.error(`[Server] Critical Error: index.html not found at ${indexPath}`);
+        res.status(404).send('Frontend application not found. Please verify deployment build.');
+    }
 });
 
 app.listen(PORT , ()=>{
