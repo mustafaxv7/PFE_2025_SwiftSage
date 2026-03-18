@@ -16,6 +16,8 @@ export const authMiddleware = (req, res, next) => {
     }
 };
 
+export default authMiddleware;
+
 export const adminMiddleware = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();

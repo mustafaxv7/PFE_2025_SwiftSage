@@ -28,7 +28,7 @@ import cookieParser from 'cookie-parser';
 import con from './config/db.js';
 import authRoutes from './routes/authRoutes.js';  
 import reportRoutes from './routes/reportRoutes.js'; 
-import authMiddleware from './middleware/authMiddleware.js';    
+import { authMiddleware } from './middleware/authMiddleware.js';    
 import authUsers from './routes/authUsers.js';
 import adminAuth from './routes/adminAuth.js';
 import sendAlertRoutes from './routes/sendAlertRoutes.js';  
