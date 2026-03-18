@@ -46,16 +46,14 @@ const LoginForm = () => {
             if (response.ok) {
                 setStatus({ loading: false, success: true, error: null });
 
-                // Store authentication data
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("userRole", data.userRole);
-
                 // Redirect based on role after brief delay
                 setTimeout(() => {
                     const redirectPath = data.userRole === "admin"
                         ? "/admin/dashboard"
                         : "/dashboard/my-reports";
                     navigate(redirectPath);
+                    // Force a reload to refresh the authentication state across the app
+                    window.location.reload();
                 }, 1000);
             } else {
                 setStatus({

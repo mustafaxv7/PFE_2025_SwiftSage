@@ -24,6 +24,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 import con from './config/db.js';
 import authRoutes from './routes/authRoutes.js';  
 import reportRoutes from './routes/reportRoutes.js'; 
@@ -43,11 +44,14 @@ const __dirname = path.dirname(__filename);
 
 // 1. Logging & Security Middleware (Top Priority)
 app.use(morgan("dev")); 
-app.use(helmet({
+app.use(cookieParser());app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
 }));
-app.use(cors());
+app.use(cors({
+    origin: true,
+    credentials: true
+}));
 
 // 2. Static File Path Resolution & Diagnostics
 const clientPath = path.resolve(__dirname, '../../client/dist');

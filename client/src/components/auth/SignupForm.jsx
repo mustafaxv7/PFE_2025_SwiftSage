@@ -38,12 +38,17 @@ const SignupForm = () => {
         setStatus({ loading: true, success: false, error: null });
 
         try {
+            const signupData = {
+                ...formData,
+                isOrganisationMember: isOrganization
+            };
+
             const response = await fetch("/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(signupData),
             });
 
             const data = await response.json();

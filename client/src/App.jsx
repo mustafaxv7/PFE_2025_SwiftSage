@@ -15,14 +15,25 @@ const App = () => {
     const [authChecked, setAuthChecked] = useState(false);  // State to track if auth has been checked
     const [userRole, setUserRole] = useState(null); // State to store the user role
 
-    // Check localStorage for token and role on mount
+    // Check auth status on mount via secure endpoint
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("userRole");
-        if (token && role) {
-            setUserRole(role);
-        }
-        setAuthChecked(true); // once check is done, then we set authChecked to true
+        const checkAuth = async () => {
+            try {
+                const response = await fetch("/auth/me");
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserRole(data.role);
+                } else {
+                    setUserRole(null);
+                }
+            } catch (error) {
+                console.error("Auth check failed:", error);
+                setUserRole(null);
+            } finally {
+                setAuthChecked(true);
+            }
+        };
+        checkAuth();
     }, []);
 
     if (!authChecked) {
