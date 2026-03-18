@@ -35,7 +35,7 @@ const LoginForm = () => {
         setStatus({ loading: true, success: false, error: null });
 
         try {
-            const response = await fetch("http://localhost:5030/auth/login", {
+            const response = await fetch("/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

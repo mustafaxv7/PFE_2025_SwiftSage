@@ -30,7 +30,7 @@ const AdminUsers = () => {
                     throw new Error('Authentication token not found');
                 }
 
-                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+                const baseURL = import.meta.env.VITE_API_BASE_URL || '';
                 console.log('Making API request to:', `${baseURL}/api/users`);
                 
                 const response = await fetch(`${baseURL}/api/users`, {
@@ -134,7 +134,7 @@ const AdminUsers = () => {
                 return;
             }
             
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
             const response = await fetch(`${baseURL}/api/users/${userToDelete.id}`, {
                 method: 'DELETE',
                 headers: {
@@ -222,7 +222,7 @@ const AdminUsers = () => {
             };
 
             // Make API call to create user in the database
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
             const response = await fetch(`${baseURL}/api/users`, {
                 method: 'POST',
                 headers: {

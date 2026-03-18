@@ -74,7 +74,7 @@ const AdminAlerts = () => {
                     throw new Error('Authentication token not found');
                 }
 
-                const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+                const baseURL = import.meta.env.VITE_API_BASE_URL || '';
                 const response = await fetch(`${baseURL}/api/alerts`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -161,7 +161,7 @@ const AdminAlerts = () => {
                 adminId: adminId
             };
 
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
             const response = await fetch(`${baseURL}/api/alerts`, {
                 method: 'POST',
                 headers: {
@@ -232,7 +232,7 @@ const AdminAlerts = () => {
                 throw new Error('Authentication required');
             }
             
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
             const response = await fetch(`${baseURL}/api/alerts/${id}`, {
                 method: 'DELETE',
                 headers: {
@@ -283,7 +283,7 @@ const AdminAlerts = () => {
                 throw new Error('Authentication required');
             }
             
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5030';
+            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
             const response = await fetch(`${baseURL}/api/alerts/${id}`, {
                 method: 'PUT',
                 headers: {
