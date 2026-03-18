@@ -25,6 +25,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import con from './config/db.js';
 import authRoutes from './routes/authRoutes.js';  
 import reportRoutes from './routes/reportRoutes.js'; 
@@ -39,9 +40,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5030;
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const clientPath = path.join(__dirname, 'client', 'dist');
+const clientPath = path.join(__dirname, '../../client/dist');
 app.use(express.static(clientPath));
 
 app.use(express.json());
