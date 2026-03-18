@@ -59,6 +59,9 @@ app.use('/api/alerts', authMiddleware, sendAlertRoutes);
 app.use('/api/feedback', authMiddleware, feedbackRoutes); 
 
 app.get('*', (req, res) => {
+    if (req.path.startsWith('/api') || req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|json)$/)) {
+        return res.status(404).json({ error: 'Not found' });
+    }
     res.sendFile(path.join(clientPath, 'index.html'));
 });
 
