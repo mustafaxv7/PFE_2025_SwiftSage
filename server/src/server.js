@@ -21,6 +21,7 @@ import sendAlertRoutes from './routes/sendAlertRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (required for Render/express-rate-limit)
 const PORT = process.env.PORT || 5030;
 
 const __filename = fileURLToPath(import.meta.url);
