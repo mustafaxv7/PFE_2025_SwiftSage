@@ -6,6 +6,14 @@ const { Pool } = pkg;
 // Strip it from the DATABASE_URL to prevent SSL connection failures.
 let connectionString = process.env.DATABASE_URL;
 
+// Handle misconfiguration where the full URL is pasted into DB_HOST instead of DATABASE_URL
+if (!connectionString) {
+    const fallbackHost = process.env.DB_CONNECTION_HOST || process.env.DB_HOST;
+    if (fallbackHost && fallbackHost.startsWith('postgres')) {
+        connectionString = fallbackHost;
+    }
+}
+
 if (connectionString) {
     // Remove channel_binding param (pg library does not support it)
     connectionString = connectionString.replace(/[?&]channel_binding=[^&]*/g, '');
