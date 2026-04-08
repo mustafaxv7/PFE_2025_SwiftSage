@@ -38,7 +38,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: `${formattedField} already exists` });
         }
         console.error("Registration error:", err);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: `Server error: ${err.message}` });
     }
 });
 
@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: err.message });
         }
         console.error("Login error:", err);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ message: `Server error: ${err.message}` });
     }
 });
 
