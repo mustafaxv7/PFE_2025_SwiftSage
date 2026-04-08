@@ -19,9 +19,14 @@ export const authMiddleware = (req, res, next) => {
 export default authMiddleware;
 
 export const adminMiddleware = (req, res, next) => {
-    if (req.user && req.user.role === 'admin') {
+    if (!req.user) {
+        console.warn('[adminMiddleware] No req.user found — authMiddleware may not have run.');
+        return res.status(401).json({ message: "Unauthorized: No user session" });
+    }
+    if (req.user.role === 'admin') {
         next();
     } else {
+        console.warn(`[adminMiddleware] Access denied. User role: "${req.user.role}", expected "admin"`);
         res.status(403).json({ message: "Access denied: Admin only" });
     }
 };

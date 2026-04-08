@@ -1,81 +1,43 @@
-import con from '../config/db.js';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import alertService from '../services/alertService.js';
 
 export const sendAlert = async (req, res) => {
-  let parsedReportData = {};
+    try {
+        let alertData = req.body;
+        
+        // Handle redundant reportData format if present
+        if (alertData.reportData) {
+            try {
+                alertData = typeof alertData.reportData === 'string' 
+                    ? JSON.parse(alertData.reportData) 
+                    : alertData.reportData;
+            } catch (e) {
+                console.error('Error parsing reportData:', e);
+            }
+        }
 
-  try {
-    if (!req.body.reportData) {
-      return res.status(400).json({ error: 'Missing reportData field.' });
+        const { message, description, date, time, status, importance, type, location, affectedArea } = alertData;
+        
+        if (!message || !type || !location || !affectedArea) {
+            return res.status(400).json({ error: 'Required fields are missing' });
+        }
+
+        const alertId = await alertService.sendAlert({
+            message,
+            description: description || message,
+            date: date || new Date().toISOString().split('T')[0],
+            time: time || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            status: status || 'active',
+            importance: importance || 'medium',
+            type,
+            location,
+            affectedArea,
+            adminId: req.user?.id
+        });
+
+        res.status(201).json({ message: 'Alert sent successfully', id: alertId });
+    } catch (err) {
+        console.error('Error sending alert:', err);
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    parsedReportData = JSON.parse(req.body.reportData);
-  } catch (err) {
-    console.error('Error parsing JSON:', err);
-    return res.status(400).json({ error: 'Invalid JSON format.' });
-  }
-
-  try {
-    const {
-      message,
-      description,
-      date,          
-      time,         
-      status,
-      importance,
-      type,
-      location,
-      affectedArea,
-      adminId        
-    } = parsedReportData;
-
-    if (!message || !date || !time || !status || !importance || !type || !location || !affectedArea || !adminId) {
-      return res.status(400).json({ error: 'Missing one or more required fields.' });
-    }
-
-    const query = `
-      INSERT INTO alerts (
-        message,
-        description,
-        date,
-        time,
-        status,
-        importance,
-        type,
-        location,
-        affected_area,
-        created_by_admin_id
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-      RETURNING id
-    `;
-
-    const values = [
-      message,
-      description || '',
-      date,
-      time,
-      status,
-      importance,
-      type,
-      location,
-      affectedArea,
-      adminId
-    ];
-
-    const result = await con.query(query, values);
-    const alertId = result.rows[0].id;
-
-    res.status(201).json({ 
-      success: true, 
-      message: 'Alert successfully created.',
-      id: alertId
-    });
-
-  } catch (error) {
-    console.error('Database error:', error);
-    res.status(500).json({ error: 'Internal server error.' });
-  }
 };
 

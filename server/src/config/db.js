@@ -1,20 +1,36 @@
+import 'dotenv/config';
 import pkg from 'pg';
-import dotenv from 'dotenv';
 const { Pool } = pkg;
 
-dotenv.config();
+// The pg library does not support the 'channel_binding' parameter.
+// Strip it from the DATABASE_URL to prevent SSL connection failures.
+let connectionString = process.env.DATABASE_URL;
+
+if (connectionString) {
+    // Remove channel_binding param (pg library does not support it)
+    connectionString = connectionString.replace(/[?&]channel_binding=[^&]*/g, '');
+    // Ensure sslmode stays as require for Neon
+}
+
+const poolConfig = connectionString
+    ? { connectionString }
+    : {
+        user: process.env.DB_USER || 'swiftsage_owner',
+        host: process.env.DB_CONNECTION_HOST || process.env.DB_HOST,
+        database: process.env.DB_NAME || 'swiftsage',
+        password: process.env.DB_CONNECTION_PASSWORD || process.env.DB_PASSWORD,
+        port: process.env.DB_PORT || 5432,
+    };
 
 const con = new Pool({
-    host: process.env.DB_CONNECTION_HOST, 
-    user: "swiftsage_owner",
-    port: 5432,
-    password: process.env.DB_CONNECTION_PASSWORD,
-    database: "swiftsage",
-    ssl: { rejectUnauthorized: false } 
+    ...poolConfig,
+    ssl: { rejectUnauthorized: false }
+});
+
+con.on('error', (err) => {
+    console.error('Unexpected error on idle database client', err);
 });
 
 export default con;
-
-
 
 

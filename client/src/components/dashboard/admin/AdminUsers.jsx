@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Ban, CheckCircle, ChevronDown, Edit, Eye, Search, Trash2, UserPlus, X } from "lucide-react";
+import { fetchWithAuth } from "../../../utils/api.js";
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
@@ -25,52 +26,29 @@ const AdminUsers = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('Authentication token not found');
+                const data = await fetchWithAuth("/api/users");
+                if (data) {
+                    const formattedUsers = data.map(user => ({
+                        id: user.id || user.user_id,
+                        name: user.name || user.username,
+                        email: user.email,
+                        phone: user.phone || user.phone_number,
+                        type: user.is_organization_member ? "organization" : "individual",
+                        orgType: null, 
+                        community: user.community,
+                        createdAt: new Date(user.created_at || Date.now()).toLocaleDateString(),
+                        reportTime: new Date(user.created_at || Date.now()).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            hour12: false 
+                        })
+                    }));
+                    setUsers(formattedUsers);
+                    setFilteredUsers(formattedUsers);
                 }
-
-                const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-                console.log('Making API request to:', `${baseURL}/api/users`);
-                
-                const response = await fetch(`${baseURL}/api/users`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `HTTP error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('Received user data:', data.length, 'items');
-                
-                // Transform the API data to match our component's expected format
-                const formattedUsers = data.map(user => ({
-                    id: user.user_id,
-                    name: user.username,
-                    email: user.email,
-                    phone: user.phone_number,
-                    type: user.is_organization_member ? "organization" : "individual",
-                    orgType: null, 
-                    community: user.community,
-                    createdAt: new Date(user.created_at).toLocaleDateString(),
-                    reportTime: new Date(user.created_at).toLocaleTimeString('en-US', { 
-                        hour: '2-digit', 
-                        minute: '2-digit', 
-                        hour12: false 
-                    })
-                }));
-                
-                setUsers(formattedUsers);
-                setFilteredUsers(formattedUsers);
             } catch (err) {
                 console.error('Error fetching users:', err);
                 setError(err.message);
-                setUsers([]);
-                setFilteredUsers([]);
             } finally {
                 setIsLoading(false);
             }
@@ -82,15 +60,15 @@ const AdminUsers = () => {
     useEffect(() => {
         let result = [...users];
         if (currentFilter !== "all") {
-            result = result.filter(user => user.community.toLowerCase() === currentFilter.toLowerCase());
+            result = result.filter(user => user.community?.toLowerCase() === currentFilter.toLowerCase());
         }
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
             result = result.filter(user =>
-                user.name.toLowerCase().includes(term) ||
-                user.email.toLowerCase().includes(term) ||
-                user.phone.toLowerCase().includes(term) ||
-                user.community.toLowerCase().includes(term)
+                user.name?.toLowerCase().includes(term) ||
+                user.email?.toLowerCase().includes(term) ||
+                user.phone?.toLowerCase().includes(term) ||
+                user.community?.toLowerCase().includes(term)
             );
         }
 
@@ -119,6 +97,11 @@ const AdminUsers = () => {
         setShowUserModal(true);
     };
 
+    const handleAddNewUser = () => {
+        setCurrentUser({ mode: "create", isOrganization: false });
+        setShowUserModal(true);
+    };
+
     const handleDeletePrompt = (user) => {
         setUserToDelete(user);
         setShowDeleteModal(true);
@@ -128,24 +111,9 @@ const AdminUsers = () => {
         if (!userToDelete) return;
         
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("Authentication required");
-                return;
-            }
-            
-            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-            const response = await fetch(`${baseURL}/api/users/${userToDelete.id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            await fetchWithAuth(`/api/users/${userToDelete.id}`, {
+                method: 'DELETE'
             });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to delete user');
-            }
             
             setUsers(users.filter(user => user.id !== userToDelete.id));
             setShowDeleteModal(false);
@@ -168,93 +136,70 @@ const AdminUsers = () => {
         ));
     };
 
-    const handleSaveUser = (userData) => {
+    const handleSaveUser = async (userData) => {
         if (userData.mode === "edit") {
-            // Update the user in the local state
-            setUsers(users.map(user =>
-                user.id === userData.id ? { 
-                    ...userData, 
-                    mode: undefined, 
-                    isOrganization: undefined,
-                    type: userData.isOrganization ? "organization" : "individual",
-                    orgType: userData.isOrganization ? userData.orgType : null
-                } : user
-            ));
-        }
-        setShowUserModal(false);
-        setCurrentUser(null);
-    };
+            try {
+                // Map frontend field names to backend expectations for PATCH
+                const updatePayload = {
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone,
+                    community: userData.community,
+                    isOrganisationMember: userData.isOrganization
+                };
 
-    const handleAddNewUser = () => {
-        setCurrentUser({
-            id: null,
-            name: "",
-            email: "",
-            phone: "",
-            password: "",
-            type: "individual",
-            community: " Chlef",
-            mode: "create",
-            isOrganization: false,
-            orgType: "public"
-        });
-        setShowUserModal(true);
+                await fetchWithAuth(`/api/users/${userData.id}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(updatePayload)
+                });
+                
+                setUsers(users.map(user =>
+                    user.id === userData.id ? { 
+                        ...userData, 
+                        mode: undefined, 
+                        isOrganization: undefined,
+                        type: userData.isOrganization ? "organization" : "individual",
+                        orgType: userData.isOrganization ? userData.orgType : null
+                    } : user
+                ));
+                setShowUserModal(false);
+                setCurrentUser(null);
+            } catch (error) {
+                console.error('Error updating user:', error);
+                alert(`Error updating user: ${error.message}`);
+            }
+        }
     };
 
     const handleCreateUser = async (userData) => {
         try {
-            // Get the auth token
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert("You must be logged in as an admin to create users");
-                return;
-            }
-
-            // Prepare request data
-            const requestData = {
-                name: userData.name,
-                email: userData.email,
-                phone: userData.phone,
-                password: userData.password,
-                isOrganisationMember: userData.isOrganization,
-                community: userData.community,
-                orgType: userData.isOrganization ? userData.orgType : null
-            };
-
-            // Make API call to create user in the database
-            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-            const response = await fetch(`${baseURL}/api/users`, {
+            const data = await fetchWithAuth("/api/users", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(requestData)
+                body: JSON.stringify({
+                    name: userData.name,
+                    email: userData.email,
+                    phone: userData.phone,
+                    password: userData.password,
+                    isOrganisationMember: userData.isOrganization,
+                    community: userData.community
+                })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create user');
-            }
-
-            const result = await response.json();
             const newUser = {
-                id: result.user_id,
+                id: data.user_id,
                 name: userData.name,
                 email: userData.email,
                 phone: userData.phone,
                 type: userData.isOrganization ? "organization" : "individual",
                 orgType: userData.isOrganization ? userData.orgType : null,
                 community: userData.community,
-                createdAt: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toLocaleDateString(),
                 reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
             };
             
-            // Add the new user to the local state
             setUsers([...users, newUser]);
             setShowUserModal(false);
             setCurrentUser(null);
-            
             alert('User created successfully');
         } catch (error) {
             console.error('Error creating user:', error);

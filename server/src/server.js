@@ -1,30 +1,16 @@
-/*
-Changes made to server.js:
+import dotenv from 'dotenv';
+dotenv.config();
 
-1. Diagnostic Logging:
-   - Added explicit logging of the static files directory path on startup.
-   - Added a check to verify if the 'client/dist' folder exists and log errors if not.
-
-2. Path Resolution:
-   - Switched to 'path.resolve' for more robust absolute path calculation.
-
-3. Middleware Order:
-   - Moved Morgan (logging) and Helmet (security) to the top to ensure all requests are tracked and secured.
-   - Configured Helmet to be compatibility-friendly with Vite-generated assets.
-
-4. Catch-all Route:
-   - Improved the SPA catch-all to handle missing index.html gracefully and return clear 404s for missing assets.
-*/
 import fs from 'fs';
-
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import rateLimit from 'express-rate-limit';
+
 import con from './config/db.js';
 import authRoutes from './routes/authRoutes.js';  
 import reportRoutes from './routes/reportRoutes.js'; 
@@ -34,68 +20,101 @@ import adminAuth from './routes/adminAuth.js';
 import sendAlertRoutes from './routes/sendAlertRoutes.js';  
 import feedbackRoutes from './routes/feedbackRoutes.js';
 
-dotenv.config();
-
 const app = express();
 const PORT = process.env.PORT || 5030;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. Logging & Security Middleware (Top Priority)
+// 1. Security & Logging Middleware (Top Priority)
 app.use(morgan("dev")); 
-app.use(cookieParser());app.use(helmet({
+app.use(cookieParser());
+app.use(helmet({
     contentSecurityPolicy: false,
     crossOriginEmbedderPolicy: false
 }));
+
+// Restricted CORS Whitelist
+const allowedOrigins = [
+    'https://swiftsage.onrender.com',
+    'http://localhost:5173', // Local Dev
+    'http://localhost:5030'  // Local Prod
+];
+
 app.use(cors({
-    origin: true,
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true
 }));
 
+// Rate Limiting
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per window
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: "Too many requests from this IP, please try again after 15 minutes"
+});
+
 // 2. Static File Path Resolution & Diagnostics
 const clientPath = path.resolve(__dirname, '../../client/dist');
-console.log(`[Server] Searching for frontend at: ${clientPath}`);
-
-if (!fs.existsSync(clientPath)) {
-    console.warn(`[Server] WARNING: Frontend 'dist' folder NOT FOUND at ${clientPath}`);
-    console.warn(`[Server] Please ensure you have run 'npm run build' in the root or client directory.`);
-} else {
+if (fs.existsSync(clientPath)) {
     console.log(`[Server] Frontend 'dist' folder found.`);
 }
 
-// 3. Static File Serving
-app.use(express.static(clientPath));
+// 3. Static File Serving (BEFORE rate limits for performance)
+app.use(express.static(clientPath, {
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        } else if (filePath.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css; charset=utf-8');
+        }
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+    }
+}));
 
-// 4. Body Parsing
+// 4. Body Parsing (BEFORE API Routes)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 5. API Routes
-app.use('/auth',authRoutes);
-app.use('/api/reports',authMiddleware,reportRoutes); 
-app.use('/api/users',authMiddleware, authUsers); 
+// 5. API Routes (WITH Protections)
+app.use('/auth', authLimiter, authRoutes);
+app.use('/api/reports', authMiddleware, reportRoutes); 
+app.use('/api/users', authMiddleware, authUsers); 
 app.use('/api/admin', authMiddleware, adminAuth);
 app.use('/api/alerts', authMiddleware, sendAlertRoutes); 
 app.use('/api/feedback', authMiddleware, feedbackRoutes); 
 
 app.get('*', (req, res) => {
-    // If it's an API request or a file that should have been caught by express.static
     if (req.path.startsWith('/api') || req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|json)$/)) {
-        console.log(`[Server] 404 for asset/api: ${req.path}`);
         return res.status(404).json({ error: 'Not found' });
     }
     
-    // Serve index.html for all other routes (SPA routing)
     const indexPath = path.join(clientPath, 'index.html');
     if (fs.existsSync(indexPath)) {
         res.sendFile(indexPath);
     } else {
-        console.error(`[Server] Critical Error: index.html not found at ${indexPath}`);
-        res.status(404).send('Frontend application not found. Please verify deployment build.');
+        res.status(404).send('Frontend application not found.');
     }
 });
 
-app.listen(PORT , ()=>{
-    console.log(`Server has started on port: ${PORT}`);
+const server = app.listen(PORT, () => {
+    console.log(`Server running on port: ${PORT}`);
+});
+
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`\n❌ Port ${PORT} is already in use.`);
+        console.error(`   Run this to free it: npx kill-port ${PORT}`);
+        console.error(`   Then run: npm start\n`);
+        process.exit(1);
+    } else {
+        throw err;
+    }
 });

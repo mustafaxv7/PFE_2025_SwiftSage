@@ -1,9 +1,7 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import {sendFeedback} from '../controllers/sendFeedback.js';
+import { sendFeedback } from '../controllers/sendFeedback.js';
 import { getFeedbacks } from '../controllers/getFeedbacks.js';
-import adminMiddleware from '../middleware/adminMiddleware.js';
-dotenv.config();
+import { adminMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 

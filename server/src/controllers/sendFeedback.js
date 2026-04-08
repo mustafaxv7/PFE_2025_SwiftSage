@@ -1,31 +1,18 @@
-import con from '../config/db.js';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import feedbackService from '../services/feedbackService.js';
 
 export const sendFeedback = async (req, res) => {
-  const { name, email, message } = req.body;
+    try {
+        const { userId, message, rating } = req.body;
+        if (!userId || !message) {
+            return res.status(400).json({ error: 'User ID and message are required' });
+        }
 
-  if (!name || !email || !message) {
-    return res.status(400).json({ error: 'All fields are required.' });
-  }
-
-  try {
-    const sql = 'INSERT INTO feedback (name, email, message, created_at) VALUES (?, ?, ?, NOW())';
-    const values = [name, email, message];
-
-    con.query(sql, values, (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({ error: 'Internal server error.' });
-      }
-
-      return res.status(200).json({ success: 'Message sent successfully!' });
-    });
-  } catch (error) {
-    console.error('Server error:', error);
-    return res.status(500).json({ error: 'Something went wrong.' });
-  }
+        const feedbackId = await feedbackService.submitFeedback({ userId, message, rating });
+        res.status(201).json({ message: 'Feedback submitted successfully', feedbackId });
+    } catch (err) {
+        console.error('Error submitting feedback:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 };
 
 

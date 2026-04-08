@@ -10,6 +10,7 @@ import AdminAlerts from "./components/dashboard/admin/AdminAlerts.jsx";
 import AdminSidebar from "./components/dashboard/admin/AdminSidebar.jsx";
 import AdminStatics from "./components/dashboard/admin/AdminStatics.jsx";
 import AdminUsers from "./components/dashboard/admin/AdminUsers.jsx";
+import { fetchWithAuth } from "./utils/api.js";
 
 const App = () => {
     const [authChecked, setAuthChecked] = useState(false);  // State to track if auth has been checked
@@ -19,9 +20,8 @@ const App = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const response = await fetch("/auth/me");
-                if (response.ok) {
-                    const data = await response.json();
+                const data = await fetchWithAuth("/auth/me");
+                if (data && data.role) {
                     setUserRole(data.role);
                 } else {
                     setUserRole(null);

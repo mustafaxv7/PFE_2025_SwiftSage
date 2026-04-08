@@ -49,10 +49,9 @@ const LoginForm = () => {
                 // Redirect based on role after brief delay
                 setTimeout(() => {
                     const redirectPath = data.userRole === "admin"
-                        ? "/admin/dashboard"
+                        ? "/admin/reports" 
                         : "/dashboard/my-reports";
                     navigate(redirectPath);
-                    // Force a reload to refresh the authentication state across the app
                     window.location.reload();
                 }, 1000);
             } else {

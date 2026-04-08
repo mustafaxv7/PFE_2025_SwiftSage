@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AlertTriangle, Filter, ChevronDown, Search, MapPin, BarChart2 } from "lucide-react";
+import { fetchWithAuth } from "../../../utils/api.js";
 
 const ReportsOverview = () => {
     const [reports, setReports] = useState([]);
@@ -9,191 +10,32 @@ const ReportsOverview = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Sample reports as fallback
-    const sampleReports = [
-        {
-            id: 1,
-            title: "Inondation à Chettia",
-            date: "10 Mars, 2025",
-            time: "08:30",
-            crisisType: "flood",
-            description: "Inondation majeure dans le centre-ville de Chettia affectant les zones résidentielles.",
-            location: "Chettia, Chlef",
-            lat: "36.1647",
-            lng: "1.3317",
-            roadStatus: "flooded",
-            missing: 3,
-            trapped: 12,
-            submergedDwelling: 48,
-            electrification: "dangerous",
-            status: "active",
-            submittedBy: "Ahmed Benali",
-            importance: "high"
-        },
-        {
-            id: 2,
-            title: "Séisme à Oued Fodda",
-            date: "15 Mars, 2025",
-            time: "14:22",
-            crisisType: "earthquake",
-            description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
-            location: "Oued Fodda, Chlef",
-            lat: "36.2200",
-            lng: "1.3383",
-            roadStatus: "partially_blocked",
-            injuredNumber: 24,
-            bleedingNumber: 8,
-            throttled: 3,
-            burnt: 0,
-            fractions: 14,
-            electrification: "partial",
-            status: "resolved",
-            submittedBy: "Karima Hadj",
-            importance: "critical"
-        },
-        {
-            id: 3,
-            title: "Incendie de forêt à Sendjas",
-            date: "2 Avril, 2025",
-            time: "11:15",
-            crisisType: "forest_fire",
-            description: "Feu de forêt se propageant à travers les forêts du nord de Sendjas.",
-            location: "Sendjas, Chlef",
-            lat: "36.0833",
-            lng: "1.2167",
-            roadStatus: "smoke_covered",
-            burntArea: 1240,
-            spreadRate: "rapid",
-            evacuated: 860,
-            threatenedStructures: 126,
-            containmentPercent: 35,
-            status: "active",
-            submittedBy: "Sofiane Amrouche",
-            importance: "high"
-        },
-        {
-            id: 4,
-            title: "Incendie industriel à Oum Drou",
-            date: "28 Mars, 2025",
-            time: "16:45",
-            crisisType: "industrial_fire",
-            description: "Incendie dans une usine chimique avec risque potentiel de libération de matières dangereuses.",
-            location: "Oum Drou, Chlef",
-            lat: "36.0830",
-            lng: "1.2000",
-            roadStatus: "closed",
-            burnt: 3500,
-            explosion: "Yes",
-            institutionType: "chemical_plant",
-            trapped: 5,
-            electrification: "offline",
-            status: "in_progress",
-            submittedBy: "Karim Boudiaf",
-            importance: "critical"
-        },
-        {
-            id: 5,
-            title: "Inondation côtière à Ténès",
-            date: "5 Avril, 2025",
-            time: "09:00",
-            crisisType: "flood",
-            description: "Inondation côtière affectant les plages et le centre-ville.",
-            location: "Ténès, Chlef",
-            lat: "36.5100",
-            lng: "1.3067",
-            roadStatus: "flooded",
-            missing: 0,
-            trapped: 8,
-            submergedDwelling: 23,
-            electrification: "partial",
-            status: "active",
-            submittedBy: "Amina Khelifi",
-            importance: "medium"
-        }
-    ];
-
     useEffect(() => {
-        const fetchReports = () => {
+        const fetchReports = async () => {
             try {
-                // Collect reports from all available sources
-                const allReports = [];
-                
-                // Try to get user reports
-                try {
-                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-                    if (userReports && userReports.length > 0) {
-                        // Add source info and ensure consistent formatting
-                        const formattedUserReports = userReports.map(report => ({
-                            ...report,
-                            submittedBy: report.submittedBy || "Anonymous User",
-                            status: report.status?.toLowerCase() || "active",
-                            source: "user"
-                        }));
-                        allReports.push(...formattedUserReports);
-                        console.log('Loaded user reports:', formattedUserReports.length);
-                    }
-                } catch (err) {
-                    console.error('Error parsing user reports:', err);
+                const data = await fetchWithAuth("/api/reports");
+                if (data) {
+                    // Map backend data to frontend format
+                    const formattedReports = data.map(report => ({
+                        id: report.id,
+                        title: report.title,
+                        date: new Date(report.createdAt).toLocaleDateString(),
+                        time: new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        crisisType: report.crisisType,
+                        description: report.description,
+                        location: (report.lat && report.lng) ? `${report.lat.toFixed(4)}, ${report.lng.toFixed(4)}` : 'Unknown',
+                        status: report.status?.toLowerCase() || "active",
+                        importance: report.importance || "medium",
+                        submittedBy: report.reportedBy || "User"
+                    }));
+                    setReports(formattedReports);
                 }
-                
-                // Try to get admin reports if they differ from user reports
-                try {
-                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-                    if (adminReports && adminReports.length > 0) {
-                        // Filter out duplicates that might already be in userReports
-                        const newAdminReports = adminReports.filter(adminReport => 
-                            !allReports.some(report => report.id === adminReport.id)
-                        );
-                        
-                        if (newAdminReports.length > 0) {
-                            const formattedAdminReports = newAdminReports.map(report => ({
-                                ...report,
-                                submittedBy: report.submittedBy || "Admin",
-                                status: report.status?.toLowerCase() || "active",
-                                source: "admin"
-                            }));
-                            allReports.push(...formattedAdminReports);
-                            console.log('Loaded admin reports:', formattedAdminReports.length);
-                        }
-                    }
-                } catch (err) {
-                    console.error('Error parsing admin reports:', err);
-                }
-                
-                // Use sample data only if no reports were found
-                if (allReports.length === 0) {
-                    console.log('No reports found, using sample data');
-                    allReports.push(...sampleReports);
-                } else {
-                    console.log(`Total reports loaded: ${allReports.length}`);
-                }
-                
-                setReports(allReports);
             } catch (error) {
                 console.error('Error loading reports:', error);
-                setReports(sampleReports);
             }
         };
         
-        // Initial fetch
         fetchReports();
-
-        // Listen for storage changes
-        const handleStorageChange = (e) => {
-            if (e.key === 'adminReports' || e.key === 'userReports' || e.key === null) {
-                fetchReports();
-            }
-        };
-        
-        window.addEventListener('storage', handleStorageChange);
-        
-        // Check periodically for changes within the same window
-        const intervalId = setInterval(fetchReports, 60000); // Check every minute
-        
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            clearInterval(intervalId);
-        };
     }, []);
 
     const handleReportClick = (report) => {
@@ -205,36 +47,23 @@ const ReportsOverview = () => {
         setIsModalOpen(false);
     };
 
-    const handleStatusChange = (reportId, newStatus) => {
-        const updatedReports = reports.map(report =>
-            report.id === reportId ? { ...report, status: newStatus } : report
-        );
-        setReports(updatedReports);
-
-        if (selectedReport && selectedReport.id === reportId) {
-            setSelectedReport({ ...selectedReport, status: newStatus });
-        }
-
-        // Update both localStorage entries to ensure consistency
+    const handleStatusChange = async (reportId, newStatus) => {
         try {
-            // Update adminReports
-            const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-            const updatedAdminReports = adminReports.map(report =>
+            await fetchWithAuth(`/api/reports/${reportId}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: newStatus })
+            });
+
+            const updatedReports = reports.map(report =>
                 report.id === reportId ? { ...report, status: newStatus } : report
             );
-            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
-            
-            // Update userReports 
-            const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-            const updatedUserReports = userReports.map(report =>
-                report.id === reportId ? { ...report, status: newStatus } : report
-            );
-            localStorage.setItem('userReports', JSON.stringify(updatedUserReports));
-            
-            // Dispatch storage event for cross-component communication
-            window.dispatchEvent(new Event('storage'));
+            setReports(updatedReports);
+
+            if (selectedReport && selectedReport.id === reportId) {
+                setSelectedReport({ ...selectedReport, status: newStatus });
+            }
         } catch (error) {
-            console.error('Error updating report status in localStorage:', error);
+            console.error('Error updating report status:', error);
         }
     };
 

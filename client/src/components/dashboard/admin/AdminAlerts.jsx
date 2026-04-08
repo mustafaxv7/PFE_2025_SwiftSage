@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Bell, AlertTriangle, Trash2, Send, Shield, MapPin, Loader } from "lucide-react";
+import { fetchWithAuth } from "../../../utils/api.js";
 
 const AdminAlerts = () => {
     const [message, setMessage] = useState("");
@@ -14,54 +15,13 @@ const AdminAlerts = () => {
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
-    
+
     const chelfCommunes = [
         "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
         "Bénairia", "Bouzeghaia", "Ouled Fares", "Chettia", "Labiod Medjadja", "Boukadir", "Oued Sly", "Sobha", "Ouled Ben Abdelkader", "El Hadjadj",
         "Aïn Merane", "Herenfa", "Taougrite", "Dahra", "Ténès", "Sidi Akkacha", "Sidi Abderrahmane", "Abou El Hassan", "Talassa", "Tadjena",
         "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
     ];
-    
-    
-    const defaultAlerts = [
-        {
-            id: 1,
-            message: "Inondation à Chettia",
-            description: "Niveaux d'eau élevés signalés dans les zones résidentielles.",
-            date: "10 Mars, 2025",
-            time: "08:30",
-            status: "Active",
-            importance: "High",
-            type: "info",
-            location: "Chettia, Chlef",
-            affectedArea: "12 km²"
-        },
-        {
-            id: 2,
-            message: "Séisme à Oued Fodda",
-            description: "Séisme de magnitude 5.8 avec des dommages structurels importants.",
-            date: "15 Mars, 2025",
-            time: "14:22",
-            status: "Resolved",
-            importance: "Critical",
-            type: "danger",
-            location: "Oued Fodda, Chlef",
-            affectedArea: "35 km²"
-        },
-        {
-            id: 3,
-            message: "Incendie de forêt à Sendjas",
-            description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles.",
-            date: "2 Avril, 2025",
-            time: "11:15",
-            status: "Active",
-            importance: "High",
-            type: "warning",
-            location: "Sendjas, Chlef",
-            affectedArea: "1240 hectares"
-        }
-    ];
-
 
     useEffect(() => {
         const fetchAlerts = async () => {
@@ -69,43 +29,18 @@ const AdminAlerts = () => {
             setError(null);
             
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    throw new Error('Authentication token not found');
-                }
-
-                const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-                const response = await fetch(`${baseURL}/api/alerts`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.message || `HTTP error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('Received alerts:', data);
-                
+                const data = await fetchWithAuth("/api/alerts");
                 if (data && data.length > 0) {
-                    // Transform the status values to capitalize first letter
                     const formattedAlerts = data.map(alert => ({
                         ...alert,
                         status: alert.status.charAt(0).toUpperCase() + alert.status.slice(1),
                         importance: alert.importance.charAt(0).toUpperCase() + alert.importance.slice(1)
                     }));
                     setAlerts(formattedAlerts);
-                } else {
-                    
-                    setAlerts(defaultAlerts);
                 }
             } catch (err) {
                 console.error('Error fetching alerts:', err);
                 setError(err.message);
-                
-                setAlerts(defaultAlerts);
             } finally {
                 setIsLoading(false);
             }
@@ -114,7 +49,6 @@ const AdminAlerts = () => {
         fetchAlerts();
     }, []);
 
-    
     const sendAlert = async () => {
         if (!message.trim()) {
             setError("Alert message cannot be empty");
@@ -126,96 +60,36 @@ const AdminAlerts = () => {
         setSuccessMessage(null);
         
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication token not found');
-            }
-            
-            
-            let adminId;
-            try {
-                const payload = token.split('.')[1];
-                const decodedPayload = JSON.parse(atob(payload));
-                adminId = decodedPayload.id;
-            } catch (err) {
-                throw new Error('Invalid token. Please log in again.');
-            }
-
             const now = new Date();
-            
-            
-            const reportData = {
+            const alertData = {
                 message: message,
                 description: description || message,
                 date: now.toISOString().split('T')[0],
-                time: now.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                }),
+                time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
                 status: "active",
                 importance: alertType === "danger" ? "critical" : alertType === "warning" ? "high" : "medium",
                 type: alertType,
                 location: selectedWilaya,
-                affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya,
-                adminId: adminId
+                affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya
             };
 
-            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-            const response = await fetch(`${baseURL}/api/alerts`, {
+            const result = await fetchWithAuth("/api/alerts", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    reportData: JSON.stringify(reportData)
-                })
+                body: JSON.stringify({ reportData: JSON.stringify(alertData) })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || errorData.error || 'Failed to send alert');
-            }
-
-            const result = await response.json();
-            
-            
             const newAlert = {
                 id: result.id || Date.now(),
-                message: message,
-                description: description || message,
-                date: now.toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                }),
-                time: now.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }),
+                ...alertData,
                 status: "Active",
-                importance: alertType === "danger" ? "Critical" : "High",
-                type: alertType,
-                location: selectedWilaya,
-                affectedArea: selectedWilaya === "Chlef" ? "Toutes les communes" : selectedWilaya
+                importance: alertType === "danger" ? "Critical" : "High"
             };
             
             setAlerts([newAlert, ...alerts]);
-            try {
-                const existingAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
-                localStorage.setItem('userAlerts', JSON.stringify([newAlert, ...existingAlerts]));
-                window.dispatchEvent(new Event('storage'));
-            } catch (err) {
-                console.error('Error saving alert to localStorage:', err);
-            }
-            
             setMessage("");
             setDescription("");
             setSuccessMessage("Alert sent successfully!");
-            
             setTimeout(() => setSuccessMessage(null), 3000);
-            
         } catch (error) {
             console.error('Error sending alert:', error);
             setError(error.message);
@@ -227,43 +101,13 @@ const AdminAlerts = () => {
     
     const deleteAlert = async (id) => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication required');
-            }
-            
-            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-            const response = await fetch(`${baseURL}/api/alerts/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+            await fetchWithAuth(`/api/alerts/${id}`, {
+                method: 'DELETE'
             });
             
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to delete alert');
-            }
-            
-            // Update local state by filtering out the deleted alert
-            const updatedAlerts = alerts.filter(alert => alert.id !== id);
-            setAlerts(updatedAlerts);
-            
-            // Update localStorage to sync with user component
-            try {
-                const userAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
-                const updatedUserAlerts = userAlerts.filter(alert => alert.id !== id);
-                localStorage.setItem('userAlerts', JSON.stringify(updatedUserAlerts));
-                
-                // Dispatch storage event to notify other components
-                window.dispatchEvent(new Event('storage'));
-            } catch (err) {
-                console.error('Error updating localStorage after delete:', err);
-            }
-            
+            setAlerts(alerts.filter(alert => alert.id !== id));
             setSuccessMessage("Alert deleted successfully!");
             setTimeout(() => setSuccessMessage(null), 3000);
-            
         } catch (error) {
             console.error('Error deleting alert:', error);
             setError(error.message);
@@ -276,54 +120,19 @@ const AdminAlerts = () => {
             const alertToUpdate = alerts.find(alert => alert.id === id);
             if (!alertToUpdate) return;
             
-            const newStatus = alertToUpdate.status === "Active" ? "Resolved" : "Active";
+            const newStatus = alertToUpdate.status === "Active" ? "resolved" : "active";
             
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('Authentication required');
-            }
-            
-            const baseURL = import.meta.env.VITE_API_BASE_URL || '';
-            const response = await fetch(`${baseURL}/api/alerts/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    status: newStatus.toLowerCase()
-                })
+            await fetchWithAuth(`/api/alerts/${id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: newStatus })
             });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to update alert status');
-            }
         
-            const updatedAlerts = alerts.map(alert =>
-                alert.id === id ? { 
-                    ...alert, 
-                    status: newStatus 
-                } : alert
-            );
-            
-            setAlerts(updatedAlerts);
-            
-            try {
-                const userAlerts = JSON.parse(localStorage.getItem('userAlerts')) || [];
-                const updatedUserAlerts = userAlerts.map(alert => 
-                    alert.id === id ? { ...alert, status: newStatus } : alert
-                );
-                localStorage.setItem('userAlerts', JSON.stringify(updatedUserAlerts));
-                
-                window.dispatchEvent(new Event('storage'));
-            } catch (err) {
-                console.error('Error updating localStorage after status change:', err);
-            }
+            setAlerts(alerts.map(alert =>
+                alert.id === id ? { ...alert, status: newStatus.charAt(0).toUpperCase() + newStatus.slice(1) } : alert
+            ));
             
             setSuccessMessage(`Alert marked as ${newStatus}`);
             setTimeout(() => setSuccessMessage(null), 3000);
-            
         } catch (error) {
             console.error('Error updating alert status:', error);
             setError(error.message);

@@ -1,26 +1,20 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import authMiddleware from '../middleware/authMiddleware.js';
-import adminMiddleware from '../middleware/adminMiddleware.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 import { addReport } from '../controllers/addReport.js';
-import { switchStatus } from '../controllers/switchSatus.js';
+import { switchStatus } from '../controllers/switchStatus.js';
 import { editReport } from '../controllers/editReport.js';
 import { getReportDetailsAdmin } from '../controllers/getReportDetailsAdmin.js';
 import { getReportDetailsUser } from '../controllers/getReportDetailsUser.js';
-import e from 'express';
-dotenv.config();
+
+import { getReports } from '../controllers/getReports.js';
 
 const router = express.Router();
 
+router.get('/', authMiddleware, getReports);
 router.post('/', addReport);
-
 router.get('/:id/user', authMiddleware, getReportDetailsUser); 
-
-router.patch('/:id/edit', authMiddleware,editReport);
-
-router.get('/:id', authMiddleware, adminMiddleware, getReportDetailsAdmin);
-
-router.patch('/:id/status', authMiddleware,adminMiddleware,switchStatus);
-
+router.patch('/:id/edit', authMiddleware, editReport);
+router.get('/:id', authMiddleware, getReportDetailsAdmin);
+router.patch('/:id/status', authMiddleware, switchStatus);
 
 export default router;

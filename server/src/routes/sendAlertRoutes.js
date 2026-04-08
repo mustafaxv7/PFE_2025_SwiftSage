@@ -1,20 +1,17 @@
 import express from 'express';
-import dotenv from 'dotenv';
-import authMiddleware from '../middleware/authMiddleware.js';
-import adminMiddleware from '../middleware/adminMiddleware.js';
-import { sendAlert } from '../controllers/sendAlert.js';    
+import { adminMiddleware } from '../middleware/authMiddleware.js';
+import { sendAlert } from '../controllers/sendAlert.js';
 import { getAlerts } from '../controllers/getAlerts.js';
 import { updateAlert } from '../controllers/updateAlert.js';
-import { deleteAlert } from '../controllers/deleteAlert.js';
-
-dotenv.config();
+import { deleteAlert } from '../controllers/deleteAlert.js';    
 const router = express.Router();
 
-router.post('/', authMiddleware, adminMiddleware, sendAlert);
-router.put('/:id', authMiddleware, adminMiddleware, updateAlert);
-router.delete('/:id', authMiddleware, adminMiddleware, deleteAlert); 
+// authMiddleware is already applied at the server level for /api/alerts
+router.post('/', adminMiddleware, sendAlert);
+router.patch('/:id', adminMiddleware, updateAlert);
+router.delete('/:id', adminMiddleware, deleteAlert); 
 
-router.get('/:id', authMiddleware, getAlerts);
-router.get('/', authMiddleware, adminMiddleware, getAlerts);
+router.get('/:id', getAlerts);
+router.get('/', adminMiddleware, getAlerts);
 
 export default router;
