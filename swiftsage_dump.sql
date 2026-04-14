@@ -394,72 +394,63 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 -- Data for Name: admins; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.admins (admin_id, email, password, created_at) FROM stdin;
-1	test02@example.com	$2b$10$6EjUzB4jxzUbHuL0rtRjZudqHtrxWasaTAiiOTN4j916KJhQx1JGa	2025-04-10 21:07:31.954511
-\.
+INSERT INTO public.admins (admin_id, email, password, created_at) VALUES (1, 'test02@example.com', '$2b$10$6EjUzB4jxzUbHuL0rtRjZudqHtrxWasaTAiiOTN4j916KJhQx1JGa', '2025-04-10 21:07:31.954511');
 
 
 --
 -- Data for Name: alerts; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.alerts (id, message, description, date, "time", status, importance, type, location, affected_area, created_by_admin_id, created_at) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.categories (id, report_id, throttled, burnt, fractions, missing, trapped, submerged_dwelling, electrification, explosion) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: feedbacks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.feedbacks (id, name, email, message, user_id, submitted_at) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: report_details; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.report_details (id, report_id, spread_rate, road_status, injured_number, bleeding_number, threatened_structures, containment_percent, burnt_area, institution_type, evacuated, created_at, updated_at, is_deleted) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: reports; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.reports (id, location, altitude, amplitude, title, description, crisis_type, image_url, created_at, updated_at, is_deleted, user_id, status) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
-\.
+
 
 
 --
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (user_id, username, email, phone_number, password, is_organization_member, created_at, updated_at, created_by_admin_id, community) FROM stdin;
-1	yessine	yessine02@gmail.com	0655555555	$2b$10$x4Z5lwCN/KzhdYEFZzZSJeSxS5L5/ZWMRIDIadR5MP73fctVwKt8y	\N	2025-03-26 12:40:19.529744	2025-03-26 12:40:19.529744	\N	unknown
-2	mustafaxv7	mustafanadour@gmail.com	0655555550	$2b$10$TLLbMC9xvbcUGDU.ZcPNjO6TJavkHcLsGS/ie90yUX7kPiqtysX9y	\N	2025-03-26 12:58:09.35488	2025-03-26 12:58:09.35488	\N	unknown
-3	halim	4ndjo694l@mozmail.com	0541197999	$2b$10$YY8ZRFgZmKTwZ7aschKVXuCQX1fmypZVNqS9M2r6BdiVzz3BINSCy	\N	2025-03-27 19:05:27.992726	2025-03-27 19:05:27.992726	\N	unknown
-10	mounir	mounir02@gmail.com	0088990088	$2b$10$wYs4Q0WfjGhKrhhN11jcouw42e9L52fLS9EMXU2bEJf5c5RWqD8Gu	\N	2025-03-27 22:27:16.587756	2025-03-27 22:27:16.587756	\N	unknown
-11	moustafa	moustafa44@gmail.com	9999999999	$2b$10$Tq4rfd0uFaZetmRm43UGoOJ15jv8wVLBMltGbMO4CIuiZsscymzk.	\N	2025-03-29 14:48:41.271522	2025-03-29 14:48:41.271522	\N	unknown
-12	hesbellaoui mehdi	hasbellaouimehdi@gmail.com	0657901898	$2b$10$9A/mDpGBr5JjZspNJIzwHOHyikTiz/GmHhFrBJv224np7QgEvO4LG	\N	2025-03-29 17:21:36.100664	2025-03-29 17:21:36.100664	\N	unknown
-14	Mohammed Benali	m_benali@esi.dz	0000000000	$2b$10$PTQc29MHA55FfRqX2If.WewxdKaT4BUgZNFN.Yq5m/24wM50G5Y5i	\N	2025-05-01 16:26:29.250732	2025-05-01 16:26:29.250732	\N	Ouled Fares
-\.
+INSERT INTO public.users (user_id, username, email, phone_number, password, is_organization_member, created_at, updated_at, created_by_admin_id, community) VALUES 
+(1, 'yessine', 'yessine02@gmail.com', '0655555555', '$2b$10$x4Z5lwCN/KzhdYEFZzZSJeSxS5L5/ZWMRIDIadR5MP73fctVwKt8y', NULL, '2025-03-26 12:40:19.529744', '2025-03-26 12:40:19.529744', NULL, 'unknown'),
+(2, 'mustafaxv7', 'mustafanadour@gmail.com', '0655555550', '$2b$10$TLLbMC9xvbcUGDU.ZcPNjO6TJavkHcLsGS/ie90yUX7kPiqtysX9y', NULL, '2025-03-26 12:58:09.35488', '2025-03-26 12:58:09.35488', NULL, 'unknown'),
+(3, 'halim', '4ndjo694l@mozmail.com', '0541197999', '$2b$10$YY8ZRFgZmKTwZ7aschKVXuCQX1fmypZVNqS9M2r6BdiVzz3BINSCy', NULL, '2025-03-27 19:05:27.992726', '2025-03-27 19:05:27.992726', NULL, 'unknown'),
+(10, 'mounir', 'mounir02@gmail.com', '0088990088', '$2b$10$wYs4Q0WfjGhKrhhN11jcouw42e9L52fLS9EMXU2bEJf5c5RWqD8Gu', NULL, '2025-03-27 22:27:16.587756', '2025-03-27 22:27:16.587756', NULL, 'unknown'),
+(11, 'moustafa', 'moustafa44@gmail.com', '9999999999', '$2b$10$Tq4rfd0uFaZetmRm43UGoOJ15jv8wVLBMltGbMO4CIuiZsscymzk.', NULL, '2025-03-29 14:48:41.271522', '2025-03-29 14:48:41.271522', NULL, 'unknown'),
+(12, 'hesbellaoui mehdi', 'hasbellaouimehdi@gmail.com', '0657901898', '$2b$10$9A/mDpGBr5JjZspNJIzwHOHyikTiz/GmHhFrBJv224np7QgEvO4LG', NULL, '2025-03-29 17:21:36.100664', '2025-03-29 17:21:36.100664', NULL, 'unknown'),
+(14, 'Mohammed Benali', 'm_benali@esi.dz', '0000000000', '$2b$10$PTQc29MHA55FfRqX2If.WewxdKaT4BUgZNFN.Yq5m/24wM50G5Y5i', NULL, '2025-05-01 16:26:29.250732', '2025-05-01 16:26:29.250732', NULL, 'Ouled Fares');
 
 
 --
