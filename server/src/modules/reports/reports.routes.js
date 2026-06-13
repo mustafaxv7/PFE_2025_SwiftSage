@@ -1,8 +1,12 @@
 import { Router } from 'express';
 import { validate } from '../../core/middleware/validate.js';
 import {
-    addReport, getReports, getReportDetailsAdmin,
-    getReportDetailsUser, editReport, switchStatus,
+    addReport,
+    getReports,
+    getReportDetailsAdmin,
+    getReportDetailsUser,
+    editReport,
+    switchStatus,
 } from './reports.controller.js';
 import { switchStatusSchema } from './reports.validation.js';
 

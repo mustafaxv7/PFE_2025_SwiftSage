@@ -1,0 +1,13 @@
+node_modules
+client/node_modules
+client/dist
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+test-results
+playwright-report
+*.md
+!package.json
+!package-lock.json

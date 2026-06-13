@@ -1,24 +1,65 @@
-import { useState, useEffect } from "react";
-import { Ban, CheckCircle, ChevronDown, Edit, Eye, Search, Trash2, UserPlus, X } from "lucide-react";
-import { fetchWithAuth } from "../../../utils/api.js";
+import { useState, useEffect } from 'react';
+import {
+    Ban,
+    CheckCircle,
+    ChevronDown,
+    Edit,
+    Eye,
+    Search,
+    Trash2,
+    UserPlus,
+    X,
+} from 'lucide-react';
+import { fetchWithAuth } from '../../../utils/api.js';
 
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [currentFilter, setCurrentFilter] = useState("all");
+    const [searchTerm, setSearchTerm] = useState('');
+    const [currentFilter, setCurrentFilter] = useState('all');
     const [showUserModal, setShowUserModal] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
 
     const chelfCommunes = [
-        "Chlef", "Sendjas", "Oum Drou", "Oued Fodda", "Beni Rached", "Ouled Abbes", "El Karimia", "Harchoun", "Beni Bouateb", "Zeboudja",
-        "Bénairia", "Bouzeghaia", "Ouled Fares", "Chettia", "Labiod Medjadja", "Boukadir", "Oued Sly", "Sobha", "Ouled Ben Abdelkader", "El Hadjadj",
-        "Aïn Merane", "Herenfa", "Taougrite", "Dahra", "Ténès", "Sidi Akkacha", "Sidi Abderrahmane", "Abou El Hassan", "Talassa", "Tadjena",
-        "El Marsa", "Moussadek", "Beni Haoua", "Breira", "Oued Goussine"
+        'Chlef',
+        'Sendjas',
+        'Oum Drou',
+        'Oued Fodda',
+        'Beni Rached',
+        'Ouled Abbes',
+        'El Karimia',
+        'Harchoun',
+        'Beni Bouateb',
+        'Zeboudja',
+        'Bénairia',
+        'Bouzeghaia',
+        'Ouled Fares',
+        'Chettia',
+        'Labiod Medjadja',
+        'Boukadir',
+        'Oued Sly',
+        'Sobha',
+        'Ouled Ben Abdelkader',
+        'El Hadjadj',
+        'Aïn Merane',
+        'Herenfa',
+        'Taougrite',
+        'Dahra',
+        'Ténès',
+        'Sidi Akkacha',
+        'Sidi Abderrahmane',
+        'Abou El Hassan',
+        'Talassa',
+        'Tadjena',
+        'El Marsa',
+        'Moussadek',
+        'Beni Haoua',
+        'Breira',
+        'Oued Goussine',
     ];
 
     useEffect(() => {
@@ -26,22 +67,25 @@ const AdminUsers = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const data = await fetchWithAuth("/api/users");
+                const data = await fetchWithAuth('/api/users');
                 if (data) {
-                    const formattedUsers = data.map(user => ({
+                    const formattedUsers = data.map((user) => ({
                         id: user.id || user.user_id,
                         name: user.name || user.username,
                         email: user.email,
                         phone: user.phone || user.phone_number,
-                        type: user.is_organization_member ? "organization" : "individual",
-                        orgType: null, 
+                        type: user.is_organization_member ? 'organization' : 'individual',
+                        orgType: null,
                         community: user.community,
                         createdAt: new Date(user.created_at || Date.now()).toLocaleDateString(),
-                        reportTime: new Date(user.created_at || Date.now()).toLocaleTimeString('en-US', { 
-                            hour: '2-digit', 
-                            minute: '2-digit', 
-                            hour12: false 
-                        })
+                        reportTime: new Date(user.created_at || Date.now()).toLocaleTimeString(
+                            'en-US',
+                            {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false,
+                            }
+                        ),
                     }));
                     setUsers(formattedUsers);
                     setFilteredUsers(formattedUsers);
@@ -59,16 +103,19 @@ const AdminUsers = () => {
 
     useEffect(() => {
         let result = [...users];
-        if (currentFilter !== "all") {
-            result = result.filter(user => user.community?.toLowerCase() === currentFilter.toLowerCase());
+        if (currentFilter !== 'all') {
+            result = result.filter(
+                (user) => user.community?.toLowerCase() === currentFilter.toLowerCase()
+            );
         }
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
-            result = result.filter(user =>
-                user.name?.toLowerCase().includes(term) ||
-                user.email?.toLowerCase().includes(term) ||
-                user.phone?.toLowerCase().includes(term) ||
-                user.community?.toLowerCase().includes(term)
+            result = result.filter(
+                (user) =>
+                    user.name?.toLowerCase().includes(term) ||
+                    user.email?.toLowerCase().includes(term) ||
+                    user.phone?.toLowerCase().includes(term) ||
+                    user.community?.toLowerCase().includes(term)
             );
         }
 
@@ -84,21 +131,21 @@ const AdminUsers = () => {
     };
 
     const handleViewUser = (user) => {
-        setCurrentUser({ ...user, mode: "view" });
+        setCurrentUser({ ...user, mode: 'view' });
         setShowUserModal(true);
     };
 
     const handleEditUser = (user) => {
         setCurrentUser({
             ...user,
-            mode: "edit",
-            isOrganization: user.type === "organization"
+            mode: 'edit',
+            isOrganization: user.type === 'organization',
         });
         setShowUserModal(true);
     };
 
     const handleAddNewUser = () => {
-        setCurrentUser({ mode: "create", isOrganization: false });
+        setCurrentUser({ mode: 'create', isOrganization: false });
         setShowUserModal(true);
     };
 
@@ -109,13 +156,13 @@ const AdminUsers = () => {
 
     const handleDeleteUser = async () => {
         if (!userToDelete) return;
-        
+
         try {
             await fetchWithAuth(`/api/users/${userToDelete.id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
             });
-            
-            setUsers(users.filter(user => user.id !== userToDelete.id));
+
+            setUsers(users.filter((user) => user.id !== userToDelete.id));
             setShowDeleteModal(false);
             setUserToDelete(null);
             alert('User deleted successfully');
@@ -127,17 +174,17 @@ const AdminUsers = () => {
 
     const handleCommunityChange = (userId, newCommunity) => {
         // Find the user to update
-        const userToUpdate = users.find(user => user.id === userId);
+        const userToUpdate = users.find((user) => user.id === userId);
         if (!userToUpdate) return;
-        
+
         // Update local state with the new community value
-        setUsers(users.map(user =>
-            user.id === userId ? { ...user, community: newCommunity } : user
-        ));
+        setUsers(
+            users.map((user) => (user.id === userId ? { ...user, community: newCommunity } : user))
+        );
     };
 
     const handleSaveUser = async (userData) => {
-        if (userData.mode === "edit") {
+        if (userData.mode === 'edit') {
             try {
                 // Map frontend field names to backend expectations for PATCH
                 const updatePayload = {
@@ -145,23 +192,27 @@ const AdminUsers = () => {
                     email: userData.email,
                     phone: userData.phone,
                     community: userData.community,
-                    isOrganisationMember: userData.isOrganization
+                    isOrganisationMember: userData.isOrganization,
                 };
 
                 await fetchWithAuth(`/api/users/${userData.id}`, {
                     method: 'PATCH',
-                    body: JSON.stringify(updatePayload)
+                    body: JSON.stringify(updatePayload),
                 });
-                
-                setUsers(users.map(user =>
-                    user.id === userData.id ? { 
-                        ...userData, 
-                        mode: undefined, 
-                        isOrganization: undefined,
-                        type: userData.isOrganization ? "organization" : "individual",
-                        orgType: userData.isOrganization ? userData.orgType : null
-                    } : user
-                ));
+
+                setUsers(
+                    users.map((user) =>
+                        user.id === userData.id
+                            ? {
+                                  ...userData,
+                                  mode: undefined,
+                                  isOrganization: undefined,
+                                  type: userData.isOrganization ? 'organization' : 'individual',
+                                  orgType: userData.isOrganization ? userData.orgType : null,
+                              }
+                            : user
+                    )
+                );
                 setShowUserModal(false);
                 setCurrentUser(null);
             } catch (error) {
@@ -173,7 +224,7 @@ const AdminUsers = () => {
 
     const handleCreateUser = async (userData) => {
         try {
-            const data = await fetchWithAuth("/api/users", {
+            const data = await fetchWithAuth('/api/users', {
                 method: 'POST',
                 body: JSON.stringify({
                     name: userData.name,
@@ -181,8 +232,8 @@ const AdminUsers = () => {
                     phone: userData.phone,
                     password: userData.password,
                     isOrganisationMember: userData.isOrganization,
-                    community: userData.community
-                })
+                    community: userData.community,
+                }),
             });
 
             const newUser = {
@@ -190,13 +241,17 @@ const AdminUsers = () => {
                 name: userData.name,
                 email: userData.email,
                 phone: userData.phone,
-                type: userData.isOrganization ? "organization" : "individual",
+                type: userData.isOrganization ? 'organization' : 'individual',
                 orgType: userData.isOrganization ? userData.orgType : null,
                 community: userData.community,
                 createdAt: new Date().toLocaleDateString(),
-                reportTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+                reportTime: new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                }),
             };
-            
+
             setUsers([...users, newUser]);
             setShowUserModal(false);
             setCurrentUser(null);
@@ -217,8 +272,8 @@ const AdminUsers = () => {
 
     const UserModal = ({ user, onClose, onSave }) => {
         const [formData, setFormData] = useState(user || {});
-        const isViewOnly = user?.mode === "view";
-        const isCreate = user?.mode === "create";
+        const isViewOnly = user?.mode === 'view';
+        const isCreate = user?.mode === 'create';
 
         useEffect(() => {
             if (user) {
@@ -228,9 +283,9 @@ const AdminUsers = () => {
 
         const handleChange = (e) => {
             const { name, value, type, checked } = e.target;
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                [name]: type === "checkbox" ? checked : value,
+                [name]: type === 'checkbox' ? checked : value,
             }));
         };
 
@@ -239,7 +294,7 @@ const AdminUsers = () => {
 
             const userData = {
                 ...formData,
-                type: formData.isOrganization ? "organization" : "individual"
+                type: formData.isOrganization ? 'organization' : 'individual',
             };
 
             if (isCreate) {
@@ -254,12 +309,13 @@ const AdminUsers = () => {
                 <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 mx-4">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-gray-900">
-                            {isViewOnly ? "User Details" : isCreate ? "Create New User" : "Edit User"}
+                            {isViewOnly
+                                ? 'User Details'
+                                : isCreate
+                                  ? 'Create New User'
+                                  : 'Edit User'}
                         </h3>
-                        <button
-                            onClick={onClose}
-                            className="text-gray-400 hover:text-gray-500"
-                        >
+                        <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
                             <X size={20} />
                         </button>
                     </div>
@@ -281,12 +337,12 @@ const AdminUsers = () => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    {formData.isOrganization ? "Organization Name" : "Full Name"}
+                                    {formData.isOrganization ? 'Organization Name' : 'Full Name'}
                                 </label>
                                 <input
                                     type="text"
                                     name="name"
-                                    value={formData.name || ""}
+                                    value={formData.name || ''}
                                     onChange={handleChange}
                                     disabled={isViewOnly}
                                     required
@@ -294,11 +350,13 @@ const AdminUsers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Email</label>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Email
+                                </label>
                                 <input
                                     type="email"
                                     name="email"
-                                    value={formData.email || ""}
+                                    value={formData.email || ''}
                                     onChange={handleChange}
                                     disabled={isViewOnly}
                                     required
@@ -306,11 +364,13 @@ const AdminUsers = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Phone
+                                </label>
                                 <input
                                     type="tel"
                                     name="phone"
-                                    value={formData.phone || ""}
+                                    value={formData.phone || ''}
                                     onChange={handleChange}
                                     disabled={isViewOnly}
                                     required
@@ -320,11 +380,13 @@ const AdminUsers = () => {
 
                             {isCreate && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Password
+                                    </label>
                                     <input
                                         type="password"
                                         name="password"
-                                        value={formData.password || ""}
+                                        value={formData.password || ''}
                                         onChange={handleChange}
                                         required
                                         placeholder="••••••••"
@@ -335,40 +397,48 @@ const AdminUsers = () => {
 
                             {formData.isOrganization && (
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700">Organization Type</label>
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        Organization Type
+                                    </label>
                                     <div className="mt-1 space-x-4">
                                         <label className="inline-flex items-center">
                                             <input
                                                 type="radio"
                                                 name="orgType"
                                                 value="public"
-                                                checked={formData.orgType === "public"}
+                                                checked={formData.orgType === 'public'}
                                                 onChange={handleChange}
                                                 disabled={isViewOnly}
                                                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                             />
-                                            <span className="ml-2 text-sm text-gray-700">Public</span>
+                                            <span className="ml-2 text-sm text-gray-700">
+                                                Public
+                                            </span>
                                         </label>
                                         <label className="inline-flex items-center">
                                             <input
                                                 type="radio"
                                                 name="orgType"
                                                 value="private"
-                                                checked={formData.orgType === "private"}
+                                                checked={formData.orgType === 'private'}
                                                 onChange={handleChange}
                                                 disabled={isViewOnly}
                                                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                                             />
-                                            <span className="ml-2 text-sm text-gray-700">Private</span>
+                                            <span className="ml-2 text-sm text-gray-700">
+                                                Private
+                                            </span>
                                         </label>
                                     </div>
                                 </div>
                             )}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">Community</label>
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Community
+                                </label>
                                 <select
                                     name="community"
-                                    value={formData.community || ""}
+                                    value={formData.community || ''}
                                     onChange={handleChange}
                                     disabled={isViewOnly}
                                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -376,7 +446,9 @@ const AdminUsers = () => {
                                     <option value="">Select your community</option>
                                     <option value="Chlef Chlef">Chlef Chlef</option>
                                     {chelfCommunes.map((commune, index) => (
-                                        <option key={index} value={commune}>{commune}</option>
+                                        <option key={index} value={commune}>
+                                            {commune}
+                                        </option>
                                     ))}
                                 </select>
                             </div>
@@ -394,7 +466,7 @@ const AdminUsers = () => {
                                         type="submit"
                                         className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                     >
-                                        {isCreate ? "Create User" : "Save Changes"}
+                                        {isCreate ? 'Create User' : 'Save Changes'}
                                     </button>
                                 </div>
                             )}
@@ -427,8 +499,9 @@ const AdminUsers = () => {
                         </div>
                         <h3 className="text-lg font-medium text-gray-900 mb-2">Delete User</h3>
                         <p className="text-sm text-gray-500">
-                            Are you sure you want to delete <span className="font-medium">{user?.name}</span>?
-                            This action cannot be undone.
+                            Are you sure you want to delete{' '}
+                            <span className="font-medium">{user?.name}</span>? This action cannot be
+                            undone.
                         </p>
                     </div>
 
@@ -454,14 +527,19 @@ const AdminUsers = () => {
     return (
         <div className="p-4 sm:p-6 md:p-8">
             <div className="mb-8">
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">User Management</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                    User Management
+                </h1>
                 <p className="text-gray-600">Manage user accounts and permissions</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div className="relative w-full sm:w-64">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                        <Search
+                            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                            size={18}
+                        />
                         <input
                             type="text"
                             placeholder="Search users..."
@@ -474,18 +552,27 @@ const AdminUsers = () => {
                         <div className="relative inline-block text-left">
                             <button
                                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
-                                onClick={() => document.getElementById('community-dropdown').classList.toggle('hidden')}
+                                onClick={() =>
+                                    document
+                                        .getElementById('community-dropdown')
+                                        .classList.toggle('hidden')
+                                }
                             >
-                                {currentFilter === "all" ? "All Communities" : currentFilter}
+                                {currentFilter === 'all' ? 'All Communities' : currentFilter}
                                 <ChevronDown size={16} className="ml-2" />
                             </button>
-                            <div id="community-dropdown" className="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                            <div
+                                id="community-dropdown"
+                                className="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                            >
                                 <div className="py-1 max-h-60 overflow-y-auto">
                                     <button
                                         className={`${currentFilter === 'all' ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
                                         onClick={() => {
                                             handleFilterChange('all');
-                                            document.getElementById('community-dropdown').classList.add('hidden');
+                                            document
+                                                .getElementById('community-dropdown')
+                                                .classList.add('hidden');
                                         }}
                                     >
                                         All Communities
@@ -496,7 +583,9 @@ const AdminUsers = () => {
                                             className={`${currentFilter === commune ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
                                             onClick={() => {
                                                 handleFilterChange(commune);
-                                                document.getElementById('community-dropdown').classList.add('hidden');
+                                                document
+                                                    .getElementById('community-dropdown')
+                                                    .classList.add('hidden');
                                             }}
                                         >
                                             {commune}
@@ -525,7 +614,7 @@ const AdminUsers = () => {
                 ) : error ? (
                     <div className="p-8 text-center">
                         <p className="text-red-500">Error: {error}</p>
-                        <button 
+                        <button
                             onClick={() => window.location.reload()}
                             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                         >
@@ -541,25 +630,46 @@ const AdminUsers = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Name
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Email
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Phone
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Type
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Community
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Created
                                     </th>
-                                    <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
                                         Actions
                                     </th>
                                 </tr>
@@ -570,41 +680,65 @@ const AdminUsers = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div>
-                                                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {user.name}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{user.email}</div>
+                                            <div className="text-sm text-gray-900">
+                                                {user.email}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{user.phone}</div>
+                                            <div className="text-sm text-gray-900">
+                                                {user.phone}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.type === "organization" ? "bg-purple-100 text-purple-800" : "bg-green-100 text-green-800"}`}>
-                                                {user.type === "organization" ? (user.orgType === "public" ? "Public Org" : "Private Org") : "Individual"}
+                                            <span
+                                                className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${user.type === 'organization' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}`}
+                                            >
+                                                {user.type === 'organization'
+                                                    ? user.orgType === 'public'
+                                                        ? 'Public Org'
+                                                        : 'Private Org'
+                                                    : 'Individual'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="relative inline-block text-left">
-                                                <button 
+                                                <button
                                                     className="text-sm text-blue-600 hover:text-blue-800 hover:underline focus:outline-none"
                                                     onClick={() => {
                                                         const dropdownId = `community-dropdown-${user.id}`;
-                                                        document.getElementById(dropdownId).classList.toggle('hidden');
+                                                        document
+                                                            .getElementById(dropdownId)
+                                                            .classList.toggle('hidden');
                                                     }}
                                                 >
                                                     {user.community}
                                                 </button>
-                                                <div id={`community-dropdown-${user.id}`} className="hidden absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                                <div
+                                                    id={`community-dropdown-${user.id}`}
+                                                    className="hidden absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10"
+                                                >
                                                     <div className="py-1 max-h-60 overflow-y-auto">
                                                         {chelfCommunes.map((commune, index) => (
                                                             <button
                                                                 key={index}
                                                                 className={`${user.community === commune ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} block px-4 py-2 text-sm w-full text-left hover:bg-gray-100`}
                                                                 onClick={() => {
-                                                                    handleCommunityChange(user.id, commune);
-                                                                    document.getElementById(`community-dropdown-${user.id}`).classList.add('hidden');
+                                                                    handleCommunityChange(
+                                                                        user.id,
+                                                                        commune
+                                                                    );
+                                                                    document
+                                                                        .getElementById(
+                                                                            `community-dropdown-${user.id}`
+                                                                        )
+                                                                        .classList.add('hidden');
                                                                 }}
                                                             >
                                                                 {commune}
@@ -616,7 +750,9 @@ const AdminUsers = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <div>{user.createdAt}</div>
-                                            <div className="text-xs text-gray-400">{user.reportTime}</div>
+                                            <div className="text-xs text-gray-400">
+                                                {user.reportTime}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button
@@ -660,9 +796,13 @@ const AdminUsers = () => {
             {showDeleteModal && userToDelete && (
                 <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 mx-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirm Deletion</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            Confirm Deletion
+                        </h3>
                         <p className="text-gray-600 mb-6">
-                            Are you sure you want to delete the user <span className="font-medium">{userToDelete.name}</span>? This action cannot be undone.
+                            Are you sure you want to delete the user{' '}
+                            <span className="font-medium">{userToDelete.name}</span>? This action
+                            cannot be undone.
                         </p>
                         <div className="flex justify-end space-x-3">
                             <button

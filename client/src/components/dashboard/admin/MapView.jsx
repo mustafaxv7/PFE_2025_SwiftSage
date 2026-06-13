@@ -1,29 +1,29 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import { Search, MapPin, ChevronDown } from "lucide-react";
-import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
-import { fetchWithAuth } from "../../../utils/api.js";
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { Search, MapPin, ChevronDown } from 'lucide-react';
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
+import { fetchWithAuth } from '../../../utils/api.js';
 
 const mapContainerStyle = {
     width: '100%',
-    height: '400px'
+    height: '400px',
 };
 
 const center = {
     lat: 36.7538,
-    lng: 3.0588
+    lng: 3.0588,
 };
 
 const MapView = () => {
     const [reports, setReports] = useState([]);
-    const [crisisType, setCrisisType] = useState("all");
-    const [severity, setSeverity] = useState("all");
-    const [searchQuery, setSearchQuery] = useState("");
+    const [crisisType, setCrisisType] = useState('all');
+    const [severity, setSeverity] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
     const [mapCenter, setMapCenter] = useState(center);
     const [mapZoom, setMapZoom] = useState(6);
     const [selectedReport, setSelectedReport] = useState(null);
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     });
 
     const mapRef = useRef(null);
@@ -35,30 +35,39 @@ const MapView = () => {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const data = await fetchWithAuth("/api/reports");
+                const data = await fetchWithAuth('/api/reports');
                 if (!data || data.length === 0) {
                     setReports([]);
                     return;
                 }
-                const allReports = data.map(report => ({
+                const allReports = data.map((report) => ({
                     id: report.id,
                     title: report.title,
-                    location: (report.lat && report.lng) ? `${parseFloat(report.lat).toFixed(4)}, ${parseFloat(report.lng).toFixed(4)}` : "Unknown",
+                    location:
+                        report.lat && report.lng
+                            ? `${parseFloat(report.lat).toFixed(4)}, ${parseFloat(report.lng).toFixed(4)}`
+                            : 'Unknown',
                     coordinates: {
                         lat: parseFloat(report.lat) || 0,
-                        lng: parseFloat(report.lng) || 0
+                        lng: parseFloat(report.lng) || 0,
                     },
-                    severity: "medium",
+                    severity: 'medium',
                     type: report.crisisType,
-                    date: report.createdAt ? new Date(report.createdAt).toLocaleDateString() : "Unknown",
+                    date: report.createdAt
+                        ? new Date(report.createdAt).toLocaleDateString()
+                        : 'Unknown',
                     description: report.description,
-                    status: (report.status || "Active").toLowerCase(),
+                    status: (report.status || 'Active').toLowerCase(),
                 }));
                 setReports(allReports);
                 if (allReports.length > 0) {
-                    const validReport = allReports.find(r =>
-                        r.coordinates && r.coordinates.lat && r.coordinates.lng &&
-                        !isNaN(r.coordinates.lat) && !isNaN(r.coordinates.lng)
+                    const validReport = allReports.find(
+                        (r) =>
+                            r.coordinates &&
+                            r.coordinates.lat &&
+                            r.coordinates.lng &&
+                            !isNaN(r.coordinates.lat) &&
+                            !isNaN(r.coordinates.lng)
                     );
                     if (validReport) {
                         setMapCenter(validReport.coordinates);
@@ -74,24 +83,25 @@ const MapView = () => {
         fetchReports();
     }, []);
 
-    const filteredReports = reports.filter(report => {
-        if (crisisType !== "all" && report.type !== crisisType) return false;
-        if (severity !== "all" && report.severity !== severity) return false;
-        if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    const filteredReports = reports.filter((report) => {
+        if (crisisType !== 'all' && report.type !== crisisType) return false;
+        if (severity !== 'all' && report.severity !== severity) return false;
+        if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            return false;
         return true;
     });
 
     const getMarkerColor = (type) => {
         switch (type) {
-            case "flood":
-                return "#3b82f6";
-            case "earthquake":
-                return "#f59e0b";
-            case "forest_fire":
-            case "industrial_fire":
-                return "#ef4444";
+            case 'flood':
+                return '#3b82f6';
+            case 'earthquake':
+                return '#f59e0b';
+            case 'forest_fire':
+            case 'industrial_fire':
+                return '#ef4444';
             default:
-                return "#10b981";
+                return '#10b981';
         }
     };
 
@@ -99,8 +109,12 @@ const MapView = () => {
         <div className="p-6 bg-white rounded-lg shadow-md">
             <div className="flex flex-col mb-6 gap-4">
                 <div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Crisis Map Overview</h2>
-                    <p className="text-gray-600 text-sm sm:text-base">Visualizing {filteredReports.length} active Crisis reports</p>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+                        Crisis Map Overview
+                    </h2>
+                    <p className="text-gray-600 text-sm sm:text-base">
+                        Visualizing {filteredReports.length} active Crisis reports
+                    </p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -155,13 +169,12 @@ const MapView = () => {
                 </div>
             </div>
 
-
             <div className="bg-gray-50 p-2 sm:p-4 rounded-lg border border-gray-200 mb-6">
                 {isLoaded ? (
                     <GoogleMap
                         mapContainerStyle={{
                             width: '100%',
-                            height: window.innerWidth < 640 ? '300px' : '400px'
+                            height: window.innerWidth < 640 ? '300px' : '400px',
                         }}
                         center={mapCenter}
                         zoom={mapZoom}
@@ -171,11 +184,11 @@ const MapView = () => {
                             mapTypeControl: false,
                             fullscreenControl: false,
                             mapTypeControlOptions: {
-                                position: window.google?.maps?.ControlPosition?.TOP_RIGHT
-                            }
+                                position: window.google?.maps?.ControlPosition?.TOP_RIGHT,
+                            },
                         }}
                     >
-                        {filteredReports.map(report => (
+                        {filteredReports.map((report) => (
                             <Marker
                                 key={report.id}
                                 position={report.coordinates}
@@ -184,7 +197,7 @@ const MapView = () => {
                                     fillColor: getMarkerColor(report.type),
                                     fillOpacity: 1,
                                     strokeWeight: 0,
-                                    scale: 8
+                                    scale: 8,
                                 }}
                                 onClick={() => {
                                     setSelectedReport(report);
@@ -200,12 +213,16 @@ const MapView = () => {
                                 onCloseClick={() => setSelectedReport(null)}
                             >
                                 <div className="p-2 max-w-xs">
-                                    <h3 className="font-bold text-gray-800 mb-1">{selectedReport.title}</h3>
+                                    <h3 className="font-bold text-gray-800 mb-1">
+                                        {selectedReport.title}
+                                    </h3>
                                     <div className="flex items-center text-sm text-gray-600 mb-1">
                                         <MapPin size={14} className="mr-1" />
                                         {selectedReport.location}
                                     </div>
-                                    <div className="text-sm text-gray-700 mb-2">{selectedReport.description}</div>
+                                    <div className="text-sm text-gray-700 mb-2">
+                                        {selectedReport.description}
+                                    </div>
                                     <div className="flex justify-between text-xs text-gray-500">
                                         <span>Type: {selectedReport.type.replace('_', ' ')}</span>
                                         <span>Severity: {selectedReport.severity}</span>
@@ -215,14 +232,17 @@ const MapView = () => {
                         )}
                     </GoogleMap>
                 ) : (
-                    <div className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg" style={mapContainerStyle}>
+                    <div
+                        className="h-full w-full flex items-center justify-center bg-gray-100 rounded-lg"
+                        style={mapContainerStyle}
+                    >
                         <p className="text-gray-500">Loading map...</p>
                     </div>
                 )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {filteredReports.slice(0, 3).map(report => (
+                {filteredReports.slice(0, 3).map((report) => (
                     <div
                         key={report.id}
                         className="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow cursor-pointer"
@@ -233,12 +253,17 @@ const MapView = () => {
                         }}
                     >
                         <div className="flex items-start justify-between mb-2">
-                            <h3 className="font-semibold text-gray-800 text-sm sm:text-base truncate mr-2">{report.title}</h3>
+                            <h3 className="font-semibold text-gray-800 text-sm sm:text-base truncate mr-2">
+                                {report.title}
+                            </h3>
                             <span
-                                className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${report.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                                        report.severity === 'high' ? 'bg-orange-100 text-orange-800' :
-                                            'bg-blue-100 text-blue-800'
-                                    }`}
+                                className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                                    report.severity === 'critical'
+                                        ? 'bg-red-100 text-red-800'
+                                        : report.severity === 'high'
+                                          ? 'bg-orange-100 text-orange-800'
+                                          : 'bg-blue-100 text-blue-800'
+                                }`}
                             >
                                 {report.severity}
                             </span>
@@ -247,7 +272,9 @@ const MapView = () => {
                             <MapPin size={12} className="mr-1 flex-shrink-0" />
                             <span className="truncate">{report.location}</span>
                         </div>
-                        <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-3">{report.description}</p>
+                        <p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-3">
+                            {report.description}
+                        </p>
                         <div className="flex justify-between text-xs text-gray-500">
                             <span>{report.date}</span>
                             <span className="capitalize">{report.type.replace('_', ' ')}</span>

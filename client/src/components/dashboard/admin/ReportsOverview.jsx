@@ -1,32 +1,38 @@
-import { useState, useEffect } from "react";
-import { AlertTriangle, Filter, ChevronDown, Search, MapPin, BarChart2 } from "lucide-react";
-import { fetchWithAuth } from "../../../utils/api.js";
+import { useState, useEffect } from 'react';
+import { AlertTriangle, Filter, ChevronDown, Search, MapPin, BarChart2 } from 'lucide-react';
+import { fetchWithAuth } from '../../../utils/api.js';
 
 const ReportsOverview = () => {
     const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [filterType, setFilterType] = useState("all");
-    const [filterStatus, setFilterStatus] = useState("all");
-    const [searchQuery, setSearchQuery] = useState("");
+    const [filterType, setFilterType] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const data = await fetchWithAuth("/api/reports");
+                const data = await fetchWithAuth('/api/reports');
                 if (data) {
                     // Map backend data to frontend format
-                    const formattedReports = data.map(report => ({
+                    const formattedReports = data.map((report) => ({
                         id: report.id,
                         title: report.title,
                         date: new Date(report.createdAt).toLocaleDateString(),
-                        time: new Date(report.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        time: new Date(report.createdAt).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                        }),
                         crisisType: report.crisisType,
                         description: report.description,
-                        location: (report.lat && report.lng) ? `${report.lat.toFixed(4)}, ${report.lng.toFixed(4)}` : 'Unknown',
-                        status: report.status?.toLowerCase() || "active",
-                        importance: report.importance || "medium",
-                        submittedBy: report.reportedBy || "User"
+                        location:
+                            report.lat && report.lng
+                                ? `${report.lat.toFixed(4)}, ${report.lng.toFixed(4)}`
+                                : 'Unknown',
+                        status: report.status?.toLowerCase() || 'active',
+                        importance: report.importance || 'medium',
+                        submittedBy: report.reportedBy || 'User',
                     }));
                     setReports(formattedReports);
                 }
@@ -34,7 +40,7 @@ const ReportsOverview = () => {
                 console.error('Error loading reports:', error);
             }
         };
-        
+
         fetchReports();
     }, []);
 
@@ -51,10 +57,10 @@ const ReportsOverview = () => {
         try {
             await fetchWithAuth(`/api/reports/${reportId}/status`, {
                 method: 'PATCH',
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ status: newStatus }),
             });
 
-            const updatedReports = reports.map(report =>
+            const updatedReports = reports.map((report) =>
                 report.id === reportId ? { ...report, status: newStatus } : report
             );
             setReports(updatedReports);
@@ -69,55 +75,93 @@ const ReportsOverview = () => {
 
     const getStatusBadge = (status) => {
         switch (status) {
-            case "active":
-                return <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Active</span>;
-            case "resolved":
-                return <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Resolved</span>;
-            case "in_progress":
-                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">In Progress</span>;
+            case 'active':
+                return (
+                    <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Active
+                    </span>
+                );
+            case 'resolved':
+                return (
+                    <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Resolved
+                    </span>
+                );
+            case 'in_progress':
+                return (
+                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        In Progress
+                    </span>
+                );
             default:
-                return <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Unknown</span>;
+                return (
+                    <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Unknown
+                    </span>
+                );
         }
     };
 
     const getImportanceBadge = (importance) => {
         switch (importance) {
-            case "critical":
-                return <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Critical</span>;
-            case "high":
-                return <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">High</span>;
-            case "medium":
-                return <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Medium</span>;
-            case "low":
-                return <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">Low</span>;
+            case 'critical':
+                return (
+                    <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Critical
+                    </span>
+                );
+            case 'high':
+                return (
+                    <span className="bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        High
+                    </span>
+                );
+            case 'medium':
+                return (
+                    <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Medium
+                    </span>
+                );
+            case 'low':
+                return (
+                    <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Low
+                    </span>
+                );
             default:
-                return <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Unknown</span>;
+                return (
+                    <span className="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        Unknown
+                    </span>
+                );
         }
     };
 
     const getCrisisTypeIcon = (type) => {
         switch (type) {
-            case "earthquake":
-                return "🌋";
-            case "flood":
-                return "🌊";
-            case "industrial_fire":
-                return "🏭";
-            case "forest_fire":
-                return "🔥";
+            case 'earthquake':
+                return '🌋';
+            case 'flood':
+                return '🌊';
+            case 'industrial_fire':
+                return '🏭';
+            case 'forest_fire':
+                return '🔥';
             default:
-                return "⚠️";
+                return '⚠️';
         }
     };
 
     const renderCrisisDetails = (report) => {
         switch (report.crisisType) {
-            case "earthquake":
+            case 'earthquake':
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
+                            <p className="capitalize">
+                                {report.roadStatus?.replace(/_/g, ' ') || 'N/A'}
+                            </p>
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Injured</h4>
@@ -141,16 +185,20 @@ const ReportsOverview = () => {
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
+                            <p className="capitalize">
+                                {report.electrification?.replace(/_/g, ' ') || 'Unknown'}
+                            </p>
                         </div>
                     </div>
                 );
-            case "flood":
+            case 'flood':
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
+                            <p className="capitalize">
+                                {report.roadStatus?.replace(/_/g, ' ') || 'N/A'}
+                            </p>
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Missing</h4>
@@ -166,11 +214,13 @@ const ReportsOverview = () => {
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
+                            <p className="capitalize">
+                                {report.electrification?.replace(/_/g, ' ') || 'Unknown'}
+                            </p>
                         </div>
                     </div>
                 );
-            case "industrial_fire":
+            case 'industrial_fire':
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
@@ -179,7 +229,9 @@ const ReportsOverview = () => {
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
+                            <p className="capitalize">
+                                {report.roadStatus?.replace(/_/g, ' ') || 'N/A'}
+                            </p>
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Explosion</h4>
@@ -187,7 +239,9 @@ const ReportsOverview = () => {
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Type of Institution</h4>
-                            <p className="capitalize">{report.institutionType?.replace(/_/g, ' ') || 'N/A'}</p>
+                            <p className="capitalize">
+                                {report.institutionType?.replace(/_/g, ' ') || 'N/A'}
+                            </p>
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Trapped</h4>
@@ -195,16 +249,20 @@ const ReportsOverview = () => {
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Electrification</h4>
-                            <p className="capitalize">{report.electrification?.replace(/_/g, ' ') || 'Unknown'}</p>
+                            <p className="capitalize">
+                                {report.electrification?.replace(/_/g, ' ') || 'Unknown'}
+                            </p>
                         </div>
                     </div>
                 );
-            case "forest_fire":
+            case 'forest_fire':
                 return (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
                             <h4 className="font-medium text-gray-700">Road Status</h4>
-                            <p className="capitalize">{report.roadStatus?.replace(/_/g, ' ') || 'N/A'}</p>
+                            <p className="capitalize">
+                                {report.roadStatus?.replace(/_/g, ' ') || 'N/A'}
+                            </p>
                         </div>
                         <div>
                             <h4 className="font-medium text-gray-700">Burnt Area</h4>
@@ -233,15 +291,18 @@ const ReportsOverview = () => {
         }
     };
 
-    const filteredReports = reports.filter(report => {
-        if (filterType !== "all" && report.crisisType !== filterType) {
+    const filteredReports = reports.filter((report) => {
+        if (filterType !== 'all' && report.crisisType !== filterType) {
             return false;
         }
-        if (filterStatus !== "all" && report.status !== filterStatus) {
+        if (filterStatus !== 'all' && report.status !== filterStatus) {
             return false;
         }
-        if (searchQuery && !report.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !report.location.toLowerCase().includes(searchQuery.toLowerCase())) {
+        if (
+            searchQuery &&
+            !report.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+            !report.location.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
             return false;
         }
 
@@ -250,17 +311,19 @@ const ReportsOverview = () => {
 
     const reportStats = {
         total: reports.length,
-        active: reports.filter(r => r.status === "active").length,
-        resolved: reports.filter(r => r.status === "resolved").length,
-        inProgress: reports.filter(r => r.status === "in_progress").length,
-        critical: reports.filter(r => r.importance === "critical").length
+        active: reports.filter((r) => r.status === 'active').length,
+        resolved: reports.filter((r) => r.status === 'resolved').length,
+        inProgress: reports.filter((r) => r.status === 'in_progress').length,
+        critical: reports.filter((r) => r.importance === 'critical').length,
     };
 
     return (
         <div className="p-6 bg-white rounded-lg shadow-md">
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Reports Overview</h2>
-                <p className="text-gray-600 mt-1">Monitoring {reportStats.total} Crisis reports across regions</p>
+                <p className="text-gray-600 mt-1">
+                    Monitoring {reportStats.total} Crisis reports across regions
+                </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
@@ -291,7 +354,9 @@ const ReportsOverview = () => {
                     <div className="flex justify-between items-center">
                         <div>
                             <p className="text-green-800 font-medium">Resolved</p>
-                            <p className="text-2xl font-bold text-green-900">{reportStats.resolved}</p>
+                            <p className="text-2xl font-bold text-green-900">
+                                {reportStats.resolved}
+                            </p>
                         </div>
                         <div className="bg-green-100 p-2 rounded-full">
                             <div className="text-green-600">✓</div>
@@ -303,7 +368,9 @@ const ReportsOverview = () => {
                     <div className="flex justify-between items-center">
                         <div>
                             <p className="text-yellow-800 font-medium">Critical</p>
-                            <p className="text-2xl font-bold text-yellow-900">{reportStats.critical}</p>
+                            <p className="text-2xl font-bold text-yellow-900">
+                                {reportStats.critical}
+                            </p>
                         </div>
                         <div className="bg-yellow-100 p-2 rounded-full">
                             <div className="text-yellow-600">⚠️</div>
@@ -369,13 +436,27 @@ const ReportsOverview = () => {
                 <table className="min-w-full bg-white">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Importance</th>
-                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reported By</th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Type
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Title
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Location
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Date
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Importance
+                            </th>
+                            <th className="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Reported By
+                            </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -386,18 +467,23 @@ const ReportsOverview = () => {
                                 </td>
                             </tr>
                         ) : (
-                            filteredReports.map(report => (
+                            filteredReports.map((report) => (
                                 <tr
                                     key={report.id}
                                     onClick={() => handleReportClick(report)}
                                     className="hover:bg-gray-50 cursor-pointer transition-colors"
                                 >
                                     <td className="py-4 px-4">
-                                        <span className="text-xl" title={report.crisisType?.replace(/_/g, ' ')}>
+                                        <span
+                                            className="text-xl"
+                                            title={report.crisisType?.replace(/_/g, ' ')}
+                                        >
                                             {getCrisisTypeIcon(report.crisisType)}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-4 font-medium text-gray-900">{report.title}</td>
+                                    <td className="py-4 px-4 font-medium text-gray-900">
+                                        {report.title}
+                                    </td>
                                     <td className="py-4 px-4 text-gray-600">
                                         <div className="flex items-center">
                                             <MapPin size={14} className="mr-1 text-gray-400" />
@@ -406,8 +492,12 @@ const ReportsOverview = () => {
                                     </td>
                                     <td className="py-4 px-4 text-gray-500">{report.date}</td>
                                     <td className="py-4 px-4">{getStatusBadge(report.status)}</td>
-                                    <td className="py-4 px-4">{getImportanceBadge(report.importance)}</td>
-                                    <td className="py-4 px-4 text-gray-600">{report.submittedBy}</td>
+                                    <td className="py-4 px-4">
+                                        {getImportanceBadge(report.importance)}
+                                    </td>
+                                    <td className="py-4 px-4 text-gray-600">
+                                        {report.submittedBy}
+                                    </td>
                                 </tr>
                             ))
                         )}
@@ -416,7 +506,7 @@ const ReportsOverview = () => {
             </div>
             <div className="flex items-center justify-between pt-4">
                 <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">{filteredReports.length}</span> of{" "}
+                    Showing <span className="font-medium">{filteredReports.length}</span> of{' '}
                     <span className="font-medium">{reports.length}</span> reports
                 </div>
                 <div className="flex space-x-1">
@@ -444,15 +534,22 @@ const ReportsOverview = () => {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <div className="flex items-center">
-                                        <span className="text-3xl mr-3">{getCrisisTypeIcon(selectedReport.crisisType)}</span>
-                                        <h3 className="text-xl font-bold text-gray-900">{selectedReport.title}</h3>
+                                        <span className="text-3xl mr-3">
+                                            {getCrisisTypeIcon(selectedReport.crisisType)}
+                                        </span>
+                                        <h3 className="text-xl font-bold text-gray-900">
+                                            {selectedReport.title}
+                                        </h3>
                                     </div>
                                     <p className="text-gray-500 mt-1">
-                                        <span className="font-medium">Reported on:</span> {selectedReport.date} at {selectedReport.time}
+                                        <span className="font-medium">Reported on:</span>{' '}
+                                        {selectedReport.date} at {selectedReport.time}
                                     </p>
                                     <div className="flex items-center mt-2">
                                         <MapPin size={16} className="mr-1 text-gray-500" />
-                                        <span className="text-gray-600">{selectedReport.location}</span>
+                                        <span className="text-gray-600">
+                                            {selectedReport.location}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex space-x-2">
@@ -473,7 +570,9 @@ const ReportsOverview = () => {
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-700">Coordinates</h4>
-                                    <p>Lat: {selectedReport.lat}, Lng: {selectedReport.lng}</p>
+                                    <p>
+                                        Lat: {selectedReport.lat}, Lng: {selectedReport.lng}
+                                    </p>
                                 </div>
                                 <div>
                                     <h4 className="font-medium text-gray-700">Reported By</h4>
@@ -490,20 +589,26 @@ const ReportsOverview = () => {
                                 <h4 className="font-semibold text-gray-800 mb-3">Change Status</h4>
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     <button
-                                        onClick={() => handleStatusChange(selectedReport.id, "active")}
-                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "active" ? 'bg-red-600 text-white' : 'bg-red-100 text-red-800 hover:bg-red-200'}`}
+                                        onClick={() =>
+                                            handleStatusChange(selectedReport.id, 'active')
+                                        }
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === 'active' ? 'bg-red-600 text-white' : 'bg-red-100 text-red-800 hover:bg-red-200'}`}
                                     >
                                         Active
                                     </button>
                                     <button
-                                        onClick={() => handleStatusChange(selectedReport.id, "in_progress")}
-                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "in_progress" ? 'bg-yellow-600 text-white' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'}`}
+                                        onClick={() =>
+                                            handleStatusChange(selectedReport.id, 'in_progress')
+                                        }
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === 'in_progress' ? 'bg-yellow-600 text-white' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'}`}
                                     >
                                         In Progress
                                     </button>
                                     <button
-                                        onClick={() => handleStatusChange(selectedReport.id, "resolved")}
-                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === "resolved" ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
+                                        onClick={() =>
+                                            handleStatusChange(selectedReport.id, 'resolved')
+                                        }
+                                        className={`px-3 py-1.5 rounded-md text-sm font-medium ${selectedReport?.status === 'resolved' ? 'bg-green-600 text-white' : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
                                     >
                                         Resolved
                                     </button>

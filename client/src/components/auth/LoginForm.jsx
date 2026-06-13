@@ -1,14 +1,14 @@
-import { useState } from "react";
-import AuthInput from "./AuthInput";
-import { useNavigate, Link } from "react-router-dom";
-import Logo from "../../assets/Logo.png";
-import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
+import { useState } from 'react';
+import AuthInput from './AuthInput';
+import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../../assets/Logo.png';
+import { FiCheckCircle, FiAlertCircle, FiLoader } from 'react-icons/fi';
 
 const LoginForm = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        email: "",
-        password: "",
+        email: '',
+        password: '',
         rememberMe: false,
     });
     const [status, setStatus] = useState({
@@ -21,12 +21,12 @@ const LoginForm = () => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === 'checkbox' ? checked : value,
         }));
 
         // Clear errors when user starts typing
         if (status.error) {
-            setStatus(prev => ({ ...prev, error: null }));
+            setStatus((prev) => ({ ...prev, error: null }));
         }
     };
 
@@ -35,9 +35,9 @@ const LoginForm = () => {
         setStatus({ loading: true, success: false, error: null });
 
         try {
-            const response = await fetch("/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
 
@@ -48,9 +48,8 @@ const LoginForm = () => {
 
                 // Redirect based on role after brief delay
                 setTimeout(() => {
-                    const redirectPath = data.userRole === "admin"
-                        ? "/admin/reports" 
-                        : "/dashboard/my-reports";
+                    const redirectPath =
+                        data.userRole === 'admin' ? '/admin/reports' : '/dashboard/my-reports';
                     navigate(redirectPath);
                     window.location.reload();
                 }, 1000);
@@ -58,16 +57,16 @@ const LoginForm = () => {
                 setStatus({
                     loading: false,
                     success: false,
-                    error: data.message || "Authentication failed. Please verify your credentials."
+                    error: data.message || 'Authentication failed. Please verify your credentials.',
                 });
             }
         } catch (error) {
             setStatus({
                 loading: false,
                 success: false,
-                error: "Connection error. Please check your network and try again."
+                error: 'Connection error. Please check your network and try again.',
             });
-            console.error("Login error:", error);
+            console.error('Login error:', error);
         }
     };
 
@@ -90,9 +89,7 @@ const LoginForm = () => {
                     <FiAlertCircle className="h-5 w-5 text-red-400" />
                 </div>
                 <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">
-                        {status.error}
-                    </h3>
+                    <h3 className="text-sm font-medium text-red-800">{status.error}</h3>
                 </div>
             </div>
         </div>
@@ -107,7 +104,6 @@ const LoginForm = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg relative">
-                
                 {status.success && renderSuccessOverlay()}
 
                 <div className="text-center">
@@ -128,9 +124,9 @@ const LoginForm = () => {
                         Log in to your account
                     </h2>
                     <p className="mt-2 text-sm text-gray-600">
-                        Or{" "}
+                        Or{' '}
                         <button
-                            onClick={() => navigate("/signup")}
+                            onClick={() => navigate('/signup')}
                             className="font-medium text-red-600 hover:text-red-500 focus:outline-none focus:underline transition ease-in-out duration-150"
                         >
                             create a new account
@@ -176,7 +172,10 @@ const LoginForm = () => {
                                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                 disabled={status.loading}
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                            <label
+                                htmlFor="remember-me"
+                                className="ml-2 block text-sm text-gray-900"
+                            >
                                 Remember me
                             </label>
                         </div>
@@ -193,11 +192,7 @@ const LoginForm = () => {
                     </div>
 
                     <div>
-                        <button
-                            type="submit"
-                            className={buttonClassName}
-                            disabled={status.loading}
-                        >
+                        <button type="submit" className={buttonClassName} disabled={status.loading}>
                             {status.loading ? (
                                 <>
                                     <FiLoader className="animate-spin h-5 w-5 mr-2" />

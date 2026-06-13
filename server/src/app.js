@@ -6,12 +6,14 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import swaggerUi from 'swagger-ui-express';
 
 import { authenticate } from './core/middleware/auth.js';
 import { authLimiter, apiLimiter } from './core/middleware/rateLimiter.js';
 import { errorHandler } from './core/middleware/errorHandler.js';
 import { requestId } from './core/middleware/requestId.js';
 import { securityHeaders } from './core/middleware/securityHeaders.js';
+import { swaggerSpec } from './core/config/swagger.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import usersRoutes from './modules/users/users.routes.js';
@@ -30,20 +32,27 @@ export function createApp() {
     app.use(securityHeaders);
     app.use(morgan('dev'));
     app.use(cookieParser());
-    app.use(helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "https://maps.googleapis.com", "https://maps.gstatic.com"],
-                styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-                imgSrc: ["'self'", "data:", "https:", "blob:"],
-                fontSrc: ["'self'", "https://fonts.gstatic.com"],
-                connectSrc: ["'self'", "https://maps.googleapis.com"],
-                frameSrc: ["'self'", "https://www.google.com"],
+    app.use(
+        helmet({
+            contentSecurityPolicy: {
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: [
+                        "'self'",
+                        "'unsafe-inline'",
+                        'https://maps.googleapis.com',
+                        'https://maps.gstatic.com',
+                    ],
+                    styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+                    imgSrc: ["'self'", 'data:', 'https:', 'blob:'],
+                    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+                    connectSrc: ["'self'", 'https://maps.googleapis.com'],
+                    frameSrc: ["'self'", 'https://www.google.com'],
+                },
             },
-        },
-        crossOriginEmbedderPolicy: false,
-    }));
+            crossOriginEmbedderPolicy: false,
+        })
+    );
 
     const allowedOrigins = [
         'https://swiftsage.onrender.com',
@@ -51,36 +60,40 @@ export function createApp() {
         'http://localhost:5030',
     ];
 
-    app.use(cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error('Not allowed by CORS'));
-            }
-        },
-        credentials: true,
-    }));
+    app.use(
+        cors({
+            origin: (origin, callback) => {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+            credentials: true,
+        })
+    );
 
     const clientPath = path.resolve(__dirname, '../../client/dist');
     if (fs.existsSync(clientPath)) {
-        app.use(express.static(clientPath, {
-            maxAge: '1d',
-            etag: true,
-            lastModified: true,
-            setHeaders: (res, filePath) => {
-                if (filePath.endsWith('.js')) {
-                    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-                    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-                } else if (filePath.endsWith('.css')) {
-                    res.setHeader('Content-Type', 'text/css; charset=utf-8');
-                    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-                } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg)$/)) {
-                    res.setHeader('Cache-Control', 'public, max-age=86400');
-                }
-                res.setHeader('X-Content-Type-Options', 'nosniff');
-            },
-        }));
+        app.use(
+            express.static(clientPath, {
+                maxAge: '1d',
+                etag: true,
+                lastModified: true,
+                setHeaders: (res, filePath) => {
+                    if (filePath.endsWith('.js')) {
+                        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+                        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+                    } else if (filePath.endsWith('.css')) {
+                        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+                        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+                    } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg)$/)) {
+                        res.setHeader('Cache-Control', 'public, max-age=86400');
+                    }
+                    res.setHeader('X-Content-Type-Options', 'nosniff');
+                },
+            })
+        );
     }
 
     app.use(express.json({ limit: '1mb' }));
@@ -92,8 +105,20 @@ export function createApp() {
     app.use('/api/alerts', authenticate, apiLimiter, alertsRoutes);
     app.use('/api/feedback', authenticate, apiLimiter, feedbackRoutes);
 
+    app.use(
+        '/api-docs',
+        swaggerUi.serve,
+        swaggerUi.setup(swaggerSpec, {
+            customCss: '.swagger-ui .topbar { display: none }',
+            customSiteTitle: 'SwiftSage API Documentation',
+        })
+    );
+
     app.get('*', (req, res) => {
-        if (req.path.startsWith('/api') || req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|json)$/)) {
+        if (
+            req.path.startsWith('/api') ||
+            req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|json)$/)
+        ) {
             return res.status(404).json({ error: 'Not found' });
         }
         const indexPath = path.join(clientPath, 'index.html');

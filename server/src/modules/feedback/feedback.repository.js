@@ -2,7 +2,8 @@ import con from '../../core/config/database.js';
 
 class FeedbackRepository {
     async create({ userId, message, rating }) {
-        const query = 'INSERT INTO feedback (user_id, message, rating) VALUES ($1, $2, $3) RETURNING id';
+        const query =
+            'INSERT INTO feedback (user_id, message, rating) VALUES ($1, $2, $3) RETURNING id';
         const { rows } = await con.query(query, [userId, message, rating]);
         return rows[0].id;
     }

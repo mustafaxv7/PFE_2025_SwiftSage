@@ -9,7 +9,7 @@ export const fetchWithAuth = async (url, options = {}) => {
     // Automatically add Content-Type: application/json if sending a body
     if (options.body && !options.headers) {
         defaultOptions.headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         };
     }
 
@@ -19,7 +19,7 @@ export const fetchWithAuth = async (url, options = {}) => {
     if (response.status === 401 && !url.includes('/auth/refresh')) {
         const refreshRes = await fetch('/auth/refresh', {
             method: 'POST',
-            credentials: 'include'
+            credentials: 'include',
         });
 
         if (refreshRes.ok) {

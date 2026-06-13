@@ -9,4 +9,3 @@ export const getFeedbacks = async (req, res) => {
         res.status(500).json({ error: 'Server error occurred.' });
     }
 };
-

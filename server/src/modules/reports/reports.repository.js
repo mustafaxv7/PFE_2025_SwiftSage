@@ -2,13 +2,24 @@ import con from '../../core/config/database.js';
 
 class ReportsRepository {
     async create(reportData) {
-        const { lng, lat, altitude, amplitude, title, description, crisisType, userId, status } = reportData;
+        const { lng, lat, altitude, amplitude, title, description, crisisType, userId, status } =
+            reportData;
         const query = `
             INSERT INTO reports (location, altitude, amplitude, title, description, crisis_type, user_id, status)
             VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $3, $4, $5, $6, $7, $8, $9)
             RETURNING id
         `;
-        const values = [lng, lat, altitude, amplitude, title, description, crisisType, userId, status || 'Active'];
+        const values = [
+            lng,
+            lat,
+            altitude,
+            amplitude,
+            title,
+            description,
+            crisisType,
+            userId,
+            status || 'Active',
+        ];
         const { rows } = await con.query(query, values);
         return rows[0].id;
     }
@@ -21,8 +32,16 @@ class ReportsRepository {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         `;
         const values = [
-            reportId, details.spreadRate, details.roadStatus, details.injuredNumber, details.bleedingNumber,
-            details.threatenedStructures, details.containmentPercent, details.burntArea, details.institutionType, details.evacuated,
+            reportId,
+            details.spreadRate,
+            details.roadStatus,
+            details.injuredNumber,
+            details.bleedingNumber,
+            details.threatenedStructures,
+            details.containmentPercent,
+            details.burntArea,
+            details.institutionType,
+            details.evacuated,
         ];
         await con.query(query, values);
     }
@@ -34,8 +53,15 @@ class ReportsRepository {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         `;
         const values = [
-            reportId, categories.throttled, categories.burnt, categories.fractions, categories.missing,
-            categories.trapped, categories.submergedDwelling, categories.electrification, categories.explosion,
+            reportId,
+            categories.throttled,
+            categories.burnt,
+            categories.fractions,
+            categories.missing,
+            categories.trapped,
+            categories.submergedDwelling,
+            categories.electrification,
+            categories.explosion,
         ];
         await con.query(query, values);
     }
@@ -73,7 +99,12 @@ class ReportsRepository {
         const fields = [];
         const values = [];
         let index = 1;
-        const mapping = { title: 'title', description: 'description', crisisType: 'crisis_type', status: 'status' };
+        const mapping = {
+            title: 'title',
+            description: 'description',
+            crisisType: 'crisis_type',
+            status: 'status',
+        };
 
         for (const [key, column] of Object.entries(mapping)) {
             if (updates[key] !== undefined) {
@@ -90,8 +121,15 @@ class ReportsRepository {
 
     async updateDetails(reportId, details) {
         const allowedFields = [
-            'spread_rate', 'road_status', 'injured_number', 'bleeding_number',
-            'threatened_structures', 'containment_percent', 'burnt_area', 'institution_type', 'evacuated',
+            'spread_rate',
+            'road_status',
+            'injured_number',
+            'bleeding_number',
+            'threatened_structures',
+            'containment_percent',
+            'burnt_area',
+            'institution_type',
+            'evacuated',
         ];
         const updates = [];
         const values = [];

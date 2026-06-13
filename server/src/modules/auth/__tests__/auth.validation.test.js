@@ -80,7 +80,11 @@ describe('Auth Validation', () => {
         });
 
         test('accepts rememberMe', () => {
-            const { error } = loginSchema.validate({ email: 'a@b.com', password: 'pass', rememberMe: true });
+            const { error } = loginSchema.validate({
+                email: 'a@b.com',
+                password: 'pass',
+                rememberMe: true,
+            });
             expect(error).toBeUndefined();
         });
     });

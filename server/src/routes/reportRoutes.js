@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.get('/', authMiddleware, getReports);
 router.post('/', authMiddleware, addReport);
-router.get('/:id/user', authMiddleware, getReportDetailsUser); 
+router.get('/:id/user', authMiddleware, getReportDetailsUser);
 router.patch('/:id/edit', authMiddleware, editReport);
 router.get('/:id', authMiddleware, getReportDetailsAdmin);
 router.patch('/:id/status', authMiddleware, switchStatus);

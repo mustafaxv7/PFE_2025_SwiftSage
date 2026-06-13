@@ -1,35 +1,35 @@
-import { useState } from "react";
-import AuthInput from "./AuthInput";
-import { useNavigate, Link } from "react-router-dom";
-import Logo from "../../assets/Logo.png";
-import { FiCheckCircle, FiAlertCircle, FiLoader } from "react-icons/fi";
+import { useState } from 'react';
+import AuthInput from './AuthInput';
+import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../../assets/Logo.png';
+import { FiCheckCircle, FiAlertCircle, FiLoader } from 'react-icons/fi';
 
 const SignupForm = () => {
     const navigate = useNavigate();
     const [isOrganization, setIsOrganization] = useState(false);
     const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-        type: "public",
-        community: "",
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        type: 'public',
+        community: '',
     });
     const [status, setStatus] = useState({
         loading: false,
         success: false,
-        error: null
+        error: null,
     });
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: type === 'checkbox' ? checked : value,
         }));
         // Clear errors when user starts typing
         if (status.error) {
-            setStatus(prev => ({ ...prev, error: null }));
+            setStatus((prev) => ({ ...prev, error: null }));
         }
     };
 
@@ -40,13 +40,13 @@ const SignupForm = () => {
         try {
             const signupData = {
                 ...formData,
-                isOrganisationMember: isOrganization
+                isOrganisationMember: isOrganization,
             };
 
-            const response = await fetch("/auth/register", {
-                method: "POST",
+            const response = await fetch('/auth/register', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(signupData),
             });
@@ -57,50 +57,50 @@ const SignupForm = () => {
                 setStatus({ loading: false, success: true, error: null });
                 // Show success message before redirect
                 setTimeout(() => {
-                    navigate("/login");
+                    navigate('/login');
                 }, 2000);
             } else {
                 setStatus({
                     loading: false,
                     success: false,
-                    error: data.message || "Registration failed. Please try again."
+                    error: data.message || 'Registration failed. Please try again.',
                 });
             }
         } catch (error) {
             setStatus({
                 loading: false,
                 success: false,
-                error: "Network error. Please check your connection."
+                error: 'Network error. Please check your connection.',
             });
-            console.error("Error signing up:", error);
+            console.error('Error signing up:', error);
         }
     };
 
     // Placeholder text based on account type
     const getPlaceholder = (field) => {
         const placeholders = {
-            name: isOrganization ? "Acme Inc." : "John Doe",
-            email: isOrganization ? "contact@organization.com" : "you@example.com",
-            phone: "+1 (555) 123-4567",
-            password: "••••••••"
+            name: isOrganization ? 'Acme Inc.' : 'John Doe',
+            email: isOrganization ? 'contact@organization.com' : 'you@example.com',
+            phone: '+1 (555) 123-4567',
+            password: '••••••••',
         };
         return placeholders[field];
     };
     const getLabel = (field) => {
         const labels = {
-            name: isOrganization ? "Organization Name" : "Full Name",
-            email: isOrganization ? "Organization Email" : "Email Address",
-            phone: "Phone Number",
-            password: "Password"
+            name: isOrganization ? 'Organization Name' : 'Full Name',
+            email: isOrganization ? 'Organization Email' : 'Email Address',
+            phone: 'Phone Number',
+            password: 'Password',
         };
         return labels[field];
     };
 
     const inputFields = [
-        { name: "name", type: "text" },
-        { name: "email", type: "email" },
-        { name: "phone", type: "tel" },
-        { name: "password", type: "password" }
+        { name: 'name', type: 'text' },
+        { name: 'email', type: 'email' },
+        { name: 'phone', type: 'tel' },
+        { name: 'password', type: 'password' },
     ];
 
     return (
@@ -114,13 +114,11 @@ const SignupForm = () => {
                             className="w-12 h-12 object-contain"
                         />
                         <span className="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">
-              Swift Sage
-            </span>
+                            Swift Sage
+                        </span>
                     </div>
                 </Link>
-                <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-                    Create your account
-                </h2>
+                <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
                 <p className="mt-2 text-sm text-gray-600">
                     Join our platform to manage crises effectively
                 </p>
@@ -131,8 +129,12 @@ const SignupForm = () => {
                     {status.success && (
                         <div className="absolute inset-0 bg-white bg-opacity-95 flex flex-col items-center justify-center rounded-xl z-10 p-6">
                             <FiCheckCircle className="h-16 w-16 text-green-500 mb-4" />
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">Registration Successful!</h3>
-                            <p className="text-gray-600 mb-6">You're being redirected to login page</p>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                                Registration Successful!
+                            </h3>
+                            <p className="text-gray-600 mb-6">
+                                You're being redirected to login page
+                            </p>
                             <div className="w-full bg-gray-200 rounded-full h-2.5">
                                 <div className="bg-green-500 h-2.5 rounded-full animate-pulse"></div>
                             </div>
@@ -167,7 +169,7 @@ const SignupForm = () => {
                                 disabled={status.loading}
                             />
                         ))}
-                        
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Community
@@ -199,7 +201,7 @@ const SignupForm = () => {
                                     Organization Type
                                 </label>
                                 <div className="flex space-x-6">
-                                    {["public", "private"].map((type) => (
+                                    {['public', 'private'].map((type) => (
                                         <label key={type} className="inline-flex items-center">
                                             <input
                                                 type="radio"
@@ -210,7 +212,9 @@ const SignupForm = () => {
                                                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300"
                                                 disabled={status.loading}
                                             />
-                                            <span className="ml-2 text-sm text-gray-700 capitalize">{type}</span>
+                                            <span className="ml-2 text-sm text-gray-700 capitalize">
+                                                {type}
+                                            </span>
                                         </label>
                                     ))}
                                 </div>
@@ -225,7 +229,10 @@ const SignupForm = () => {
                                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                 disabled={status.loading}
                             />
-                            <label htmlFor="isOrganization" className="ml-2 block text-sm text-gray-700">
+                            <label
+                                htmlFor="isOrganization"
+                                className="ml-2 block text-sm text-gray-700"
+                            >
                                 Are you registering as an organization?
                             </label>
                         </div>
@@ -239,8 +246,14 @@ const SignupForm = () => {
                                 disabled={status.loading}
                             />
                             <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                                I agree to the <a href="#" className="text-red-600 hover:underline">Terms</a> and <a
-                                href="#" className="text-red-600 hover:underline">Privacy Policy</a>
+                                I agree to the{' '}
+                                <a href="#" className="text-red-600 hover:underline">
+                                    Terms
+                                </a>{' '}
+                                and{' '}
+                                <a href="#" className="text-red-600 hover:underline">
+                                    Privacy Policy
+                                </a>
                             </label>
                         </div>
                         <div>
@@ -266,9 +279,9 @@ const SignupForm = () => {
                     </form>
                     <div className="mt-6 text-center">
                         <p className="text-sm text-gray-600">
-                            Already have an account?{" "}
+                            Already have an account?{' '}
                             <button
-                                onClick={() => navigate("/login")}
+                                onClick={() => navigate('/login')}
                                 className={`font-medium text-red-600 hover:text-red-500 hover:underline ${
                                     status.loading ? 'pointer-events-none opacity-50' : ''
                                 }`}

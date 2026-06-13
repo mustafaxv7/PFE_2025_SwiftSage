@@ -22,7 +22,8 @@ class AuthRepository {
     }
 
     async findAdminById(id) {
-        const query = "SELECT admin_id as id, email, 'admin' as role FROM admins WHERE admin_id = $1";
+        const query =
+            "SELECT admin_id as id, email, 'admin' as role FROM admins WHERE admin_id = $1";
         const { rows } = await con.query(query, [id]);
         return rows[0];
     }
@@ -34,7 +35,12 @@ class AuthRepository {
             RETURNING user_id
         `;
         const { rows } = await con.query(query, [
-            name, email, phone, password, isOrganisationMember || false, community,
+            name,
+            email,
+            phone,
+            password,
+            isOrganisationMember || false,
+            community,
         ]);
         return rows[0].user_id;
     }

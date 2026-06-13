@@ -1,13 +1,35 @@
 import con from '../config/db.js';
 
 class AlertRepository {
-    async create({ message, description, date, time, status, importance, type, location, affectedArea, adminId }) {
+    async create({
+        message,
+        description,
+        date,
+        time,
+        status,
+        importance,
+        type,
+        location,
+        affectedArea,
+        adminId,
+    }) {
         const query = `
             INSERT INTO alerts (message, description, date, "time", status, importance, type, location, affected_area, created_by_admin_id)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id;
         `;
-        const values = [message, description, date, time, status, importance, type, location, affectedArea, adminId];
+        const values = [
+            message,
+            description,
+            date,
+            time,
+            status,
+            importance,
+            type,
+            location,
+            affectedArea,
+            adminId,
+        ];
         const { rows } = await con.query(query, values);
         return rows[0].id;
     }
@@ -44,7 +66,7 @@ class AlertRepository {
             importance: 'importance',
             type: 'type',
             location: 'location',
-            affectedArea: 'affected_area'
+            affectedArea: 'affected_area',
         };
 
         for (const [key, column] of Object.entries(mapping)) {

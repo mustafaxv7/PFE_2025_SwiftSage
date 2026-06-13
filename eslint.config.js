@@ -12,9 +12,16 @@ export default [
         },
         rules: {
             ...js.configs.recommended.rules,
-            'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+            'no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                },
+            ],
             'no-console': 'off',
-            'eqeqeq': ['error', 'always'],
+            eqeqeq: ['error', 'always'],
             'no-throw-literal': 'error',
             'prefer-const': 'error',
             'no-var': 'error',
@@ -46,9 +53,16 @@ export default [
         },
         rules: {
             ...js.configs.recommended.rules,
-            'no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_', varsIgnorePattern: '^[A-Z_]' }],
+            'no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    varsIgnorePattern: '^[A-Z_]',
+                },
+            ],
             'no-console': 'off',
-            'eqeqeq': ['error', 'always'],
+            eqeqeq: ['error', 'always'],
             'prefer-const': 'error',
             'no-var': 'error',
         },

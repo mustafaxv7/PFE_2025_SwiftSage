@@ -13,7 +13,10 @@ const log = (level, message, meta = {}) => {
     if (isDev) {
         const colors = { info: '\x1b[36m', warn: '\x1b[33m', error: '\x1b[31m', debug: '\x1b[90m' };
         const { requestId: _id, ...rest } = entry;
-        console.log(`${colors[level] || ''}[${level.toUpperCase()}]\x1b[0m [${entry.requestId}] ${message}`, Object.keys(rest).length > 1 ? rest : '');
+        console.log(
+            `${colors[level] || ''}[${level.toUpperCase()}]\x1b[0m [${entry.requestId}] ${message}`,
+            Object.keys(rest).length > 1 ? rest : ''
+        );
     } else {
         console.log(JSON.stringify(entry));
     }

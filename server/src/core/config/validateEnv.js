@@ -8,11 +8,11 @@ const rules = {
         },
         JWT_SECRET: {
             minLength: 32,
-            hint: 'Must be at least 32 characters. Generate with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"',
+            hint: "Must be at least 32 characters. Generate with: node -e \"console.log(require('crypto').randomBytes(48).toString('base64url'))\"",
         },
         JWT_REFRESH_SECRET: {
             minLength: 32,
-            hint: 'Must be at least 32 characters. Generate with: node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"',
+            hint: "Must be at least 32 characters. Generate with: node -e \"console.log(require('crypto').randomBytes(48).toString('base64url'))\"",
         },
     },
     optional: {
@@ -53,7 +53,9 @@ for (const [key, rule] of Object.entries(rules.optional)) {
         }
         warnings.push(`  ${key} not set — using default: "${rule.default || '(empty)'}"`);
     } else if (rule.allowed && !rule.allowed.includes(process.env[key])) {
-        warnings.push(`  ${key}="${process.env[key]}" — expected one of: ${rule.allowed.join(', ')}`);
+        warnings.push(
+            `  ${key}="${process.env[key]}" — expected one of: ${rule.allowed.join(', ')}`
+        );
     }
 }
 

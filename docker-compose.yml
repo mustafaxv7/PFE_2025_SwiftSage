@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgis/postgis:17-3.4
+    environment:
+      POSTGRES_DB: swiftsage
+      POSTGRES_USER: swiftsage_owner
+      POSTGRES_PASSWORD: devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    ports:
+      - "5030:5030"
+    environment:
+      NODE_ENV: production
+      PORT: 5030
+      DATABASE_URL: postgresql://swiftsage_owner:devpassword@db:5432/swiftsage?sslmode=disable
+      JWT_SECRET: dev-jwt-secret-change-in-production-min-32-chars
+      JWT_REFRESH_SECRET: dev-refresh-secret-change-in-production-min-32
+      DO_SPACES_KEY: ${DO_SPACES_KEY:-}
+      DO_SPACES_SECRET: ${DO_SPACES_SECRET:-}
+      DO_SPACES_BUCKET: ${DO_SPACES_BUCKET:-swift-pick}
+      SPACES_ENDPOINT: ${SPACES_ENDPOINT:-https://nyc3.digitaloceanspaces.com}
+      DO_SPACES_REGION: ${DO_SPACES_REGION:-nyc3}
+      VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

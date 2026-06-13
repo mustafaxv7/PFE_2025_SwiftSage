@@ -26,18 +26,16 @@ if (connectionString) {
 const poolConfig = connectionString
     ? { connectionString }
     : {
-        user: process.env.DB_USER || 'swiftsage_owner',
-        host: process.env.DB_CONNECTION_HOST || process.env.DB_HOST,
-        database: process.env.DB_NAME || 'swiftsage',
-        password: process.env.DB_CONNECTION_PASSWORD || process.env.DB_PASSWORD,
-        port: process.env.DB_PORT || 5432,
-    };
+          user: process.env.DB_USER || 'swiftsage_owner',
+          host: process.env.DB_CONNECTION_HOST || process.env.DB_HOST,
+          database: process.env.DB_NAME || 'swiftsage',
+          password: process.env.DB_CONNECTION_PASSWORD || process.env.DB_PASSWORD,
+          port: process.env.DB_PORT || 5432,
+      };
 
 const pool = new Pool({
     ...poolConfig,
-    ssl: process.env.NODE_ENV === 'production'
-        ? { rejectUnauthorized: true }
-        : false,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
@@ -72,9 +70,10 @@ async function initializeDatabase() {
         if (err.code === '42P01') {
             logger.info('Tables missing. Running swiftsage_dump.sql...');
             try {
-                const normalizedFilename = process.platform === 'win32' && __filename.startsWith('/')
-                    ? __filename.substring(1)
-                    : __filename;
+                const normalizedFilename =
+                    process.platform === 'win32' && __filename.startsWith('/')
+                        ? __filename.substring(1)
+                        : __filename;
                 const configDir = path.dirname(normalizedFilename);
                 let sqlPath = path.resolve(configDir, '../../../swiftsage_dump.sql');
                 if (!fs.existsSync(sqlPath)) {
@@ -94,7 +93,9 @@ async function initializeDatabase() {
     for (const idx of INDEXES) {
         try {
             await pool.query(idx);
-        } catch (_e) { /* index may already exist */ }
+        } catch (_e) {
+            /* index may already exist */
+        }
     }
     logger.info('Database indexes ensured');
 }

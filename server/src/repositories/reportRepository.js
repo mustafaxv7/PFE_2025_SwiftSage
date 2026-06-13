@@ -2,13 +2,24 @@ import con from '../config/db.js';
 
 class ReportRepository {
     async create(reportData) {
-        const { lng, lat, altitude, amplitude, title, description, crisisType, userId, status } = reportData;
+        const { lng, lat, altitude, amplitude, title, description, crisisType, userId, status } =
+            reportData;
         const query = `
             INSERT INTO reports (location, altitude, amplitude, title, description, crisis_type, user_id, status)
             VALUES (ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography, $3, $4, $5, $6, $7, $8, $9)
             RETURNING id;
         `;
-        const values = [lng, lat, altitude, amplitude, title, description, crisisType, userId, status || 'Active'];
+        const values = [
+            lng,
+            lat,
+            altitude,
+            amplitude,
+            title,
+            description,
+            crisisType,
+            userId,
+            status || 'Active',
+        ];
         const { rows } = await con.query(query, values);
         return rows[0].id;
     }
@@ -21,8 +32,16 @@ class ReportRepository {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
         `;
         const values = [
-            reportId, details.spreadRate, details.roadStatus, details.injuredNumber, details.bleedingNumber,
-            details.threatenedStructures, details.containmentPercent, details.burntArea, details.institutionType, details.evacuated
+            reportId,
+            details.spreadRate,
+            details.roadStatus,
+            details.injuredNumber,
+            details.bleedingNumber,
+            details.threatenedStructures,
+            details.containmentPercent,
+            details.burntArea,
+            details.institutionType,
+            details.evacuated,
         ];
         await con.query(query, values);
     }
@@ -34,25 +53,39 @@ class ReportRepository {
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
         `;
         const values = [
-            reportId, categories.throttled, categories.burnt, categories.fractions, categories.missing,
-            categories.trapped, categories.submergedDwelling, categories.electrification, categories.explosion
+            reportId,
+            categories.throttled,
+            categories.burnt,
+            categories.fractions,
+            categories.missing,
+            categories.trapped,
+            categories.submergedDwelling,
+            categories.electrification,
+            categories.explosion,
         ];
         await con.query(query, values);
     }
 
     async updateDetails(reportId, details) {
         const allowedFields = [
-            "spread_rate", "road_status", "injured_number", "bleeding_number", 
-            "threatened_structures", "containment_percent", "burnt_area", "institution_type", "evacuated"
+            'spread_rate',
+            'road_status',
+            'injured_number',
+            'bleeding_number',
+            'threatened_structures',
+            'containment_percent',
+            'burnt_area',
+            'institution_type',
+            'evacuated',
         ];
-        
+
         const updates = [];
         const values = [];
         let paramIndex = 1;
 
         for (const field of allowedFields) {
             // Map camelCase to snake_case for DB
-            const dbField = field.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+            const dbField = field.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
             if (field in details) {
                 updates.push(`${dbField} = $${paramIndex++}`);
                 values.push(details[field]);
@@ -114,7 +147,7 @@ class ReportRepository {
             title: 'title',
             description: 'description',
             crisisType: 'crisis_type',
-            status: 'status'
+            status: 'status',
         };
 
         for (const [key, column] of Object.entries(mapping)) {

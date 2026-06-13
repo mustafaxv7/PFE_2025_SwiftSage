@@ -17,7 +17,6 @@ export const addReport = async (req, res) => {
 
         const reportId = await reportService.createReport(reportData, details, additionalData);
         res.status(201).json({ message: 'Report created successfully', reportId });
-
     } catch (err) {
         console.error('Error adding report:', err);
         res.status(500).json({ error: 'Internal server error.' });

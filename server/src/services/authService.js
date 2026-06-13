@@ -6,10 +6,10 @@ class AuthService {
     async registerUser(userData) {
         const { password } = userData;
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         return await userRepository.create({
             ...userData,
-            password: hashedPassword
+            password: hashedPassword,
         });
     }
 
@@ -19,10 +19,10 @@ class AuthService {
         if (admin) {
             const isValid = await bcrypt.compare(password, admin.password);
             if (!isValid) throw new Error('Invalid credentials');
-            
+
             return {
                 id: admin.admin_id,
-                role: 'admin'
+                role: 'admin',
             };
         }
 
@@ -35,7 +35,7 @@ class AuthService {
 
         return {
             id: user.user_id,
-            role: 'user'
+            role: 'user',
         };
     }
 

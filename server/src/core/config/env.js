@@ -23,14 +23,18 @@ if (missing.length > 0) {
 if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {
     console.error('\n[env] FATAL: JWT_SECRET must be at least 32 characters.');
     console.error('Generate a secure one with:');
-    console.error('  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"\n');
+    console.error(
+        "  node -e \"console.log(require('crypto').randomBytes(48).toString('base64url'))\"\n"
+    );
     process.exit(1);
 }
 
 if (process.env.JWT_REFRESH_SECRET && process.env.JWT_REFRESH_SECRET.length < 32) {
     console.error('\n[env] FATAL: JWT_REFRESH_SECRET must be at least 32 characters.');
     console.error('Generate a secure one with:');
-    console.error('  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"\n');
+    console.error(
+        "  node -e \"console.log(require('crypto').randomBytes(48).toString('base64url'))\"\n"
+    );
     process.exit(1);
 }
 

@@ -9,10 +9,15 @@ export const registerSchema = Joi.object({
         'string.email': 'Please provide a valid email address',
         'any.required': 'Email is required',
     }),
-    phone: Joi.string().pattern(/^[0-9+ ]+$/).min(8).max(20).required().messages({
-        'string.pattern.base': 'Phone number must contain only numbers, spaces, or +',
-        'any.required': 'Phone number is required',
-    }),
+    phone: Joi.string()
+        .pattern(/^[0-9+ ]+$/)
+        .min(8)
+        .max(20)
+        .required()
+        .messages({
+            'string.pattern.base': 'Phone number must contain only numbers, spaces, or +',
+            'any.required': 'Phone number is required',
+        }),
     password: Joi.string().min(8).required().messages({
         'string.min': 'Password must be at least 8 characters long',
         'any.required': 'Password is required',

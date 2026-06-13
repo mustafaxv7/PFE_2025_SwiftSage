@@ -42,13 +42,15 @@ class UserRepository {
     }
 
     async findAdminById(id) {
-        const query = "SELECT admin_id as id, email, 'admin' as role FROM admins WHERE admin_id = $1";
+        const query =
+            "SELECT admin_id as id, email, 'admin' as role FROM admins WHERE admin_id = $1";
         const { rows } = await con.query(query, [id]);
         return rows[0];
     }
 
     async getAll() {
-        const query = 'SELECT user_id as id, username as name, email, phone_number as phone, community FROM users ORDER BY created_at DESC';
+        const query =
+            'SELECT user_id as id, username as name, email, phone_number as phone, community FROM users ORDER BY created_at DESC';
         const { rows } = await con.query(query);
         return rows;
     }

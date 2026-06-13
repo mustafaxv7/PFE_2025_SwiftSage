@@ -19,7 +19,11 @@ export const register = async (req, res, next) => {
         if (err.code === '23505') {
             const match = err.detail.match(/\((.*?)\)/);
             const field = match ? match[1].replace(/_/g, ' ') : 'Record';
-            return res.status(400).json({ message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists` });
+            return res
+                .status(400)
+                .json({
+                    message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`,
+                });
         }
         next(err);
     }

@@ -53,7 +53,12 @@ export const getReportDetailsUser = async (req, res, next) => {
 
 export const editReport = async (req, res, next) => {
     try {
-        await reportsService.editReport(req.params.id, req.user.id, req.body.description, req.body.reportDetailsData);
+        await reportsService.editReport(
+            req.params.id,
+            req.user.id,
+            req.body.description,
+            req.body.reportDetailsData
+        );
         res.status(200).json({ message: 'Report updated successfully.' });
     } catch (err) {
         if (err.message === 'Unauthorized or report not found') {

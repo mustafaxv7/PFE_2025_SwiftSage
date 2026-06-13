@@ -15,12 +15,16 @@ describe('Error Handler Middleware', () => {
     const mockRes = { status: jest.fn().mockReturnThis(), json: jest.fn().mockReturnThis() };
     const mockNext = jest.fn();
 
-    beforeEach(() => { jest.clearAllMocks(); });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
     test('handles AppError correctly', () => {
         errorHandler(new AppError('test', 418, 'TEAPOT'), mockReq, mockRes, mockNext);
         expect(mockRes.status).toHaveBeenCalledWith(418);
-        expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ code: 'TEAPOT', requestId: 'test-123' }));
+        expect(mockRes.json).toHaveBeenCalledWith(
+            expect.objectContaining({ code: 'TEAPOT', requestId: 'test-123' })
+        );
     });
 
     test('handles NotFoundError', () => {
@@ -41,22 +45,32 @@ describe('Error Handler Middleware', () => {
         err.type = 'entity.parse.failed';
         errorHandler(err, mockReq, mockRes, mockNext);
         expect(mockRes.status).toHaveBeenCalledWith(400);
-        expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ code: 'INVALID_JSON' }));
+        expect(mockRes.json).toHaveBeenCalledWith(
+            expect.objectContaining({ code: 'INVALID_JSON' })
+        );
     });
 
     test('handles unknown errors with 500', () => {
         errorHandler(new Error('broke'), mockReq, mockRes, mockNext);
         expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.json).toHaveBeenCalledWith(expect.objectContaining({ code: 'INTERNAL_ERROR' }));
+        expect(mockRes.json).toHaveBeenCalledWith(
+            expect.objectContaining({ code: 'INTERNAL_ERROR' })
+        );
     });
 
     test('logs unknown errors via structured logger', () => {
         errorHandler(new Error('broke'), mockReq, mockRes, mockNext);
-        expect(logger.error).toHaveBeenCalledWith('Unhandled error', expect.objectContaining({ requestId: 'test-123' }));
+        expect(logger.error).toHaveBeenCalledWith(
+            'Unhandled error',
+            expect.objectContaining({ requestId: 'test-123' })
+        );
     });
 
     test('logs AppError as warning', () => {
         errorHandler(new AppError('no', 403, 'FORBIDDEN'), mockReq, mockRes, mockNext);
-        expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('FORBIDDEN'), expect.objectContaining({ requestId: 'test-123' }));
+        expect(logger.warn).toHaveBeenCalledWith(
+            expect.stringContaining('FORBIDDEN'),
+            expect.objectContaining({ requestId: 'test-123' })
+        );
     });
 });

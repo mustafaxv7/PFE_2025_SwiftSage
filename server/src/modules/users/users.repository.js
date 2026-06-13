@@ -2,7 +2,8 @@ import con from '../../core/config/database.js';
 
 class UsersRepository {
     async findAll() {
-        const query = 'SELECT user_id as id, username as name, email, phone_number as phone, community FROM users ORDER BY created_at DESC';
+        const query =
+            'SELECT user_id as id, username as name, email, phone_number as phone, community FROM users ORDER BY created_at DESC';
         const { rows } = await con.query(query);
         return rows;
     }

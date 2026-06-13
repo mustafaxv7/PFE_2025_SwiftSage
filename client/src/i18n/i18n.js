@@ -7,35 +7,34 @@ import enTranslation from './locales/en.json';
 import frTranslation from './locales/fr.json';
 import arTranslation from './locales/ar.json';
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: {
-        translation: enTranslation
-      },
-      fr: {
-        translation: frTranslation
-      },
-      ar: {
-        translation: arTranslation
-      }
-    },
-    fallbackLng: 'en',
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
-    },
-    interpolation: {
-      escapeValue: false 
-    }
-  });
+i18n.use(LanguageDetector)
+    .use(initReactI18next)
+    .init({
+        resources: {
+            en: {
+                translation: enTranslation,
+            },
+            fr: {
+                translation: frTranslation,
+            },
+            ar: {
+                translation: arTranslation,
+            },
+        },
+        fallbackLng: 'en',
+        detection: {
+            order: ['localStorage', 'navigator'],
+            caches: ['localStorage'],
+        },
+        interpolation: {
+            escapeValue: false,
+        },
+    });
 
 i18n.on('languageChanged', (lng) => {
-  const direction = lng === 'ar' ? 'rtl' : 'ltr';
-  document.documentElement.dir = direction;
-  document.documentElement.lang = lng;
+    const direction = lng === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.dir = direction;
+    document.documentElement.lang = lng;
 });
 
 export default i18n;

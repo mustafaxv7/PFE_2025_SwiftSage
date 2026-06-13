@@ -32,8 +32,8 @@ class ReportService {
             details: {
                 roadStatus: report.road_status || 'Unknown',
                 missing: report.missing || 0,
-                trapped: report.trapped || 0
-            }
+                trapped: report.trapped || 0,
+            },
         };
     }
 

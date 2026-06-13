@@ -5,15 +5,26 @@ export const sendAlert = async (req, res, next) => {
         let alertData = req.body;
         if (alertData.reportData) {
             try {
-                alertData = typeof alertData.reportData === 'string'
-                    ? JSON.parse(alertData.reportData)
-                    : alertData.reportData;
+                alertData =
+                    typeof alertData.reportData === 'string'
+                        ? JSON.parse(alertData.reportData)
+                        : alertData.reportData;
             } catch {
                 return res.status(400).json({ error: 'Invalid reportData JSON' });
             }
         }
 
-        const { message, description, date, time, status, importance, type, location, affectedArea } = alertData;
+        const {
+            message,
+            description,
+            date,
+            time,
+            status,
+            importance,
+            type,
+            location,
+            affectedArea,
+        } = alertData;
         if (!message || !type || !location || !affectedArea) {
             return res.status(400).json({ error: 'Required fields are missing' });
         }
@@ -22,7 +33,13 @@ export const sendAlert = async (req, res, next) => {
             message,
             description: description || message,
             date: date || new Date().toISOString().split('T')[0],
-            time: time || new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            time:
+                time ||
+                new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                }),
             status: status || 'active',
             importance: importance || 'medium',
             type,
