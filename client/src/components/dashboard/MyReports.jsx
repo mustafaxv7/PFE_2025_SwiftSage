@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Search,
     MapPin,
@@ -15,6 +16,7 @@ import {
 import { fetchWithAuth } from '../../utils/api.js';
 
 const MyReports = () => {
+    const { t } = useTranslation();
     const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -187,7 +189,7 @@ const MyReports = () => {
     return (
         <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">My Reports</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{t('dashboard.reports.title')}</h2>
                 <div className="relative w-full sm:w-auto">
                     <Search
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -195,7 +197,7 @@ const MyReports = () => {
                     />
                     <input
                         type="text"
-                        placeholder="Search reports..."
+                        placeholder={t('dashboard.reports.searchPlaceholder')}
                         className="w-full sm:w-auto pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -222,7 +224,7 @@ const MyReports = () => {
             ) : reports.length === 0 ? (
                 <div className="text-center py-10">
                     <FileText className="mx-auto text-gray-400" size={48} />
-                    <p className="mt-2 text-gray-500">No reports found</p>
+                    <p className="mt-2 text-gray-500">{t('dashboard.reports.noReports')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
@@ -273,7 +275,7 @@ const MyReports = () => {
                     <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-4 sm:p-6 border-b border-gray-200 flex justify-between items-center">
                             <h3 className="text-lg sm:text-xl font-bold text-gray-800">
-                                Report Details
+                                {t('dashboard.reports.details')}
                             </h3>
                             <button
                                 onClick={closeModal}
@@ -307,7 +309,7 @@ const MyReports = () => {
 
                             <div className="mt-6">
                                 <h4 className="text-lg font-medium text-gray-800 mb-2">
-                                    Description
+                                    {t('dashboard.reports.description')}
                                 </h4>
                                 {isEditing ? (
                                     <textarea
@@ -328,17 +330,17 @@ const MyReports = () => {
                                         Details
                                     </h4>
                                     <div className="bg-gray-50 p-3 sm:p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-y-2">
-                                        <div className="text-sm text-gray-500">Date Reported:</div>
+                                        <div className="text-sm text-gray-500">{t('dashboard.reports.date')}:</div>
                                         <div className="text-sm font-medium">
                                             {selectedReport.date.replace('_', ' ')}
                                         </div>
 
-                                        <div className="text-sm text-gray-500">Crisis Type:</div>
+                                        <div className="text-sm text-gray-500">{t('dashboard.reports.crisisType')}:</div>
                                         <div className="text-sm font-medium capitalize">
                                             {selectedReport.crisisType.replace('_', ' ')}
                                         </div>
 
-                                        <div className="text-sm text-gray-500">Road Status:</div>
+                                        <div className="text-sm text-gray-500">{t('dashboard.reports.roadStatus')}:</div>
                                         <div className="text-sm font-medium">
                                             {isEditing ? (
                                                 <select
@@ -366,7 +368,7 @@ const MyReports = () => {
                                             )}
                                         </div>
 
-                                        <div className="text-sm text-gray-500">Submitted By:</div>
+                                        <div className="text-sm text-gray-500">{t('dashboard.reports.submittedBy')}:</div>
                                         <div className="text-sm font-medium">
                                             {selectedReport.submittedBy.replace('_', ' ')}
                                         </div>
@@ -517,7 +519,7 @@ const MyReports = () => {
                                             onClick={handleSaveEdit}
                                             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
                                         >
-                                            <Save size={16} className="inline mr-1" /> Save Changes
+                                            <Save size={16} className="inline me-1" /> {t('dashboard.reports.saveChanges')}
                                         </button>
                                         <button
                                             onClick={handleCancelEdit}
@@ -529,13 +531,13 @@ const MyReports = () => {
                                 ) : (
                                     <>
                                         <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition">
-                                            <Flag size={16} className="inline mr-1" /> Flag Report
+                                            <Flag size={16} className="inline me-1" /> {t('dashboard.reports.flagReport')}
                                         </button>
                                         <button
                                             onClick={handleEditClick}
                                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
                                         >
-                                            <Edit size={16} className="inline mr-1" /> Edit Report
+                                            <Edit size={16} className="inline me-1" /> {t('dashboard.reports.editReport')}
                                         </button>
                                     </>
                                 )}
