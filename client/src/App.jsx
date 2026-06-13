@@ -13,10 +13,9 @@ import AdminUsers from "./components/dashboard/admin/AdminUsers.jsx";
 import { fetchWithAuth } from "./utils/api.js";
 
 const App = () => {
-    const [authChecked, setAuthChecked] = useState(false);  // State to track if auth has been checked
-    const [userRole, setUserRole] = useState(null); // State to store the user role
+    const [authChecked, setAuthChecked] = useState(false);
+    const [userRole, setUserRole] = useState(null);
 
-    // Check auth status on mount via secure endpoint
     useEffect(() => {
         const checkAuth = async () => {
             try {
@@ -37,7 +36,7 @@ const App = () => {
     }, []);
 
     if (!authChecked) {
-        return <div>Loading...</div>; // show loading state while checking auth
+        return <div>Loading...</div>;
     }
 
     return (
@@ -54,7 +53,7 @@ const App = () => {
                 <Route
                     path="/admin/*"
                     element={
-                        ( // TEMPORARY ACCESS
+                        userRole === "admin" ? (
                             <div className="flex h-screen w-full">
                                 <AdminSidebar/>
                                 <div className="flex-1 p-6 bg-gray-100 ml-64">
@@ -67,6 +66,8 @@ const App = () => {
                                     </Routes>
                                 </div>
                             </div>
+                        ) : (
+                            <Navigate to="/" replace />
                         )
                     }
                 />

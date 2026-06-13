@@ -1,13 +1,11 @@
 import express from 'express';
 import { sendFeedback } from '../controllers/sendFeedback.js';
 import { getFeedbacks } from '../controllers/getFeedbacks.js';
-import { adminMiddleware } from '../middleware/authMiddleware.js';
+import { authMiddleware, adminMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-
-router.post('/', sendFeedback);
-
-router.get('/', adminMiddleware, getFeedbacks); 
+router.post('/', authMiddleware, sendFeedback);
+router.get('/', adminMiddleware, getFeedbacks);
 
 export default router;

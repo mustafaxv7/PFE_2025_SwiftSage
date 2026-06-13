@@ -1,42 +1,31 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userRepository from '../repositories/userRepository.js';
+import authRepository from './auth.repository.js';
 
 class AuthService {
     async registerUser(userData) {
-        const { password } = userData;
-        const hashedPassword = await bcrypt.hash(password, 10);
-        
-        return await userRepository.create({
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        return await authRepository.createUser({
             ...userData,
-            password: hashedPassword
+            password: hashedPassword,
         });
     }
 
     async login(email, password) {
-        // Try Admin first
-        const admin = await userRepository.findAdminByEmail(email);
+        const admin = await authRepository.findAdminByEmail(email);
         if (admin) {
             const isValid = await bcrypt.compare(password, admin.password);
             if (!isValid) throw new Error('Invalid credentials');
-            
-            return {
-                id: admin.admin_id,
-                role: 'admin'
-            };
+            return { id: admin.admin_id, role: 'admin' };
         }
 
-        // Try regular User
-        const user = await userRepository.findByEmail(email);
+        const user = await authRepository.findUserByEmail(email);
         if (!user) throw new Error('Invalid credentials');
 
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) throw new Error('Invalid credentials');
 
-        return {
-            id: user.user_id,
-            role: 'user'
-        };
+        return { id: user.user_id, role: 'user' };
     }
 
     generateToken(payload) {
@@ -49,9 +38,9 @@ class AuthService {
 
     async getUserStatus(id, role) {
         if (role === 'admin') {
-            return await userRepository.findAdminById(id);
+            return await authRepository.findAdminById(id);
         }
-        return await userRepository.findById(id);
+        return await authRepository.findUserById(id);
     }
 }
 

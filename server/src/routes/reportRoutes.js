@@ -11,7 +11,7 @@ import { getReports } from '../controllers/getReports.js';
 const router = express.Router();
 
 router.get('/', authMiddleware, getReports);
-router.post('/', addReport);
+router.post('/', authMiddleware, addReport);
 router.get('/:id/user', authMiddleware, getReportDetailsUser); 
 router.patch('/:id/edit', authMiddleware, editReport);
 router.get('/:id', authMiddleware, getReportDetailsAdmin);
