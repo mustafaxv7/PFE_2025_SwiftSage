@@ -83,7 +83,7 @@ router.post('/refresh', (req, res) => {
         });
         
         res.json({ message: "Token refreshed" });
-    } catch (err) {
+    } catch (_err) {
         res.status(401).json({ message: "Invalid refresh token" });
     }
 });

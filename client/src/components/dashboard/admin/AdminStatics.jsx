@@ -161,7 +161,7 @@ const AdminStatics = () => {
                                     paddingAngle={2}
                                     label={{ fontSize: window.innerWidth < 768 ? 10 : 12 }}
                                 >
-                                    {distributionByWilaya.map((entry, index) => (
+                                    {crisisTypeData.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>

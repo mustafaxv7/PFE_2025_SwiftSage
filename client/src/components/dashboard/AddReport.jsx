@@ -138,7 +138,7 @@ const AddReport = () => {
         }
     };
 
-    const [map, setMap] = useState(null);
+    const [_map, setMap] = useState(null);
     const mapContainerRef = useRef(null);
 
     const containerStyle = {

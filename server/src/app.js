@@ -7,7 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-import { authenticate, authorizeAdmin } from './core/middleware/auth.js';
+import { authenticate } from './core/middleware/auth.js';
 import { authLimiter, apiLimiter } from './core/middleware/rateLimiter.js';
 import { errorHandler } from './core/middleware/errorHandler.js';
 

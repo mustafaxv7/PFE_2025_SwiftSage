@@ -28,8 +28,8 @@ const AdminSidebar = ({ isMobile = false }) => {
 
     const handleLogout = async () => {
         try {
-            await fetch("/auth/logout", { method: "POST", credentials: "include" });
-        } catch {}
+      await fetch("/auth/logout", { method: "POST", credentials: "include" });
+    } catch (_e) { /* ignore */ }
         navigate("/", { replace: true });
     };
 

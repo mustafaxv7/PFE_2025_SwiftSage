@@ -1,4 +1,3 @@
-import con from '../config/db.js';
 import alertService from '../services/alertService.js';
 
 export const getAlerts = async (req, res) => {

@@ -24,7 +24,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const handleLogout = async () => {
     try {
       await fetch("/auth/logout", { method: "POST", credentials: "include" });
-    } catch {}
+    } catch (_e) { /* ignore */ }
     navigate("/", { replace: true });
   };
 
