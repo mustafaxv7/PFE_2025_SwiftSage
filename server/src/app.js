@@ -10,6 +10,7 @@ import fs from 'fs';
 import { authenticate } from './core/middleware/auth.js';
 import { authLimiter, apiLimiter } from './core/middleware/rateLimiter.js';
 import { errorHandler } from './core/middleware/errorHandler.js';
+import { requestId } from './core/middleware/requestId.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import usersRoutes from './modules/users/users.routes.js';
@@ -24,6 +25,7 @@ export function createApp() {
     const app = express();
     app.set('trust proxy', 1);
 
+    app.use(requestId);
     app.use(morgan('dev'));
     app.use(cookieParser());
     app.use(helmet({
