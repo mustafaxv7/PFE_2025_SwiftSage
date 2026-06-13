@@ -11,19 +11,25 @@ import {
     X
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { fetchWithAuth } from "../../../utils/api.js";
 
 const AdminSidebar = ({ isMobile = false }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [adminEmail, setAdminEmail] = useState("admin");
 
     useEffect(() => {
-        
         setIsMobileOpen(false);
+        fetchWithAuth("/auth/me").then(data => {
+            if (data?.email) setAdminEmail(data.email);
+        }).catch(() => {});
     }, [location.pathname]);
 
-    const handleLogout = () => {
-        localStorage.removeItem("authToken");
+    const handleLogout = async () => {
+        try {
+            await fetch("/auth/logout", { method: "POST", credentials: "include" });
+        } catch {}
         navigate("/", { replace: true });
     };
 
@@ -134,8 +140,8 @@ const AdminSidebar = ({ isMobile = false }) => {
                                 A
                             </div>
                             <div>
-                                <div className="text-xs sm:text-sm font-medium">Admin User</div>
-                                <div className="text-xs text-gray-400">admin@example.com</div>
+                                <div className="text-xs sm:text-sm font-medium">Admin</div>
+                                <div className="text-xs text-gray-400">{adminEmail}</div>
                             </div>
                         </div>
                     </div>

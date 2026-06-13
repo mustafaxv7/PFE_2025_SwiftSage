@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Search, MapPin, ChevronDown } from "lucide-react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
+import { fetchWithAuth } from "../../../utils/api.js";
 
 const mapContainerStyle = {
     width: '100%',
@@ -34,126 +35,31 @@ const MapView = () => {
     useEffect(() => {
         const fetchReports = async () => {
             try {
-                const sampleReports = [
-                    {
-                        id: 1,
-                        title: "Inondation à Chettia",
-                        location: "Chettia, Chlef",
-                        coordinates: { lat: 36.1647, lng: 1.3317 },
-                        severity: "high",
-                        type: "flood",
-                        date: "10 Mars, 2025",
-                        description: "Inondation majeure affectant le centre-ville de Chettia avec fermetures de routes et dommages matériels.",
-                        affectedArea: "8 km²",
-                        evacuees: 180,
-                        status: "active"
+                const data = await fetchWithAuth("/api/reports");
+                if (!data || data.length === 0) {
+                    setReports([]);
+                    return;
+                }
+                const allReports = data.map(report => ({
+                    id: report.id,
+                    title: report.title,
+                    location: (report.lat && report.lng) ? `${parseFloat(report.lat).toFixed(4)}, ${parseFloat(report.lng).toFixed(4)}` : "Unknown",
+                    coordinates: {
+                        lat: parseFloat(report.lat) || 0,
+                        lng: parseFloat(report.lng) || 0
                     },
-                    {
-                        id: 2,
-                        title: "Séisme à Oued Fodda",
-                        location: "Oued Fodda, Chlef",
-                        coordinates: { lat: 36.2200, lng: 1.3383 },
-                        severity: "critical",
-                        type: "earthquake",
-                        date: "15 Mars, 2025",
-                        description: "Séisme de magnitude 5.8 causant des dommages structurels importants.",
-                        affectedArea: "40 km de rayon",
-                        injured: 35,
-                        status: "active"
-                    },
-                    {
-                        id: 3,
-                        title: "Incendie de forêt à Sendjas",
-                        location: "Sendjas, Chlef",
-                        coordinates: { lat: 36.0833, lng: 1.2167 },
-                        severity: "high",
-                        type: "forest_fire",
-                        date: "2 Avril, 2025",
-                        description: "Feu de forêt se propageant à travers les forêts du nord de Sendjas.",
-                        burntArea: "950 hectares",
-                        contained: "35%",
-                        status: "active"
-                    }
-                ];
-
-                // Collect reports from all available sources
-                const allReports = [];
-                
-                // Try to get user reports
-                try {
-                    const userReports = JSON.parse(localStorage.getItem('userReports') || '[]');
-                    if (userReports.length > 0) {
-                        const formattedUserReports = userReports.map(report => ({
-                            id: report.id,
-                            title: report.title,
-                            location: report.location || `${report.lat}, ${report.lng}`,
-                            coordinates: {
-                                lat: parseFloat(report.lat) || 0,
-                                lng: parseFloat(report.lng) || 0
-                            },
-                            severity: report.importance?.toLowerCase() || "medium",
-                            type: report.crisisType,
-                            date: report.date,
-                            description: report.description,
-                            status: report.status?.toLowerCase() || "active",
-                            source: "user"
-                        }));
-                        allReports.push(...formattedUserReports);
-                    }
-                } catch (err) {
-                    console.error('Error parsing user reports:', err);
-                }
-                
-                // Try to get admin reports if they differ from user reports
-                try {
-                    const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-                    if (adminReports.length > 0) {
-                        // Filter out duplicates that might already be in userReports
-                        const newAdminReports = adminReports.filter(adminReport => 
-                            !allReports.some(report => report.id === adminReport.id)
-                        );
-                        
-                        const formattedAdminReports = newAdminReports.map(report => ({
-                            id: report.id,
-                            title: report.title,
-                            location: report.location || `${report.lat}, ${report.lng}`,
-                            coordinates: {
-                                lat: parseFloat(report.lat) || 0,
-                                lng: parseFloat(report.lng) || 0
-                            },
-                            severity: report.importance?.toLowerCase() || "medium",
-                            type: report.crisisType,
-                            date: report.date,
-                            description: report.description,
-                            status: report.status?.toLowerCase() || "active",
-                            source: "admin"
-                        }));
-                        allReports.push(...formattedAdminReports);
-                    }
-                } catch (err) {
-                    console.error('Error parsing admin reports:', err);
-                }
-
-                // Use sample data only if no reports were found
-                if (allReports.length === 0) {
-                    console.log('No reports found, using sample data');
-                    allReports.push(...sampleReports);
-                } else {
-                    console.log(`Loaded ${allReports.length} reports from localStorage`);
-                }
-
-                // Set reports and update map
+                    severity: "medium",
+                    type: report.crisisType,
+                    date: report.createdAt ? new Date(report.createdAt).toLocaleDateString() : "Unknown",
+                    description: report.description,
+                    status: (report.status || "Active").toLowerCase(),
+                }));
                 setReports(allReports);
                 if (allReports.length > 0) {
-                    // Find a valid coordinate to center on
-                    const validReport = allReports.find(r => 
-                        r.coordinates && 
-                        r.coordinates.lat && 
-                        r.coordinates.lng &&
-                        !isNaN(r.coordinates.lat) && 
-                        !isNaN(r.coordinates.lng)
+                    const validReport = allReports.find(r =>
+                        r.coordinates && r.coordinates.lat && r.coordinates.lng &&
+                        !isNaN(r.coordinates.lat) && !isNaN(r.coordinates.lng)
                     );
-                    
                     if (validReport) {
                         setMapCenter(validReport.coordinates);
                         setMapZoom(7);
@@ -166,21 +72,6 @@ const MapView = () => {
         };
 
         fetchReports();
-
-        // Listen for storage changes
-        const handleStorageChange = () => {
-            fetchReports();
-        };
-        
-        window.addEventListener('storage', handleStorageChange);
-        
-        // Also check periodically for changes within the same window
-        const intervalId = setInterval(fetchReports, 30000); // Check every 30 seconds
-        
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            clearInterval(intervalId);
-        };
     }, []);
 
     const filteredReports = reports.filter(report => {

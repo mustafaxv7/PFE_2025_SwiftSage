@@ -1,4 +1,5 @@
 import { useNavigate, NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   AlertTriangle,
   FileText,
@@ -8,12 +9,22 @@ import {
   X
 } from "lucide-react";
 import Logo from "../../assets/Logo.png";
+import { fetchWithAuth } from "../../utils/api.js";
 
 const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const navigate = useNavigate();
+  const [userName, setUserName] = useState("User");
 
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
+  useEffect(() => {
+    fetchWithAuth("/auth/me").then(data => {
+      if (data?.name) setUserName(data.name);
+    }).catch(() => {});
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/auth/logout", { method: "POST", credentials: "include" });
+    } catch {}
     navigate("/", { replace: true });
   };
 
@@ -99,7 +110,7 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
               U
             </div>
             <div className="ml-2">
-              <p className="text-sm font-medium text-white">User Name</p>
+              <p className="text-sm font-medium text-white">{userName}</p>
               <p className="text-xs text-gray-400">Emergency Responder</p>
             </div>
           </div>

@@ -1,104 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Bell, AlertTriangle, X, Filter, History, ExternalLink, Eye } from "lucide-react";
+import { Bell, AlertTriangle, X, Filter, History, ExternalLink, Eye, Loader } from "lucide-react";
+import { fetchWithAuth } from "../../utils/api.js";
 
 const Alerts = () => {
     const [alerts, setAlerts] = useState([]);
     const [filter, setFilter] = useState("all");
     const [showDetails, setShowDetails] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadAlerts = () => {
-            const sampleAlerts = [
-                {
-                    id: 1,
-                    message: "Inondation à Chettia",
-                    description: "Niveaux d'eau élevés signalés dans les zones résidentielles. Plusieurs rues sont inaccessibles à Chettia.",
-                    date: "10 Mars, 2025",
-                    status: "Active",
-                    importance: "High",
-                    type: "info",
-                    location: "Chettia, Chlef",
-                    affectedArea: "12 km²"
-                },
-                {
-                    id: 2,
-                    message: "Séisme à Oued Fodda",
-                    description: "Séisme de magnitude 5.8 avec des dommages structurels importants et des répliques potentielles attendues.",
-                    date: "15 Mars, 2025",
-                    status: "Resolved",
-                    importance: "Critical",
-                    type: "danger",
-                    location: "Oued Fodda, Chlef",
-                    affectedArea: "35 km²"
-                },
-                {
-                    id: 3,
-                    message: "Incendie de forêt à Sendjas",
-                    description: "Feu de forêt se propageant rapidement menaçant les zones résidentielles. Ordres d'évacuation en place.",
-                    date: "2 Avril, 2025",
-                    status: "Active",
-                    importance: "High",
-                    type: "warning",
-                    location: "Sendjas, Chlef",
-                    affectedArea: "1240 hectares"
-                }
-            ];
-
+        const loadAlerts = async () => {
             try {
-                const storedAlerts = localStorage.getItem('userAlerts');
-                if (storedAlerts) {
-                    const parsedAlerts = JSON.parse(storedAlerts);
-                    if (parsedAlerts && parsedAlerts.length > 0) {
-                        // Ensure consistent data format 
-                        const formattedAlerts = parsedAlerts.map(alert => ({
-                            ...alert,
-                            // Format status consistently
-                            status: typeof alert.status === 'string' ? 
-                                alert.status.charAt(0).toUpperCase() + alert.status.slice(1) : 
-                                (alert.status === true ? "Active" : "Resolved"),
-                            // Ensure other fields are present
-                            importance: alert.importance || "Medium",
-                            type: alert.type || "info"
-                        }));
-                        setAlerts(formattedAlerts);
-                        return;
-                    }
+                setLoading(true);
+                const data = await fetchWithAuth("/api/alerts");
+                if (data && data.length > 0) {
+                    const formatted = data.map(alert => ({
+                        ...alert,
+                        status: typeof alert.status === 'string'
+                            ? alert.status.charAt(0).toUpperCase() + alert.status.slice(1)
+                            : "Active",
+                        importance: alert.importance
+                            ? alert.importance.charAt(0).toUpperCase() + alert.importance.slice(1)
+                            : "Medium",
+                    }));
+                    setAlerts(formatted);
                 }
-                // If no stored alerts or empty array, use sample data
-                setAlerts(sampleAlerts);
             } catch (error) {
-                console.error('Error loading alerts from localStorage:', error);
-                setAlerts(sampleAlerts);
+                console.error('Error loading alerts:', error);
+            } finally {
+                setLoading(false);
             }
         };
-
         loadAlerts();
-        const handleStorageChange = (e) => {
-            if (e.key === 'userAlerts' || e.key === null) {
-                loadAlerts();
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-
-        const handleCustomEvent = () => loadAlerts();
-        window.addEventListener('alertsUpdated', handleCustomEvent);
-
-        return () => {
-            window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener('alertsUpdated', handleCustomEvent);
-        };
     }, []);
 
     const dismissAlert = (id) => {
-        try {
-            const updatedAlerts = alerts.filter(alert => alert.id !== id);
-            setAlerts(updatedAlerts);
-            localStorage.setItem('userAlerts', JSON.stringify(updatedAlerts));
-            window.dispatchEvent(new CustomEvent('alertsUpdated'));
-        } catch (error) {
-            console.error('Error dismissing alert:', error);
-        }
+        setAlerts(prev => prev.filter(alert => alert.id !== id));
     };
 
     const getAlertIcon = (type) => {
@@ -176,7 +113,12 @@ const Alerts = () => {
             </div>
 
             <div className="p-6">
-                {filteredAlerts.length === 0 ? (
+                {loading ? (
+                    <div className="text-center py-12">
+                        <Loader className="mx-auto text-blue-500 animate-spin" size={40} />
+                        <p className="mt-4 text-gray-500">Loading alerts...</p>
+                    </div>
+                ) : filteredAlerts.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 rounded-lg">
                         <Bell size={40} className="mx-auto text-gray-300 mb-4" />
                         <p className="text-gray-500 font-medium">No active alerts at the moment</p>

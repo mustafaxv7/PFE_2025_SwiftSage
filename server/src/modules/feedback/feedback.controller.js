@@ -2,7 +2,15 @@ import feedbackService from './feedback.service.js';
 
 export const sendFeedback = async (req, res, next) => {
     try {
-        const feedbackId = await feedbackService.submitFeedback(req.body);
+        const { message, rating } = req.body;
+        if (!message) {
+            return res.status(400).json({ message: 'Message is required' });
+        }
+        const feedbackId = await feedbackService.submitFeedback({
+            userId: req.user.id,
+            message,
+            rating,
+        });
         res.status(201).json({ message: 'Feedback submitted successfully', feedbackId });
     } catch (err) {
         next(err);

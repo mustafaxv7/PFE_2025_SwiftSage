@@ -1,90 +1,39 @@
 import { useState, useEffect } from "react";
-import { Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown, Save } from "lucide-react";
+import { Search, MapPin, FileText, Calendar, AlertCircle, Flag, X, Edit, ChevronDown, Save, Loader } from "lucide-react";
+import { fetchWithAuth } from "../../utils/api.js";
 
 const MyReports = () => {
-    const sampleReports = [
-        {
-            id: 1,
-            title: "Inondation à Chettia",
-            date: "10 Mars, 2025",
-            crisisType: "flood",
-            description: "Inondation majeure dans le centre-ville de Chettia affectant les zones résidentielles.",
-            location: "Chettia, Chlef",
-            lat: "36.1647",
-            lng: "1.3317",
-            roadStatus: "flooded",
-            missing: 3,
-            trapped: 12,
-            submergedDwelling: 48,
-            electrification: "dangerous",
-            status: "active",
-            submittedBy: "Ahmed Benali",
-            importance: "high"
-        },
-        {
-            id: 2,
-            title: "Séisme à Oued Fodda",
-            date: "15 Mars, 2025",
-            crisisType: "earthquake",
-            description: "Séisme de magnitude 5.8 ayant causé d'importants dégâts structurels dans la région.",
-            location: "Oued Fodda, Chlef",
-            lat: "36.2200",
-            lng: "1.3383",
-            roadStatus: "partially_blocked",
-            injuredNumber: 24,
-            bleedingNumber: 8,
-            throttled: 3,
-            burnt: 0,
-            fractions: 14,
-            electrification: "partial",
-            status: "resolved",
-            submittedBy: "Karima Hadj",
-            importance: "critical"
-        },
-        {
-            id: 3,
-            title: "Incendie de forêt à Sendjas",
-            date: "2 Avril, 2025",
-            crisisType: "forest_fire",
-            description: "Feu de forêt se propageant à travers les forêts du nord de Sendjas.",
-            location: "Sendjas, Chlef",
-            lat: "36.0833",
-            lng: "1.2167",
-            roadStatus: "smoke_covered",
-            burntArea: 1240,
-            spreadRate: "rapid",
-            evacuated: 860,
-            threatenedStructures: 126,
-            containmentPercent: 35,
-            status: "active",
-            submittedBy: "Sofiane Amrouche",
-            importance: "high"
-        }
-    ];
-
-    const loadReportsFromStorage = () => {
-        try {
-            const storedReports = localStorage.getItem('userReports');
-            if (storedReports) {
-                const parsedReports = JSON.parse(storedReports);
-                return parsedReports.length > 0 ? parsedReports : sampleReports;
-            }
-            localStorage.setItem('userReports', JSON.stringify(sampleReports));
-            return sampleReports;
-        } catch (error) {
-            console.error('Error loading reports from localStorage:', error);
-            return sampleReports;
-        }
-    };
-
     const [reports, setReports] = useState([]);
     const [selectedReport, setSelectedReport] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editedReport, setEditedReport] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
-        setReports(loadReportsFromStorage());
+        const loadReports = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchWithAuth("/api/reports");
+                if (data) {
+                    const formatted = data.map(r => ({
+                        ...r,
+                        status: (r.status || "Active").toLowerCase(),
+                        date: r.createdAt ? new Date(r.createdAt).toLocaleDateString() : "Unknown",
+                        location: (r.lat && r.lng) ? `${parseFloat(r.lat).toFixed(4)}, ${parseFloat(r.lng).toFixed(4)}` : "Unknown",
+                    }));
+                    setReports(formatted);
+                }
+            } catch (err) {
+                console.error('Error loading reports:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadReports();
     }, []);
 
     const handleReportClick = (report) => {
@@ -105,26 +54,18 @@ const MyReports = () => {
         setEditedReport({ ...selectedReport });
     };
 
-    const handleSaveEdit = () => {
-        const updatedReports = reports.map(report =>
-            report.id === editedReport.id ? editedReport : report
-        );
-
-        setReports(updatedReports);
-        setSelectedReport(editedReport);
-        setIsEditing(false);
-        localStorage.setItem('userReports', JSON.stringify(updatedReports));
+    const handleSaveEdit = async () => {
         try {
-            const adminReports = JSON.parse(localStorage.getItem('adminReports') || '[]');
-            const updatedAdminReports = adminReports.map(report =>
-                report.id === editedReport.id ? editedReport : report
-            );
-            localStorage.setItem('adminReports', JSON.stringify(updatedAdminReports));
-        } catch (error) {
-            console.error('Error updating admin reports:', error);
+            await fetchWithAuth(`/api/reports/${editedReport.id}/edit`, {
+                method: 'PATCH',
+                body: JSON.stringify({ description: editedReport.description }),
+            });
+            setReports(prev => prev.map(r => r.id === editedReport.id ? { ...r, description: editedReport.description } : r));
+            setSelectedReport({ ...selectedReport, description: editedReport.description });
+            setIsEditing(false);
+        } catch (err) {
+            alert(`Error updating report: ${err.message}`);
         }
-
-        alert("Report updated successfully!");
     };
 
     const handleCancelEdit = () => {
@@ -203,7 +144,18 @@ const MyReports = () => {
                 </div>
             </div>
 
-            {reports.length === 0 ? (
+            {loading ? (
+                <div className="text-center py-10">
+                    <Loader className="mx-auto text-blue-500 animate-spin" size={48} />
+                    <p className="mt-2 text-gray-500">Loading reports...</p>
+                </div>
+            ) : error ? (
+                <div className="text-center py-10">
+                    <AlertCircle className="mx-auto text-red-400" size={48} />
+                    <p className="mt-2 text-red-500">{error}</p>
+                    <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Try Again</button>
+                </div>
+            ) : reports.length === 0 ? (
                 <div className="text-center py-10">
                     <FileText className="mx-auto text-gray-400" size={48} />
                     <p className="mt-2 text-gray-500">No reports found</p>

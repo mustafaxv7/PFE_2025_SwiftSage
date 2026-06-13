@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { MapPin, Upload, AlertTriangle, X } from "lucide-react";
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
-import axios from 'axios';
+import { fetchWithAuth } from '../../utils/api.js';
 
 const AddReport = () => {
     const initialReportData = {
@@ -44,14 +44,13 @@ const AddReport = () => {
     const [success, setSuccess] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [userId, setUserId] = useState(() => {
-        try {
-            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-            return userInfo?.username || "anonymous";
-        } catch {
-            return "anonymous";
-        }
-    });
+    const [userId, setUserId] = useState(null);
+
+    useEffect(() => {
+        fetchWithAuth("/auth/me").then(data => {
+            if (data?.id) setUserId(data.id);
+        }).catch(() => {});
+    }, []);
 
     const formData = {
         ...reportData,
@@ -210,49 +209,48 @@ const AddReport = () => {
         setLoading(true);
         
         try {
-            // Validate required fields
             if (!reportData.title || !reportData.description || !reportData.crisisType || !reportData.lat || !reportData.lng) {
                 throw new Error("Please fill in all required fields");
             }
-            
-            // Generate a unique ID for the report
-            const reportId = Date.now().toString();
-            const currentDate = new Date();
-            const formattedDate = currentDate.toLocaleDateString('fr-FR', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            // Construct the new report object
-            const newReport = {
-                id: reportId,
+            if (!userId) {
+                throw new Error("User not authenticated. Please log in again.");
+            }
+
+            const reportPayload = {
+                lat: parseFloat(reportData.lat),
+                lng: parseFloat(reportData.lng),
+                altitude: reportData.altitude ? parseFloat(reportData.altitude) : null,
+                amplitude: reportData.amplitude ? parseFloat(reportData.amplitude) : null,
                 title: reportData.title,
                 description: reportData.description,
                 crisisType: reportData.crisisType,
-                lat: reportData.lat,
-                lng: reportData.lng,
-                date: formattedDate,
-                time: currentDate.toLocaleTimeString('fr-FR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }),
-                location: reportData.location || `Latitude: ${reportData.lat}, Longitude: ${reportData.lng}`,
-                status: "Active", 
+                userId: userId,
+                status: "Active",
             };
-            
-            let userReports = JSON.parse(localStorage.getItem("userReports")) || [];
-            userReports.unshift(newReport);
-            localStorage.setItem("userReports", JSON.stringify(userReports));
-            
-            let adminReports = JSON.parse(localStorage.getItem("adminReports")) || [];
-            adminReports.unshift(newReport);
-            localStorage.setItem("adminReports", JSON.stringify(adminReports));
+
+            const hasDetails = Object.values(reportDetailsData).some(v => v !== undefined && v !== '');
+            const hasCategories = Object.values(additionalData).some(v => v !== undefined && v !== '');
+
+            const formData = new FormData();
+            formData.append('reportData', JSON.stringify(reportPayload));
+            if (hasDetails) formData.append('reportDetailsData', JSON.stringify(reportDetailsData));
+            if (hasCategories) formData.append('additionalData', JSON.stringify(additionalData));
+            if (reportData.image) formData.append('image', reportData.image);
+
+            const response = await fetch('/api/reports', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.message || errData.error || `Server error ${response.status}`);
+            }
             
             setReportData(initialReportData);
             setReportDetailsData(initialReportDetailsData);
             setAdditionalData(initialAdditionalData);
-            
             setSuccess("Report submitted successfully!");
         } catch (err) {
             setError(err.message || "Failed to submit report. Please try again.");

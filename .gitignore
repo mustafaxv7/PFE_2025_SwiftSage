@@ -15,6 +15,10 @@ client/.idea/
 # -- Build output --
 client/dist/
 
+# -- Test artifacts --
+test-results/
+playwright-report/
+
 # -- OS files --
 .DS_Store
 Thumbs.db
