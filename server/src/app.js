@@ -11,6 +11,7 @@ import { authenticate } from './core/middleware/auth.js';
 import { authLimiter, apiLimiter } from './core/middleware/rateLimiter.js';
 import { errorHandler } from './core/middleware/errorHandler.js';
 import { requestId } from './core/middleware/requestId.js';
+import { securityHeaders } from './core/middleware/securityHeaders.js';
 
 import authRoutes from './modules/auth/auth.routes.js';
 import usersRoutes from './modules/users/users.routes.js';
@@ -26,6 +27,7 @@ export function createApp() {
     app.set('trust proxy', 1);
 
     app.use(requestId);
+    app.use(securityHeaders);
     app.use(morgan('dev'));
     app.use(cookieParser());
     app.use(helmet({
@@ -63,19 +65,26 @@ export function createApp() {
     const clientPath = path.resolve(__dirname, '../../client/dist');
     if (fs.existsSync(clientPath)) {
         app.use(express.static(clientPath, {
+            maxAge: '1d',
+            etag: true,
+            lastModified: true,
             setHeaders: (res, filePath) => {
                 if (filePath.endsWith('.js')) {
                     res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+                    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
                 } else if (filePath.endsWith('.css')) {
                     res.setHeader('Content-Type', 'text/css; charset=utf-8');
+                    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+                } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg)$/)) {
+                    res.setHeader('Cache-Control', 'public, max-age=86400');
                 }
                 res.setHeader('X-Content-Type-Options', 'nosniff');
             },
         }));
     }
 
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
+    app.use(express.json({ limit: '1mb' }));
+    app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
     app.use('/auth', authLimiter, authRoutes);
     app.use('/api/users', authenticate, apiLimiter, usersRoutes);
